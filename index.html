@@ -194,6 +194,27 @@ input:checked+.slider-sw::before{transform:translateX(18px);}
 .saved-empty{text-align:center;color:var(--muted);padding:3rem 1rem;font-size:.88rem;line-height:1.8;}
 .saved-empty .em-icon{font-size:2.5rem;display:block;margin-bottom:.7rem;}
 
+/* 写真解析ボックス */
+.photo-analyze-box{background:rgba(77,150,255,.06);border:1.5px solid rgba(77,150,255,.2);border-radius:16px;padding:1.1rem 1.2rem;margin-bottom:1.1rem;}
+.pa-title{font-size:.7rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--a4);margin-bottom:.8rem;}
+.pa-row{display:flex;gap:.8rem;margin-bottom:.8rem;flex-wrap:wrap;}
+.pa-upload{flex:0 0 100px;height:80px;background:var(--surface);border:2px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.72rem;color:var(--muted);text-align:center;padding:.4rem;}
+.pa-upload:hover{border-color:var(--a4);color:var(--a4);}
+.pa-upload.has-img{border-style:solid;border-color:var(--a4);padding:0;overflow:hidden;}
+.pa-upload.has-img img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
+.pa-options{flex:1;display:flex;flex-direction:column;gap:.35rem;}
+.pa-opt-label{font-size:.68rem;font-weight:700;color:var(--muted);margin-bottom:.1rem;}
+.pa-check{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--muted2);cursor:pointer;}
+.pa-check input{accent-color:var(--a4);width:14px;height:14px;}
+.pa-key-row{display:flex;gap:.5rem;}
+.pa-key-row input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;color:var(--text);padding:.55rem .8rem;outline:none;transition:border-color .2s;}
+.pa-key-row input:focus{border-color:var(--a4);}
+.btn-pa-analyze{background:var(--a4);color:#000;font-family:inherit;font-size:.8rem;font-weight:900;border:none;border-radius:10px;padding:.55em 1.1em;cursor:pointer;white-space:nowrap;transition:opacity .18s;}
+.btn-pa-analyze:disabled{opacity:.4;cursor:not-allowed;}
+.btn-pa-analyze:not(:disabled):hover{opacity:.8;}
+textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.9rem;padding:.7rem 1rem;outline:none;transition:border-color .2s;resize:vertical;}
+textarea:focus{border-color:var(--a4);background:#1a1a28;}
+
 @media(max-width:580px){
   .steps{flex-direction:column;}
   .step{flex-direction:row;text-align:left;align-items:flex-start;gap:.6rem;}
@@ -241,39 +262,108 @@ input:checked+.slider-sw::before{transform:translateX(18px);}
 
 <div class="card">
   <div class="card-title"><span class="icon">🎭</span> キャラクター設定</div>
+
+  <!-- キャラタイプ選択 -->
+  <div class="field">
+    <div class="attr-label">🐾 キャラクタータイプ</div>
+    <div class="attr-chips" id="char-type-chips">
+      <span class="chip chartype active" data-type="human">👤 人間</span>
+      <span class="chip chartype" data-type="pet">🐾 犬・猫・うさぎなど</span>
+      <span class="chip chartype" data-type="animal">🐘 その他の動物</span>
+      <span class="chip chartype" data-type="other">✨ その他（ロボット・妖精など）</span>
+    </div>
+  </div>
+
+  <!-- 写真から読み取るボタン -->
+  <div class="photo-analyze-box" id="photo-analyze-box">
+    <div class="pa-title">📸 写真からキャラを自動抽出（Gemini API）</div>
+    <div class="pa-row">
+      <div class="pa-upload" id="pa-upload" onclick="document.getElementById('pa-file').click()">
+        <span id="pa-upload-label">📷 写真をタップ／クリック</span>
+        <input type="file" id="pa-file" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">
+      </div>
+      <div class="pa-options">
+        <div class="pa-opt-label">抽出する情報</div>
+        <label class="pa-check"><input type="checkbox" id="pa-clothing" checked> 👗 服・アクセサリー</label>
+        <label class="pa-check"><input type="checkbox" id="pa-pose"> 🤸 ポーズをそのまま維持</label>
+        <label class="pa-check"><input type="checkbox" id="pa-hair" checked> 💇 髪型・毛並み</label>
+        <label class="pa-check"><input type="checkbox" id="pa-color" checked> 🎨 カラー・色合い</label>
+        <label class="pa-check"><input type="checkbox" id="pa-feature" checked> ✨ 特徴的なパーツ</label>
+      </div>
+    </div>
+    <div class="pa-key-row">
+      <input type="password" id="pa-apikey" placeholder="Gemini APIキー（AIza...）無料取得→ aistudio.google.com" style="flex:1;font-family:monospace;font-size:.78rem;">
+      <button class="btn-pa-analyze" id="btn-pa-analyze" onclick="analyzeCharPhoto()" disabled>🔍 解析</button>
+    </div>
+    <div id="pa-status" style="font-size:.75rem;color:var(--muted);margin-top:.4rem;display:none;"></div>
+  </div>
+
   <div class="field">
     <label>キャラクターの説明（必須）</label>
-    <input type="text" id="character" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン、魔法使いの女の子">
+    <textarea id="character" rows="3" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン、魔法使いの女の子&#10;写真から自動抽出することもできるで👆"></textarea>
   </div>
   <div class="field">
     <label>キャラクター名（任意）</label>
     <input type="text" id="charname" placeholder="例: もちこ、たろう">
   </div>
-  <div class="field">
-    <div class="attr-label">👤 性別</div>
-    <div class="attr-chips" id="gender-chips">
-      <span class="chip gender active" data-val="">指定なし</span>
-      <span class="chip gender" data-val="male character, masculine, adult man">男性</span>
-      <span class="chip gender" data-val="female character, feminine, adult woman">女性</span>
-      <span class="chip gender" data-val="otokoyaku, Takarazuka male role, elegant androgynous woman dressed and performing as a man, sharp masculine features on female face, slicked-back hair, princely bearing">🌹 宝塚・男役</span>
-      <span class="chip gender" data-val="musumeyaku, Takarazuka female role, ultra-feminine woman, graceful, large expressive eyes, flowing hair, delicate features">🌸 宝塚・娘役</span>
-      <span class="chip gender" data-val="non-binary, gender-neutral character">ノンバイナリー</span>
+
+  <!-- 人間用パネル -->
+  <div id="panel-human">
+    <div class="field">
+      <div class="attr-label">👤 性別</div>
+      <div class="attr-chips" id="gender-chips">
+        <span class="chip gender active" data-val="">指定なし</span>
+        <span class="chip gender" data-val="male character, masculine, adult man">男性</span>
+        <span class="chip gender" data-val="female character, feminine, adult woman">女性</span>
+        <span class="chip gender" data-val="otokoyaku, Takarazuka male role, elegant androgynous woman dressed and performing as a man, sharp masculine features on female face, slicked-back hair, princely bearing">🌹 宝塚・男役</span>
+        <span class="chip gender" data-val="musumeyaku, Takarazuka female role, ultra-feminine woman, graceful, large expressive eyes, flowing hair, delicate features">🌸 宝塚・娘役</span>
+        <span class="chip gender" data-val="non-binary, gender-neutral character">ノンバイナリー</span>
+      </div>
+    </div>
+    <div class="field">
+      <div class="attr-label">🎂 年齢イメージ</div>
+      <input type="range" class="age-range" id="age-range" min="5" max="80" value="25" oninput="updateAgeDisplay()">
+      <div class="age-display" id="age-display">25歳ごろ</div>
+      <div class="range-labels"><span>子ども(5)</span><span>ティーン(15)</span><span>青年(25)</span><span>中年(45)</span><span>シニア(80)</span></div>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="attr-label">⚡ 中性度（左:男性的 ↔ 右:女性的）</div>
+      <div class="slider-track-wrap">
+        <div class="slider-track-bg"></div>
+        <input type="range" class="androgyny-range" id="androgyny-range" min="0" max="100" value="50">
+      </div>
+      <div class="range-labels"><span>💙 男性的</span><span>⚡ 中性</span><span>💗 女性的</span></div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:.4rem">性別×中性度で「男役っぽい女性」「女性っぽい男性」なども細かく指定できるで</div>
     </div>
   </div>
-  <div class="field">
-    <div class="attr-label">🎂 年齢イメージ</div>
-    <input type="range" class="age-range" id="age-range" min="5" max="80" value="25" oninput="updateAgeDisplay()">
-    <div class="age-display" id="age-display">25歳ごろ</div>
-    <div class="range-labels"><span>子ども(5)</span><span>ティーン(15)</span><span>青年(25)</span><span>中年(45)</span><span>シニア(80)</span></div>
-  </div>
-  <div class="field" style="margin-bottom:0">
-    <div class="attr-label">⚡ 中性度（左:男性的 ↔ 右:女性的）</div>
-    <div class="slider-track-wrap">
-      <div class="slider-track-bg"></div>
-      <input type="range" class="androgyny-range" id="androgyny-range" min="0" max="100" value="50">
+
+  <!-- ペット用パネル -->
+  <div id="panel-pet" style="display:none">
+    <div class="field">
+      <div class="attr-label">🐾 性別</div>
+      <div class="attr-chips">
+        <span class="chip petgender active" data-val="">指定なし</span>
+        <span class="chip petgender" data-val="male, boy">オス（男の子）</span>
+        <span class="chip petgender" data-val="female, girl">メス（女の子）</span>
+      </div>
     </div>
-    <div class="range-labels"><span>💙 男性的</span><span>⚡ 中性</span><span>💗 女性的</span></div>
-    <div style="font-size:.7rem;color:var(--muted);margin-top:.4rem">性別×中性度で「男役っぽい女性」「女性っぽい男性」なども細かく指定できるで</div>
+    <div class="field" style="margin-bottom:0">
+      <div class="attr-label">📅 年齢イメージ</div>
+      <div class="attr-chips">
+        <span class="chip petage active" data-val="very young puppy or kitten, baby animal, tiny and chubby">赤ちゃん・子</span>
+        <span class="chip petage" data-val="young adult animal, energetic and playful">若い・元気</span>
+        <span class="chip petage" data-val="mature adult animal, calm and dignified">大人・落ち着き</span>
+        <span class="chip petage" data-val="elderly animal, senior, gentle and wise looking">シニア・おじいちゃん風</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- その他動物・その他はシンプルに説明だけ -->
+  <div id="panel-animal" style="display:none">
+    <div style="font-size:.78rem;color:var(--muted);padding:.5rem 0">🐘 動物の種類はキャラクターの説明欄に書いてや！性別・年齢の細かい指定は不要なことが多いで。</div>
+  </div>
+  <div id="panel-other" style="display:none">
+    <div style="font-size:.78rem;color:var(--muted);padding:.5rem 0">✨ キャラクターの説明欄に詳しく書いてや！（例: 青いロボット、森の妖精、ドラゴンなど）</div>
   </div>
 </div>
 
@@ -641,14 +731,29 @@ function renderSaved() {
 
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ===== CHAR ATTRS =====
-let selectedGender = '';
-document.querySelectorAll('.chip.gender').forEach(c => {
+// ===== CHAR TYPE =====
+let charType = 'human';
+let selectedGender = '', selectedPetGender = '', selectedPetAge = 'very young puppy or kitten, baby animal, tiny and chubby';
+
+document.querySelectorAll('.chip.chartype').forEach(c => {
   c.addEventListener('click', () => {
-    document.querySelectorAll('.chip.gender').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.chip.chartype').forEach(x => x.classList.remove('active'));
     c.classList.add('active');
-    selectedGender = c.dataset.val;
+    charType = c.dataset.type;
+    document.getElementById('panel-human').style.display = charType === 'human' ? 'block' : 'none';
+    document.getElementById('panel-pet').style.display = charType === 'pet' ? 'block' : 'none';
+    document.getElementById('panel-animal').style.display = charType === 'animal' ? 'block' : 'none';
+    document.getElementById('panel-other').style.display = charType === 'other' ? 'block' : 'none';
   });
+});
+document.querySelectorAll('.chip.gender').forEach(c => {
+  c.addEventListener('click', () => { document.querySelectorAll('.chip.gender').forEach(x => x.classList.remove('active')); c.classList.add('active'); selectedGender = c.dataset.val; });
+});
+document.querySelectorAll('.chip.petgender').forEach(c => {
+  c.addEventListener('click', () => { document.querySelectorAll('.chip.petgender').forEach(x => x.classList.remove('active')); c.classList.add('active'); selectedPetGender = c.dataset.val; });
+});
+document.querySelectorAll('.chip.petage').forEach(c => {
+  c.addEventListener('click', () => { document.querySelectorAll('.chip.petage').forEach(x => x.classList.remove('active')); c.classList.add('active'); selectedPetAge = c.dataset.val; });
 });
 
 function updateAgeDisplay() {
@@ -658,25 +763,149 @@ function updateAgeDisplay() {
 function buildCharacterPrompt() {
   const base = document.getElementById('character').value.trim();
   const name = document.getElementById('charname').value.trim();
-  const age = parseInt(document.getElementById('age-range').value);
-  const androgyny = parseInt(document.getElementById('androgyny-range').value);
   let parts = [];
   if (name) parts.push(name);
   if (base) parts.push(base);
-  if (age <= 8) parts.push('very young child, toddler');
-  else if (age <= 13) parts.push('child around ' + age + ' years old');
-  else if (age <= 17) parts.push('teenager around ' + age + ' years old');
-  else if (age <= 30) parts.push('young adult around ' + age + ' years old');
-  else if (age <= 55) parts.push('adult around ' + age + ' years old');
-  else parts.push('elderly person around ' + age + ' years old');
-  if (selectedGender) parts.push(selectedGender);
-  if (androgyny <= 15) parts.push('extremely masculine appearance, very strong male features, no feminine traits');
-  else if (androgyny <= 35) parts.push('masculine appearance, mostly male features');
-  else if (androgyny >= 85) parts.push('extremely feminine appearance, very delicate features, no masculine traits');
-  else if (androgyny >= 65) parts.push('feminine appearance, mostly female features, soft delicate face');
-  else parts.push('androgynous appearance, balanced between masculine and feminine');
+
+  if (charType === 'human') {
+    const age = parseInt(document.getElementById('age-range').value);
+    const androgyny = parseInt(document.getElementById('androgyny-range').value);
+    if (age <= 8) parts.push('very young child, toddler');
+    else if (age <= 13) parts.push('child around ' + age + ' years old');
+    else if (age <= 17) parts.push('teenager around ' + age + ' years old');
+    else if (age <= 30) parts.push('young adult around ' + age + ' years old');
+    else if (age <= 55) parts.push('adult around ' + age + ' years old');
+    else parts.push('elderly person around ' + age + ' years old');
+    if (selectedGender) parts.push(selectedGender);
+    if (androgyny <= 15) parts.push('extremely masculine appearance, very strong male features, no feminine traits');
+    else if (androgyny <= 35) parts.push('masculine appearance, mostly male features');
+    else if (androgyny >= 85) parts.push('extremely feminine appearance, very delicate features, no masculine traits');
+    else if (androgyny >= 65) parts.push('feminine appearance, mostly female features, soft delicate face');
+    else parts.push('androgynous appearance, balanced between masculine and feminine');
+  } else if (charType === 'pet') {
+    if (selectedPetGender) parts.push(selectedPetGender);
+    if (selectedPetAge) parts.push(selectedPetAge);
+  }
+  // animal・other はbase説明のみ
   return parts.filter(Boolean).join(', ');
 }
+
+// ===== PHOTO ANALYZE =====
+let paImageBase64 = null, paImageMime = 'image/jpeg';
+
+document.getElementById('pa-file').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  paImageMime = file.type;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    paImageBase64 = ev.target.result.split(',')[1];
+    const box = document.getElementById('pa-upload');
+    box.classList.add('has-img');
+    box.innerHTML = `<img src="${ev.target.result}" alt="preview"><input type="file" id="pa-file" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">`;
+    checkPaReady();
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('pa-apikey').addEventListener('input', checkPaReady);
+
+function checkPaReady() {
+  const key = document.getElementById('pa-apikey').value.trim();
+  const btn = document.getElementById('btn-pa-analyze');
+  btn.disabled = !(paImageBase64 && key.startsWith('AIza'));
+}
+
+async function analyzeCharPhoto() {
+  const apiKey = document.getElementById('pa-apikey').value.trim();
+  if (!paImageBase64 || !apiKey) return;
+  try { localStorage.setItem('gemini_api_key', apiKey); } catch(e) {}
+
+  const btn = document.getElementById('btn-pa-analyze');
+  const status = document.getElementById('pa-status');
+  btn.disabled = true; btn.textContent = '解析中...';
+  status.style.display = 'block'; status.textContent = '🤖 Gemini が画像を解析中...'; status.style.color = 'var(--a4)';
+
+  const inclClothing = document.getElementById('pa-clothing').checked;
+  const inclPose     = document.getElementById('pa-pose').checked;
+  const inclHair     = document.getElementById('pa-hair').checked;
+  const inclColor    = document.getElementById('pa-color').checked;
+  const inclFeature  = document.getElementById('pa-feature').checked;
+
+  const typeLabel = charType === 'human' ? '人物' : charType === 'pet' ? '動物（ペット）' : charType === 'animal' ? '動物' : 'キャラクター';
+
+  const prompt = `この画像に写っている${typeLabel}の特徴を、AIイラスト生成プロンプト用に詳細に英語で記述してください。
+
+抽出する情報：
+${inclHair ? '- 髪型・毛並み・毛色（長さ・質感・色含む）' : ''}
+${inclClothing ? '- 服装・アクセサリー・装飾品（色・デザイン・スタイル）' : ''}
+${inclColor ? '- 全体的な色合い・カラーパレット' : ''}
+${inclFeature ? '- 顔の特徴・体型・特徴的なパーツ（目の色、耳の形など）' : ''}
+${inclPose ? '- ポーズ・体勢（そのまま維持するため詳細に）' : '- ポーズは記述しない（感情に合わせて変化させるため）'}
+
+出力形式：
+- カンマ区切りの英語キーワード列のみ
+- 説明文や前置きは不要
+- キャラクターの説明として直接使える形式で
+
+例: fluffy white cat, chubby round body, bright blue eyes, small pink nose, wearing a red bow tie, soft pastel fur texture`;
+
+  try {
+    // まず使えるモデルを取得
+    const mRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { redirect: 'follow' });
+    const mData = await mRes.json();
+    const models = mData.models || [];
+    const preferred = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-1.5-flash'];
+    let model = null;
+    for (const p of preferred) {
+      const found = models.find(m => m.name.includes(p) && (m.supportedGenerationMethods||[]).includes('generateContent'));
+      if (found) { model = found.name.replace('models/', ''); break; }
+    }
+    if (!model) {
+      const any = models.find(m => (m.supportedGenerationMethods||[]).includes('generateContent'));
+      if (any) model = any.name.replace('models/', '');
+      else throw new Error('使えるモデルが見つからへんかった');
+    }
+
+    status.textContent = `🤖 ${model} で解析中...`;
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [
+            { inline_data: { mime_type: paImageMime, data: paImageBase64 } },
+            { text: prompt }
+          ]}],
+          generationConfig: { temperature: 0.2, maxOutputTokens: 512 }
+        })
+      }
+    );
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.filter(p=>p.text)?.map(p=>p.text)?.join('') || '';
+    const clean = text.replace(/```[a-z]*|```/g,'').trim();
+
+    if (clean) {
+      document.getElementById('character').value = clean;
+      status.textContent = '✅ 抽出完了！説明欄に反映したで。必要なら編集してや。';
+      status.style.color = 'var(--a3)';
+    } else {
+      throw new Error('テキストが取得できへんかった');
+    }
+  } catch(err) {
+    status.textContent = '❌ エラー: ' + err.message;
+    status.style.color = 'var(--a1)';
+  } finally {
+    btn.disabled = false; btn.textContent = '🔍 解析';
+    checkPaReady();
+  }
+}
+
+// Gemini APIキー復元
+try { const k = localStorage.getItem('gemini_api_key'); if(k) { document.getElementById('pa-apikey').value = k; checkPaReady(); } } catch(e) {}
 
 // ===== STYLE =====
 let selectedStyleVal = 'cute kawaii anime illustration style, clean linework, bright colors';

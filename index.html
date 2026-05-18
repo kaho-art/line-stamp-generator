@@ -8,18 +8,27 @@
 <style>
 :root{
   --bg:#0d0d14;--surface:#16161f;--card:#1e1e2e;--border:#2a2a3d;
-  --a1:#ff6b6b;--a2:#ffd93d;--a3:#6bcb77;--a4:#4d96ff;--a5:#c77dff;
+  --a1:#ff6b6b;--a2:#ffd93d;--a3:#6bcb77;--a4:#4d96ff;--a5:#c77dff;--a6:#ff9f43;
   --text:#f0f0f8;--muted:#888899;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'M PLUS Rounded 1c',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(77,150,255,.07) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 85% 80%,rgba(255,107,107,.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
-.wrapper{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+.wrapper{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:2rem 1.5rem 6rem;}
 
 header{text-align:center;padding:2.5rem 0 2rem;}
 .badge{display:inline-block;background:linear-gradient(135deg,var(--a1),var(--a2));color:#000;font-size:.7rem;font-weight:900;letter-spacing:.12em;padding:.3em 1em;border-radius:99px;margin-bottom:1.2rem;text-transform:uppercase;}
 h1{font-family:'Zen Dots',sans-serif;font-size:clamp(1.5rem,5vw,2.6rem);line-height:1.15;background:linear-gradient(135deg,#fff 30%,var(--a4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.6rem;}
 .subtitle{color:var(--muted);font-size:.9rem;}
+
+.nav-tabs{display:flex;gap:.5rem;margin-bottom:2rem;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:.35rem;}
+.nav-tab{flex:1;padding:.75rem .5rem;border-radius:12px;text-align:center;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;color:var(--muted);background:transparent;border:none;transition:all .2s;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{background:var(--card);color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.3);}
+.nav-tab.active.gen{color:var(--a2);}
+.nav-tab.active.saved{color:var(--a5);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
 
 .steps{display:flex;gap:.5rem;margin:0 0 2rem;flex-wrap:wrap;}
 .step{flex:1;min-width:100px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.9rem .8rem;text-align:center;}
@@ -48,7 +57,24 @@ textarea{resize:vertical;min-height:72px;}
 .count-btn .lbl{font-size:.68rem;color:var(--muted);}
 .count-btn.active .lbl{color:var(--text);font-weight:700;}
 
-.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.55rem;}
+.attr-label{font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
+.attr-chips{display:flex;flex-wrap:wrap;gap:.35rem;}
+.chip{background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.28em .78em;font-size:.75rem;cursor:pointer;transition:all .16s;user-select:none;color:var(--muted);}
+.chip:hover{border-color:var(--a4);color:var(--a4);}
+.chip.active{font-weight:700;}
+.chip.gender.active{background:rgba(255,159,67,.15);border-color:var(--a6);color:var(--a6);}
+
+input.age-range,input.androgyny-range{-webkit-appearance:none;width:100%;height:4px;border-radius:99px;outline:none;cursor:pointer;margin-top:.5rem;}
+input.age-range{background:var(--border);}
+input.age-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--a3);box-shadow:0 0 8px rgba(107,203,119,.4);cursor:pointer;}
+.slider-track-wrap{position:relative;margin-top:.5rem;}
+.slider-track-bg{height:4px;border-radius:99px;background:linear-gradient(90deg,#4d96ff,#c77dff,#ff6b6b);}
+input.androgyny-range{background:transparent;margin-top:-4px;position:relative;}
+input.androgyny-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);box-shadow:0 0 8px rgba(0,0,0,.5);cursor:pointer;border:2px solid var(--border);}
+.age-display{text-align:center;font-family:'Zen Dots',sans-serif;font-size:1rem;color:var(--a3);margin-top:.3rem;}
+.range-labels{display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);margin-top:.3rem;}
+
+.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:.55rem;}
 .style-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:.85rem .75rem;cursor:pointer;transition:all .18s;user-select:none;display:flex;flex-direction:column;gap:.25rem;}
 .style-card:hover{border-color:var(--a5);}
 .style-card.active{background:rgba(199,125,255,.12);border-color:var(--a5);}
@@ -56,6 +82,10 @@ textarea{resize:vertical;min-height:72px;}
 .style-card .s-name{font-size:.8rem;font-weight:700;color:var(--text);}
 .style-card .s-desc{font-size:.68rem;color:var(--muted);line-height:1.3;}
 .style-card.active .s-name{color:var(--a5);}
+.style-custom-wrap{margin-top:.8rem;display:flex;gap:.5rem;display:none;}
+.style-custom-wrap input{flex:1;}
+.btn-sm-purple{background:var(--a5);color:#000;font-family:inherit;font-size:.78rem;font-weight:900;border:none;border-radius:10px;padding:.5em 1em;cursor:pointer;white-space:nowrap;transition:opacity .18s;}
+.btn-sm-purple:hover{opacity:.8;}
 
 .tag-group{display:flex;flex-wrap:wrap;gap:.42rem;}
 .tag{background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.3em .85em;font-size:.76rem;cursor:pointer;transition:all .18s;user-select:none;}
@@ -76,10 +106,10 @@ textarea{resize:vertical;min-height:72px;}
 .toggle-label{font-size:.82rem;color:var(--muted);}
 .switch{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0;}
 .switch input{opacity:0;width:0;height:0;}
-.slider{position:absolute;inset:0;background:var(--border);border-radius:99px;cursor:pointer;transition:background .2s;}
-.slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
-input:checked+.slider{background:var(--a3);}
-input:checked+.slider::before{transform:translateX(18px);}
+.slider-sw{position:absolute;inset:0;background:var(--border);border-radius:99px;cursor:pointer;transition:background .2s;}
+.slider-sw::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
+input:checked+.slider-sw{background:var(--a3);}
+input:checked+.slider-sw::before{transform:translateX(18px);}
 
 .btn-generate{width:100%;background:linear-gradient(135deg,var(--a1) 0%,var(--a2) 100%);color:#000;font-family:inherit;font-size:1.05rem;font-weight:900;border:none;border-radius:16px;padding:1.1rem;cursor:pointer;letter-spacing:.05em;transition:opacity .2s,transform .15s;margin-top:.5rem;}
 .btn-generate:hover{opacity:.9;transform:translateY(-2px);}
@@ -89,14 +119,17 @@ input:checked+.slider::before{transform:translateX(18px);}
 .output-card{background:var(--card);border:1.5px solid var(--a4);border-radius:20px;padding:1.8rem 2rem;}
 .out-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.6rem;}
 .output-title{font-family:'Zen Dots',sans-serif;font-size:.9rem;color:var(--a4);}
+.out-btns{display:flex;gap:.45rem;flex-wrap:wrap;}
 .phase-tabs{display:flex;gap:.5rem;margin-bottom:1.1rem;}
 .phase-tab{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:.82rem .5rem;text-align:center;cursor:pointer;transition:all .18s;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--muted);}
 .phase-tab:hover{border-color:var(--a4);color:var(--text);}
 .phase-tab.active{border-color:var(--a4);background:rgba(77,150,255,.13);color:var(--a4);}
 .phase-tab .pt-icon{font-size:1.1rem;display:block;margin-bottom:.28rem;}
-.btn-copy{background:var(--a4);color:#000;font-family:inherit;font-size:.78rem;font-weight:900;border:none;border-radius:8px;padding:.45em 1.1em;cursor:pointer;transition:opacity .18s;}
-.btn-copy:hover{opacity:.78;}
-.btn-copy.copied{background:var(--a3);}
+.btn-action{font-family:inherit;font-size:.78rem;font-weight:900;border:none;border-radius:8px;padding:.45em 1.1em;cursor:pointer;transition:all .18s;}
+.btn-action.copy{background:var(--a4);color:#000;}
+.btn-action.save{background:var(--a5);color:#000;}
+.btn-action.done{background:var(--a3);color:#000;}
+.btn-action:hover{opacity:.8;}
 .prompt-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.1rem;font-size:.82rem;line-height:1.75;color:#ccc;white-space:pre-wrap;word-break:break-word;max-height:440px;overflow-y:auto;}
 .prompt-box::-webkit-scrollbar{width:5px;}
 .prompt-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
@@ -108,11 +141,65 @@ input:checked+.slider::before{transform:translateX(18px);}
 .flow-step{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:.18em .65em;color:var(--text);}
 .flow-arrow{color:var(--a2);font-weight:900;}
 
+/* ===== SAVED TAB ===== */
+.gas-setup-card{background:rgba(107,203,119,.06);border:1.5px solid rgba(107,203,119,.25);border-radius:18px;padding:1.4rem 1.6rem;margin-bottom:1.4rem;}
+.gas-setup-title{font-size:.7rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a3);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem;}
+.gas-url-row{display:flex;gap:.5rem;margin-bottom:.5rem;}
+.gas-url-row input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:monospace;font-size:.82rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;}
+.gas-url-row input:focus{border-color:var(--a3);}
+.gas-url-row input.ok{border-color:var(--a3);}
+.btn-connect{background:var(--a3);color:#000;font-family:inherit;font-size:.8rem;font-weight:900;border:none;border-radius:10px;padding:.55em 1.1em;cursor:pointer;white-space:nowrap;transition:opacity .18s;}
+.btn-connect:hover{opacity:.8;}
+.gas-hint{font-size:.72rem;color:#7acc8a;line-height:1.6;}
+.gas-hint a{color:var(--a3);}
+.gas-status{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:700;margin-top:.5rem;}
+.gas-status.ok{color:var(--a3);}
+.gas-status.err{color:var(--a1);}
+.gas-status.loading{color:var(--a2);}
+
+.saved-add-card{background:var(--card);border:2px dashed var(--border);border-radius:20px;padding:1.5rem 2rem;margin-bottom:1.4rem;transition:border-color .2s;}
+.saved-add-card:focus-within{border-color:var(--a5);}
+.saved-add-title{font-size:.7rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a5);margin-bottom:.8rem;}
+.saved-add-row{display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap;}
+.saved-add-row input{flex:1;min-width:120px;}
+.saved-add-area{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.85rem;padding:.7rem 1rem;outline:none;resize:vertical;min-height:100px;transition:border-color .2s;}
+.saved-add-area:focus{border-color:var(--a5);}
+.saved-add-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;flex-wrap:wrap;gap:.5rem;}
+.btn-add-saved{background:var(--a5);color:#000;font-family:inherit;font-size:.82rem;font-weight:900;border:none;border-radius:10px;padding:.6em 1.3em;cursor:pointer;transition:opacity .18s;}
+.btn-add-saved:hover{opacity:.8;}
+.saved-note{font-size:.72rem;color:var(--muted);}
+
+.saved-toolbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;}
+.saved-toolbar input{flex:1;min-width:160px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.85rem;padding:.6rem 1rem;outline:none;transition:border-color .2s;}
+.saved-toolbar input:focus{border-color:var(--a5);}
+.btn-refresh{background:transparent;border:1.5px solid var(--border);border-radius:10px;color:var(--muted);font-family:inherit;font-size:.78rem;font-weight:700;padding:.5em .9em;cursor:pointer;transition:all .18s;}
+.btn-refresh:hover{border-color:var(--a3);color:var(--a3);}
+
+.saved-list{display:flex;flex-direction:column;gap:.9rem;}
+.saved-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem 1.4rem;transition:border-color .2s;}
+.saved-item:hover{border-color:var(--a5);}
+.saved-item-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem;margin-bottom:.6rem;}
+.saved-item-title{font-size:.88rem;font-weight:700;color:var(--text);}
+.saved-item-tag{display:inline-block;font-size:.65rem;background:rgba(199,125,255,.15);border:1px solid rgba(199,125,255,.3);color:var(--a5);border-radius:99px;padding:.15em .6em;margin-left:.4rem;}
+.saved-item-actions{display:flex;gap:.4rem;flex-shrink:0;}
+.btn-item{font-family:inherit;font-size:.7rem;font-weight:700;border:1px solid transparent;border-radius:7px;padding:.35em .8em;cursor:pointer;transition:opacity .18s;}
+.btn-item.copy{background:var(--a4);color:#000;}
+.btn-item.del{background:rgba(255,107,107,.12);color:var(--a1);border-color:rgba(255,107,107,.25);}
+.btn-item:hover{opacity:.72;}
+.saved-item-preview{font-size:.76rem;color:var(--muted);line-height:1.5;max-height:60px;overflow:hidden;cursor:pointer;position:relative;}
+.saved-item-preview.expanded{max-height:none;}
+.saved-item-preview::after{content:'▼ もっと見る';position:absolute;bottom:0;right:0;font-size:.65rem;color:var(--a5);background:var(--card);padding-left:.3em;}
+.saved-item-preview.expanded::after{display:none;}
+.saved-item-date{font-size:.65rem;color:var(--muted);margin-top:.5rem;}
+.saved-empty{text-align:center;color:var(--muted);padding:3rem 1rem;font-size:.88rem;line-height:1.8;}
+.saved-empty .em-icon{font-size:2.5rem;display:block;margin-bottom:.7rem;}
+
 @media(max-width:580px){
   .steps{flex-direction:column;}
   .step{flex-direction:row;text-align:left;align-items:flex-start;gap:.6rem;}
   .step-num{flex-shrink:0;margin:0;}
   .style-grid{grid-template-columns:repeat(2,1fr);}
+  .style-custom-wrap{flex-direction:column;}
 }
 </style>
 </head>
@@ -125,6 +212,14 @@ input:checked+.slider::before{transform:translateX(18px);}
   <p class="subtitle">ChatGPTに貼るだけ！2フェーズで一覧確認→ZIP出力まで完結や✨</p>
 </header>
 
+<div class="nav-tabs">
+  <button class="nav-tab gen active" onclick="switchNav('gen')">✨ プロンプト生成</button>
+  <button class="nav-tab saved" onclick="switchNav('saved')">📚 プロンプト保存庫</button>
+</div>
+
+<!-- ===== 生成タブ ===== -->
+<div class="tab-content active" id="tab-gen">
+
 <div class="steps">
   <div class="step"><div class="step-num">1</div><p>枚数・キャラ・スタイルを設定</p></div>
   <div class="step"><div class="step-num">2</div><p>感情パターンを選択</p></div>
@@ -133,7 +228,6 @@ input:checked+.slider::before{transform:translateX(18px);}
   <div class="step"><div class="step-num">5</div><p>【Phase2】分割ZIPプロンプトを貼る</p></div>
 </div>
 
-<!-- COUNT -->
 <div class="card">
   <div class="card-title"><span class="icon">🔢</span> スタンプ枚数を選択</div>
   <div class="count-selector">
@@ -145,23 +239,47 @@ input:checked+.slider::before{transform:translateX(18px);}
   </div>
 </div>
 
-<!-- CHARACTER -->
 <div class="card">
-  <div class="card-title"><span class="icon">🐱</span> キャラクター設定</div>
+  <div class="card-title"><span class="icon">🎭</span> キャラクター設定</div>
   <div class="field">
     <label>キャラクターの説明（必須）</label>
     <input type="text" id="character" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン、魔法使いの女の子">
   </div>
-  <div class="field" style="margin-bottom:0">
+  <div class="field">
     <label>キャラクター名（任意）</label>
     <input type="text" id="charname" placeholder="例: もちこ、たろう">
   </div>
+  <div class="field">
+    <div class="attr-label">👤 性別</div>
+    <div class="attr-chips" id="gender-chips">
+      <span class="chip gender active" data-val="">指定なし</span>
+      <span class="chip gender" data-val="male character, masculine, adult man">男性</span>
+      <span class="chip gender" data-val="female character, feminine, adult woman">女性</span>
+      <span class="chip gender" data-val="otokoyaku, Takarazuka male role, elegant androgynous woman dressed and performing as a man, sharp masculine features on female face, slicked-back hair, princely bearing">🌹 宝塚・男役</span>
+      <span class="chip gender" data-val="musumeyaku, Takarazuka female role, ultra-feminine woman, graceful, large expressive eyes, flowing hair, delicate features">🌸 宝塚・娘役</span>
+      <span class="chip gender" data-val="non-binary, gender-neutral character">ノンバイナリー</span>
+    </div>
+  </div>
+  <div class="field">
+    <div class="attr-label">🎂 年齢イメージ</div>
+    <input type="range" class="age-range" id="age-range" min="5" max="80" value="25" oninput="updateAgeDisplay()">
+    <div class="age-display" id="age-display">25歳ごろ</div>
+    <div class="range-labels"><span>子ども(5)</span><span>ティーン(15)</span><span>青年(25)</span><span>中年(45)</span><span>シニア(80)</span></div>
+  </div>
+  <div class="field" style="margin-bottom:0">
+    <div class="attr-label">⚡ 中性度（左:男性的 ↔ 右:女性的）</div>
+    <div class="slider-track-wrap">
+      <div class="slider-track-bg"></div>
+      <input type="range" class="androgyny-range" id="androgyny-range" min="0" max="100" value="50">
+    </div>
+    <div class="range-labels"><span>💙 男性的</span><span>⚡ 中性</span><span>💗 女性的</span></div>
+    <div style="font-size:.7rem;color:var(--muted);margin-top:.4rem">性別×中性度で「男役っぽい女性」「女性っぽい男性」なども細かく指定できるで</div>
+  </div>
 </div>
 
-<!-- STYLE -->
 <div class="card">
   <div class="card-title"><span class="icon">🎨</span> アートスタイル</div>
-  <div class="style-grid">
+  <div class="style-grid" id="style-grid">
     <div class="style-card active" data-val="cute kawaii anime illustration style, clean linework, bright colors"><span class="s-icon">✨</span><span class="s-name">かわいいアニメ</span><span class="s-desc">クリーンな線画・鮮やか</span></div>
     <div class="style-card" data-val="chibi super-deformed character style, big head small body, pastel colors"><span class="s-icon">🥰</span><span class="s-name">ちびキャラ</span><span class="s-desc">頭でっかち・丸くてかわいい</span></div>
     <div class="style-card" data-val="flat vector sticker illustration, bold outlines, minimal shading"><span class="s-icon">📐</span><span class="s-name">フラットベクター</span><span class="s-desc">シンプル・モダンな線画</span></div>
@@ -178,10 +296,14 @@ input:checked+.slider::before{transform:translateX(18px);}
     <div class="style-card" data-val="retro 1980s anime style, limited cel animation palette, VHS scan lines aesthetic"><span class="s-icon">📼</span><span class="s-name">レトロアニメ（80s）</span><span class="s-desc">セル画・VHS・昭和レトロ</span></div>
     <div class="style-card" data-val="loose doodle sketch style, hand-drawn pen lines, sketchbook feel, minimal color fills"><span class="s-icon">📓</span><span class="s-name">スケッチ落書き風</span><span class="s-desc">手書きノート・ゆるゆる感</span></div>
     <div class="style-card" data-val="neon glow dark illustration, glowing outlines, synthwave cyberpunk aesthetic"><span class="s-icon">🌈</span><span class="s-name">ネオン・サイバーパンク</span><span class="s-desc">蛍光・光の線・未来的ダーク</span></div>
+    <div class="style-card" data-val="__custom__"><span class="s-icon">✏️</span><span class="s-name">その他（自由入力）</span><span class="s-desc">好きなスタイルを入力</span></div>
+  </div>
+  <div class="style-custom-wrap" id="custom-style-wrap">
+    <input type="text" id="custom-style-input" placeholder="例: ukiyo-e woodblock print style, traditional Japanese art">
+    <button class="btn-sm-purple" onclick="applyCustomStyle()">適用</button>
   </div>
 </div>
 
-<!-- EMOTIONS -->
 <div class="card">
   <div class="emotion-header">
     <div class="card-title" style="margin-bottom:0"><span class="icon">😄</span> 感情・表現パターン</div>
@@ -200,14 +322,14 @@ input:checked+.slider::before{transform:translateX(18px);}
     <span class="tag" data-val="surprised, shocked, jaw drop">😲 びっくり</span>
     <span class="tag" data-val="embarrassed, blushing, shy">😳 はずかしい</span>
     <span class="tag" data-val="sleepy, tired, heavy eyelids, yawning">😴 ねむい</span>
-    <span class="tag" data-val="cool, confident, sunglasses, smug">😎 クール</span>
+    <span class="tag" data-val="cool, confident, smug">😎 クール</span>
     <span class="tag" data-val="in love, heart eyes, floating hearts">🥰 ラブラブ</span>
     <span class="tag" data-val="thumbs up, good job, approval">👍 グッド</span>
     <span class="tag" data-val="thumbs down, disapproval, nope">👎 ダメ</span>
     <span class="tag" data-val="waving hello, friendly greeting">👋 あいさつ</span>
     <span class="tag" data-val="celebrating, party popper, hurray">🎉 やったー！</span>
     <span class="tag" data-val="sweating nervously, anxious">😅 あせあせ</span>
-    <span class="tag" data-val="thinking deeply, pondering, chin scratch">🤔 かんがえてる</span>
+    <span class="tag" data-val="thinking deeply, pondering">🤔 かんがえてる</span>
     <span class="tag" data-val="eating delicious food, yummy">😋 たべてる</span>
     <span class="tag" data-val="running fast, in a hurry, late">🏃 いそいでる</span>
     <span class="tag" data-val="sleeping soundly, snoring, ZZZ">💤 おやすみ</span>
@@ -236,13 +358,11 @@ input:checked+.slider::before{transform:translateX(18px);}
   </div>
 </div>
 
-<!-- OPTIONS -->
 <div class="card">
   <div class="card-title"><span class="icon">✨</span> オプション設定</div>
   <div class="field">
     <label>テキスト吹き出し（任意）</label>
     <input type="text" id="text-overlay" placeholder="例: ありがとう！／おつかれ〜／よろしく">
-    <div style="font-size:.73rem;color:var(--muted);margin-top:.28rem">感情に合ったセリフを入れたい場合に（空欄でテキストなし）</div>
   </div>
   <div class="field">
     <label>追加デザインオプション</label>
@@ -262,165 +382,342 @@ input:checked+.slider::before{transform:translateX(18px);}
     <textarea id="custom" placeholder="例: 全体的に丸みのあるかわいいデザインで統一して、紫系の色は使わないで、など"></textarea>
   </div>
   <div class="toggle-row">
-    <label class="switch"><input type="checkbox" id="toggle-size" checked><span class="slider"></span></label>
+    <label class="switch"><input type="checkbox" id="toggle-size" checked><span class="slider-sw"></span></label>
     <span class="toggle-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
   </div>
   <button class="btn-generate" onclick="generatePrompts()">✨ 2フェーズ プロンプトを生成する！</button>
 </div>
 
-<!-- OUTPUT -->
 <div id="stamp-output">
   <div class="output-card">
     <div class="out-header">
       <div class="output-title" id="output-title">📋 生成されたプロンプト</div>
-      <button class="btn-copy" id="copy-btn" onclick="copyPrompt()">コピーする</button>
+      <div class="out-btns">
+        <button class="btn-action save" id="btn-save" onclick="saveCurrentPrompt()">💾 スプシに保存</button>
+        <button class="btn-action copy" id="copy-btn" onclick="copyPrompt()">コピーする</button>
+      </div>
     </div>
     <div class="phase-tabs">
-      <button class="phase-tab active" id="tab1" onclick="switchTab(1)">
-        <span class="pt-icon">🖼️</span>Phase 1<br><span style="font-size:.66rem;font-weight:400">一覧グリッド生成</span>
-      </button>
-      <button class="phase-tab" id="tab2" onclick="switchTab(2)">
-        <span class="pt-icon">✂️</span>Phase 2<br><span style="font-size:.66rem;font-weight:400">確認後 → 分割ZIP</span>
-      </button>
+      <button class="phase-tab active" id="tab1" onclick="switchTab(1)"><span class="pt-icon">🖼️</span>Phase 1<br><span style="font-size:.66rem;font-weight:400">一覧グリッド生成</span></button>
+      <button class="phase-tab" id="tab2" onclick="switchTab(2)"><span class="pt-icon">✂️</span>Phase 2<br><span style="font-size:.66rem;font-weight:400">確認後 → 分割ZIP</span></button>
     </div>
     <div class="phase-panel active" id="panel1">
       <div class="prompt-box" id="prompt-phase1"></div>
       <div class="tip-box">💡 <b>Phase 1：</b>ChatGPT（GPT-4o）に貼って全スタンプを<b>1枚のグリッド画像</b>で確認！
-        <div class="flow">
-          <span class="flow-step">コピー</span><span class="flow-arrow">→</span>
-          <span class="flow-step">ChatGPTに貼る</span><span class="flow-arrow">→</span>
-          <span class="flow-step">一覧グリッド画像が届く</span><span class="flow-arrow">→</span>
-          <span class="flow-step">OKならPhase2へ！</span>
-        </div>
+        <div class="flow"><span class="flow-step">コピー</span><span class="flow-arrow">→</span><span class="flow-step">ChatGPTに貼る</span><span class="flow-arrow">→</span><span class="flow-step">一覧グリッド画像が届く</span><span class="flow-arrow">→</span><span class="flow-step">OKならPhase2へ！</span></div>
       </div>
     </div>
     <div class="phase-panel" id="panel2">
       <div class="prompt-box" id="prompt-phase2"></div>
       <div class="tip-box">💡 <b>Phase 2：</b>同じチャットに貼るだけ！分割→透明PNG→<b>ZIP</b>でダウンロード！
-        <div class="flow">
-          <span class="flow-step">Phase1でOK確認</span><span class="flow-arrow">→</span>
-          <span class="flow-step">このプロンプトをコピー</span><span class="flow-arrow">→</span>
-          <span class="flow-step">同じチャットに貼る</span><span class="flow-arrow">→</span>
-          <span class="flow-step">line_stamps.zip ダウンロード！</span>
-        </div>
+        <div class="flow"><span class="flow-step">Phase1でOK確認</span><span class="flow-arrow">→</span><span class="flow-step">このプロンプトをコピー</span><span class="flow-arrow">→</span><span class="flow-step">同じチャットに貼る</span><span class="flow-arrow">→</span><span class="flow-step">line_stamps.zip ダウンロード！</span></div>
       </div>
     </div>
+  </div>
+</div>
+</div><!-- /tab-gen -->
+
+<!-- ===== 保存タブ ===== -->
+<div class="tab-content" id="tab-saved">
+
+  <!-- GAS設定 -->
+  <div class="gas-setup-card">
+    <div class="gas-setup-title">🔗 Googleスプレッドシート連携設定</div>
+    <div class="gas-url-row">
+      <input type="text" id="gas-url-input" placeholder="GAS WebアプリのURL（https://script.google.com/macros/s/...）" oninput="onGasUrlChange()">
+      <button class="btn-connect" onclick="testConnection()">接続テスト</button>
+    </div>
+    <div id="gas-status"></div>
+    <div class="gas-hint" style="margin-top:.7rem">
+      📋 <b>設定手順：</b><br>
+      1. <a href="https://sheets.new" target="_blank">Googleスプレッドシートを新規作成</a> する<br>
+      2. 「拡張機能」→「Apps Script」を開く<br>
+      3. ダウンロードした <b>gas-code.gs</b> の中身を全部貼り付けて保存<br>
+      4. 「デプロイ」→「新しいデプロイ」→ 種類:ウェブアプリ、アクセス:<b>全員</b> に設定<br>
+      5. 表示されたURLをこの欄に貼り付けて「接続テスト」をクリック！
+    </div>
+  </div>
+
+  <!-- 手動追加 -->
+  <div class="saved-add-card">
+    <div class="saved-add-title">📥 プロンプトを手動で追加</div>
+    <div class="saved-add-row">
+      <input type="text" id="new-prompt-title" placeholder="タイトル（例: もちこちゃん24枚セット）">
+      <input type="text" id="new-prompt-tag" placeholder="タグ（例: アニメ風）" style="max-width:140px;">
+    </div>
+    <textarea class="saved-add-area" id="new-prompt-body" placeholder="プロンプトをここに貼り付けてね。SNSで拾ったやつでもOK！"></textarea>
+    <div class="saved-add-footer">
+      <button class="btn-add-saved" onclick="addSavedPrompt()">💾 保存する</button>
+      <span class="saved-note">スプシに直接保存されるで</span>
+    </div>
+  </div>
+
+  <!-- 一覧 -->
+  <div class="saved-toolbar">
+    <input type="text" id="search-input" placeholder="🔍 タイトルやタグで検索..." oninput="renderSaved()">
+    <button class="btn-refresh" onclick="loadFromGas()">🔄 再読み込み</button>
+  </div>
+  <div class="saved-list" id="saved-list">
+    <div class="saved-empty"><span class="em-icon">🔗</span>まずスプレッドシートと接続してや！<br>上の設定欄でGASのURLを入力してな。</div>
   </div>
 </div>
 
 </div>
 <script>
-let stampCount = 24;
-let selectedStyle = { val: 'cute kawaii anime illustration style, clean linework, bright colors' };
-let selectedEmotions = [];
-let selectedExtras = [];
-let currentTab = 1;
+// ===== NAV =====
+function switchNav(tab) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector('.nav-tab.' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'saved') { loadFromGas(); }
+}
 
-const DEFAULT_POOL = [
-  'happy, big smile, joy','crying, sad tears, heartbroken','angry, furious, steam from head',
-  'laughing hard, tears of laughter','surprised, shocked, jaw drop','embarrassed, blushing, shy',
-  'sleepy, tired, heavy eyelids, yawning','cool, confident, sunglasses, smug','in love, heart eyes, floating hearts',
-  'thumbs up, good job, approval','thumbs down, disapproval, nope','waving hello, friendly greeting',
-  'celebrating, party popper, hurray','sweating nervously, anxious','thinking deeply, pondering',
-  'eating delicious food, yummy','running fast, in a hurry','sleeping soundly, snoring, ZZZ',
-  'OK hand gesture, affirmative','clapping hands, applause','texting on smartphone',
-  'working hard, focused at laptop','drinking tea or coffee, cozy','begging, please, puppy eyes',
-  'dancing, spinning, having fun','waiting, bored, impatient','reading a book, studious',
-  'overwhelmed, too much','triumphant, fist pump, victory','taking a selfie, peace sign',
-  'sick, sneezing','exercising, working out, flexing','listening to music, headphones',
-  'money eyes, excited about wealth','crying ugly, sobbing','speechless, blank stare',
-  'shrugging, whatever','giving a gift','heartbroken, sad love','disgusted, eww face'
-];
+// ===== GAS =====
+let gasUrl = '';
+let cachedPrompts = [];
 
-document.querySelectorAll('.count-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    stampCount = parseInt(btn.dataset.n);
-    updateBadge();
+function getGasUrl() { return document.getElementById('gas-url-input').value.trim(); }
+
+function onGasUrlChange() {
+  const url = getGasUrl();
+  try { localStorage.setItem('gas_url', url); } catch(e) {}
+}
+
+async function testConnection() {
+  const url = getGasUrl();
+  if (!url) { setGasStatus('URLを入力してや！', 'err'); return; }
+  setGasStatus('接続テスト中...', 'loading');
+  try {
+    const res = await fetch(url + '?action=getAll');
+    const data = await res.json();
+    if (data.ok) {
+      setGasStatus('✅ 接続成功！スプレッドシートと繋がったで！', 'ok');
+      cachedPrompts = data.data || [];
+      renderSaved();
+    } else {
+      setGasStatus('❌ エラー: ' + (data.error || '不明'), 'err');
+    }
+  } catch(e) {
+    setGasStatus('❌ 接続失敗。URLを確認してな。CORSエラーの場合はGASの設定でアクセスを「全員」にしてや。', 'err');
+  }
+}
+
+function setGasStatus(msg, type) {
+  const el = document.getElementById('gas-status');
+  el.innerHTML = `<div class="gas-status ${type}">${msg}</div>`;
+}
+
+async function loadFromGas() {
+  const url = getGasUrl();
+  if (!url) return;
+  try {
+    const res = await fetch(url + '?action=getAll');
+    const data = await res.json();
+    if (data.ok) { cachedPrompts = data.data || []; renderSaved(); }
+  } catch(e) { /* silent */ }
+}
+
+async function gasRequest(params) {
+  const url = getGasUrl();
+  if (!url) { alert('スプシURLを設定してや！「プロンプト保存庫」タブで設定できるで。'); return null; }
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(url + '?' + qs);
+  return await res.json();
+}
+
+// ===== SAVE =====
+async function saveCurrentPrompt() {
+  if (!lastP1) return;
+  const btn = document.getElementById('btn-save');
+  btn.textContent = '保存中...'; btn.disabled = true;
+  const data = { id: Date.now(), title: lastTitle, tag: '', body: lastP1 + '\n\n---Phase2---\n\n' + lastP2, date: new Date().toLocaleDateString('ja-JP') };
+  try {
+    const result = await gasRequest({ action: 'save', data: JSON.stringify(data) });
+    if (result && result.ok) {
+      btn.textContent = '✓ 保存済み！'; btn.classList.add('done');
+      cachedPrompts.unshift(data);
+    } else {
+      btn.textContent = '❌ 失敗';
+    }
+  } catch(e) {
+    btn.textContent = '❌ エラー';
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = '💾 スプシに保存'; btn.classList.remove('done'); }, 2500);
+  }
+}
+
+async function addSavedPrompt() {
+  const title = document.getElementById('new-prompt-title').value.trim();
+  const tag = document.getElementById('new-prompt-tag').value.trim();
+  const body = document.getElementById('new-prompt-body').value.trim();
+  if (!title || !body) { alert('タイトルとプロンプトを入力してや！'); return; }
+  const data = { id: Date.now(), title, tag, body, date: new Date().toLocaleDateString('ja-JP') };
+  const result = await gasRequest({ action: 'save', data: JSON.stringify(data) });
+  if (result && result.ok) {
+    document.getElementById('new-prompt-title').value = '';
+    document.getElementById('new-prompt-tag').value = '';
+    document.getElementById('new-prompt-body').value = '';
+    cachedPrompts.unshift(data);
+    renderSaved();
+    alert('保存したで！');
+  } else {
+    alert('保存に失敗したで。GASのURL設定を確認してや。');
+  }
+}
+
+async function deleteSaved(id) {
+  if (!confirm('このプロンプトを削除してもええ？')) return;
+  const result = await gasRequest({ action: 'delete', id });
+  if (result && result.ok) {
+    cachedPrompts = cachedPrompts.filter(p => String(p.id) !== String(id));
+    renderSaved();
+  } else {
+    alert('削除に失敗したで。');
+  }
+}
+
+function copySaved(id) {
+  const p = cachedPrompts.find(p => String(p.id) === String(id));
+  if (!p) return;
+  navigator.clipboard.writeText(p.body).then(() => {
+    const btn = document.querySelector('[data-copy="' + id + '"]');
+    if (btn) { const o = btn.textContent; btn.textContent = 'コピー済 ✓'; setTimeout(() => btn.textContent = o, 2000); }
+  });
+}
+
+function toggleExpand(id) {
+  const el = document.querySelector('[data-preview="' + id + '"]');
+  if (el) el.classList.toggle('expanded');
+}
+
+function renderSaved() {
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const arr = cachedPrompts.filter(p => !q || p.title.toLowerCase().includes(q) || (p.tag||'').toLowerCase().includes(q) || p.body.toLowerCase().includes(q));
+  const list = document.getElementById('saved-list');
+  if (arr.length === 0) {
+    const noGas = !getGasUrl();
+    list.innerHTML = `<div class="saved-empty"><span class="em-icon">${noGas ? '🔗' : '📭'}</span>${noGas ? 'まずスプレッドシートと接続してや！<br>上の設定欄でGASのURLを入力してな。' : q ? '検索結果が見つからへんかったで。' : 'まだ保存されてへんで！<br>プロンプトを生成して「💾 スプシに保存」を押すか、上の入力欄から追加してや。'}</div>`;
+    return;
+  }
+  list.innerHTML = arr.map(p => `
+    <div class="saved-item">
+      <div class="saved-item-header">
+        <div><span class="saved-item-title">${escHtml(p.title)}</span>${p.tag ? `<span class="saved-item-tag">${escHtml(p.tag)}</span>` : ''}</div>
+        <div class="saved-item-actions">
+          <button class="btn-item copy" data-copy="${p.id}" onclick="copySaved(${p.id})">📋 コピー</button>
+          <button class="btn-item del" onclick="deleteSaved(${p.id})">🗑️ 削除</button>
+        </div>
+      </div>
+      <div class="saved-item-preview" data-preview="${p.id}" onclick="toggleExpand(${p.id})">${escHtml(p.body.slice(0, 120))}${p.body.length > 120 ? '…' : ''}</div>
+      <div class="saved-item-date">📅 ${p.date}</div>
+    </div>`).join('');
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ===== CHAR ATTRS =====
+let selectedGender = '';
+document.querySelectorAll('.chip.gender').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.chip.gender').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    selectedGender = c.dataset.val;
   });
 });
+
+function updateAgeDisplay() {
+  document.getElementById('age-display').textContent = document.getElementById('age-range').value + '歳ごろ';
+}
+
+function buildCharacterPrompt() {
+  const base = document.getElementById('character').value.trim();
+  const name = document.getElementById('charname').value.trim();
+  const age = parseInt(document.getElementById('age-range').value);
+  const androgyny = parseInt(document.getElementById('androgyny-range').value);
+  let parts = [];
+  if (name) parts.push(name);
+  if (base) parts.push(base);
+  if (age <= 8) parts.push('very young child, toddler');
+  else if (age <= 13) parts.push('child around ' + age + ' years old');
+  else if (age <= 17) parts.push('teenager around ' + age + ' years old');
+  else if (age <= 30) parts.push('young adult around ' + age + ' years old');
+  else if (age <= 55) parts.push('adult around ' + age + ' years old');
+  else parts.push('elderly person around ' + age + ' years old');
+  if (selectedGender) parts.push(selectedGender);
+  if (androgyny <= 15) parts.push('extremely masculine appearance, very strong male features, no feminine traits');
+  else if (androgyny <= 35) parts.push('masculine appearance, mostly male features');
+  else if (androgyny >= 85) parts.push('extremely feminine appearance, very delicate features, no masculine traits');
+  else if (androgyny >= 65) parts.push('feminine appearance, mostly female features, soft delicate face');
+  else parts.push('androgynous appearance, balanced between masculine and feminine');
+  return parts.filter(Boolean).join(', ');
+}
+
+// ===== STYLE =====
+let selectedStyleVal = 'cute kawaii anime illustration style, clean linework, bright colors';
+let customStyleVal = '';
 document.querySelectorAll('.style-card').forEach(card => {
   card.addEventListener('click', () => {
     document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
-    selectedStyle.val = card.dataset.val;
+    const wrap = document.getElementById('custom-style-wrap');
+    if (card.dataset.val === '__custom__') {
+      wrap.style.display = 'flex';
+      selectedStyleVal = customStyleVal || 'custom illustration style';
+    } else {
+      wrap.style.display = 'none';
+      selectedStyleVal = card.dataset.val;
+    }
   });
+});
+function applyCustomStyle() {
+  const val = document.getElementById('custom-style-input').value.trim();
+  if (!val) return;
+  customStyleVal = val; selectedStyleVal = val;
+  document.querySelector('.style-card[data-val="__custom__"] .s-desc').textContent = val.slice(0, 30) + (val.length > 30 ? '…' : '');
+}
+
+// ===== EMOTIONS =====
+let stampCount = 24, selectedEmotions = [], selectedExtras = [], currentTab = 1;
+const DEFAULT_POOL = ['happy, big smile, joy','crying, sad tears, heartbroken','angry, furious, steam from head','laughing hard, tears of laughter','surprised, shocked, jaw drop','embarrassed, blushing, shy','sleepy, tired, heavy eyelids, yawning','cool, confident, smug','in love, heart eyes, floating hearts','thumbs up, good job, approval','thumbs down, disapproval, nope','waving hello, friendly greeting','celebrating, party popper, hurray','sweating nervously, anxious','thinking deeply, pondering','eating delicious food, yummy','running fast, in a hurry','sleeping soundly, snoring, ZZZ','OK hand gesture, affirmative','clapping hands, applause','texting on smartphone','working hard, focused at laptop','drinking tea or coffee, cozy','begging, please, puppy eyes','dancing, spinning, having fun','waiting, bored, impatient','reading a book, studious','overwhelmed, too much','triumphant, fist pump, victory','taking a selfie, peace sign','sick, sneezing','exercising, working out, flexing','listening to music, headphones','money eyes, excited about wealth','crying ugly, sobbing','speechless, blank stare','shrugging, whatever','giving a gift','heartbroken, sad love','disgusted, eww face'];
+
+document.querySelectorAll('.count-btn').forEach(btn => {
+  btn.addEventListener('click', () => { document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); stampCount = parseInt(btn.dataset.n); updateBadge(); });
 });
 document.querySelectorAll('#emotion-tags .tag').forEach(t => {
-  t.addEventListener('click', () => {
-    const idx = selectedEmotions.indexOf(t.dataset.val);
-    if (idx === -1) { selectedEmotions.push(t.dataset.val); t.classList.add('active'); }
-    else { selectedEmotions.splice(idx, 1); t.classList.remove('active'); }
-    updateBadge();
-  });
+  t.addEventListener('click', () => { const i = selectedEmotions.indexOf(t.dataset.val); if(i===-1){selectedEmotions.push(t.dataset.val);t.classList.add('active');}else{selectedEmotions.splice(i,1);t.classList.remove('active');} updateBadge(); });
 });
 document.querySelectorAll('#extra-tags .tag').forEach(t => {
-  t.addEventListener('click', () => {
-    const idx = selectedExtras.indexOf(t.dataset.val);
-    if (idx === -1) { selectedExtras.push(t.dataset.val); t.classList.add('active'); }
-    else { selectedExtras.splice(idx, 1); t.classList.remove('active'); }
-  });
+  t.addEventListener('click', () => { const i = selectedExtras.indexOf(t.dataset.val); if(i===-1){selectedExtras.push(t.dataset.val);t.classList.add('active');}else{selectedExtras.splice(i,1);t.classList.remove('active');} });
 });
+function updateBadge() { const n=selectedEmotions.length,b=document.getElementById('emotion-count'); b.textContent=n+' / '+stampCount+' 選択中'; b.className='count-badge '+(n===stampCount?'ok':n>stampCount?'over':'under'); }
+function selectAll() { document.querySelectorAll('#emotion-tags .tag').forEach(t=>{if(!selectedEmotions.includes(t.dataset.val))selectedEmotions.push(t.dataset.val);t.classList.add('active');}); updateBadge(); }
+function clearAll() { selectedEmotions=[]; document.querySelectorAll('#emotion-tags .tag').forEach(t=>t.classList.remove('active')); updateBadge(); }
+function autoSelect() { clearAll(); Array.from(document.querySelectorAll('#emotion-tags .tag')).sort(()=>Math.random()-.5).slice(0,stampCount).forEach(t=>{selectedEmotions.push(t.dataset.val);t.classList.add('active');}); updateBadge(); }
 
-function updateBadge() {
-  const n = selectedEmotions.length;
-  const b = document.getElementById('emotion-count');
-  b.textContent = `${n} / ${stampCount} 選択中`;
-  b.className = 'count-badge ' + (n === stampCount ? 'ok' : n > stampCount ? 'over' : 'under');
-}
-function selectAll() {
-  document.querySelectorAll('#emotion-tags .tag').forEach(t => {
-    if (!selectedEmotions.includes(t.dataset.val)) selectedEmotions.push(t.dataset.val);
-    t.classList.add('active');
-  });
-  updateBadge();
-}
-function clearAll() {
-  selectedEmotions = [];
-  document.querySelectorAll('#emotion-tags .tag').forEach(t => t.classList.remove('active'));
-  updateBadge();
-}
-function autoSelect() {
-  clearAll();
-  Array.from(document.querySelectorAll('#emotion-tags .tag'))
-    .sort(() => Math.random() - .5).slice(0, stampCount)
-    .forEach(t => { selectedEmotions.push(t.dataset.val); t.classList.add('active'); });
-  updateBadge();
-}
-
+// ===== GENERATE =====
+let lastP1='', lastP2='', lastTitle='';
 function generatePrompts() {
   const character = document.getElementById('character').value.trim();
-  const charname  = document.getElementById('charname').value.trim();
-  const textOverlay = document.getElementById('text-overlay').value.trim();
-  const custom    = document.getElementById('custom').value.trim();
-  const wantSize  = document.getElementById('toggle-size').checked;
-
-  if (!character) {
-    const el = document.getElementById('character');
-    el.style.borderColor = 'var(--a1)'; el.focus();
-    setTimeout(() => el.style.borderColor = '', 1600); return;
-  }
-
-  const padded = [...selectedEmotions];
-  let pi = 0;
-  while (padded.length < stampCount) {
-    const c = DEFAULT_POOL[pi % DEFAULT_POOL.length];
-    if (!padded.includes(c)) padded.push(c);
-    pi++;
-  }
-  const emotions = padded.slice(0, stampCount);
-  const charDesc = charname ? `${charname}（${character}）` : character;
-  const sizeNote = wantSize ? '\n- 各セル推奨サイズ: 370×320px' : '';
-  const textNote = textOverlay ? `\n- 各スタンプには感情に合ったひと言（例:「${textOverlay}」）を添える` : '';
-  const extrasBlock = selectedExtras.length > 0 ? selectedExtras.map(e => `  - ${e}`).join('\n') : '  - (なし)';
-  const customNote = custom ? `\n\n【追加指示】\n${custom}` : '';
-  const cols = stampCount <= 16 ? 4 : stampCount <= 24 ? 6 : 8;
-  const rows = Math.ceil(stampCount / cols);
-  const pad = n => String(n).padStart(2, '0');
-  const eBlock = emotions.map((e, i) => `  ${pad(i+1)}. ${e}`).join('\n');
-
-  const p1 = `あなたは優秀なイラストレーターです。LINEスタンプ用イラストの【一覧確認シート】を1枚生成してください。
+  if (!character) { const el=document.getElementById('character'); el.style.borderColor='var(--a1)'; el.focus(); setTimeout(()=>el.style.borderColor='',1600); return; }
+  const textOverlay=document.getElementById('text-overlay').value.trim();
+  const custom=document.getElementById('custom').value.trim();
+  const wantSize=document.getElementById('toggle-size').checked;
+  const charDesc=buildCharacterPrompt();
+  const padded=[...selectedEmotions]; let pi=0;
+  while(padded.length<stampCount){const c=DEFAULT_POOL[pi%DEFAULT_POOL.length];if(!padded.includes(c))padded.push(c);pi++;}
+  const emotions=padded.slice(0,stampCount);
+  const sizeNote=wantSize?'\n- 各セル推奨サイズ: 370×320px':'';
+  const textNote=textOverlay?'\n- 各スタンプには感情に合ったひと言（例:「'+textOverlay+'」）を添える':'';
+  const extrasBlock=selectedExtras.length>0?selectedExtras.map(e=>'  - '+e).join('\n'):'  - (なし)';
+  const customNote=custom?'\n\n【追加指示】\n'+custom:'';
+  const cols=stampCount<=16?4:stampCount<=24?6:8;
+  const rows=Math.ceil(stampCount/cols);
+  const pad=n=>String(n).padStart(2,'0');
+  const eBlock=emotions.map((e,i)=>'  '+pad(i+1)+'. '+e).join('\n');
+  lastTitle=(document.getElementById('charname').value.trim()||character).slice(0,20)+' '+stampCount+'枚セット';
+  lastP1=`あなたは優秀なイラストレーターです。LINEスタンプ用イラストの【一覧確認シート】を1枚生成してください。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【目的】
@@ -432,7 +729,7 @@ function generatePrompts() {
 【キャラクター設定】
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 - キャラクター: ${charDesc}
-- アートスタイル: ${selectedStyle.val}
+- アートスタイル: ${selectedStyleVal}
 - 全コマで同じキャラクターデザインを一貫して使用すること
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -451,8 +748,7 @@ ${extrasBlock}
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【${stampCount}枚の感情・表現リスト】
 ━━━━━━━━━━━━━━━━━━━━━━━━━
-${eBlock}
-${customNote}
+${eBlock}${customNote}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【出力指示】
@@ -462,7 +758,7 @@ ${customNote}
 
 それではグリッド一覧画像を生成してください！`;
 
-  const p2 = `ありがとうございます！一覧を確認しました。
+  lastP2=`ありがとうございます！一覧を確認しました。
 各スタンプを個別PNGファイルに分割してZIPにまとめてください。
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -471,13 +767,13 @@ ${customNote}
 - 先ほど生成したグリッド画像から各コマを切り出す
 - フォーマット: PNG（背景は完全に透明 / transparent background）
 - ★背景の白またはグレーを除去し、キャラクター部分のみを残すこと★
-- ファイル名: stamp_01.png 〜 stamp_${pad(stampCount)}.png${wantSize ? '\n- 各画像サイズ: 370×320px にリサイズ' : ''}
+- ファイル名: stamp_01.png 〜 stamp_${pad(stampCount)}.png${wantSize?'\n- 各画像サイズ: 370×320px にリサイズ':''}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【キャラクター・スタイル（参照）】
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 - キャラクター: ${charDesc}
-- アートスタイル: ${selectedStyle.val}
+- アートスタイル: ${selectedStyleVal}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【感情リスト（番号順）】
@@ -494,30 +790,23 @@ ${eBlock}
 
 分割・ZIP化を開始してください！`;
 
-  document.getElementById('prompt-phase1').textContent = p1;
-  document.getElementById('prompt-phase2').textContent = p2;
-  document.getElementById('output-title').textContent = `📋 ${stampCount}枚セット プロンプト（2フェーズ）`;
-  document.getElementById('stamp-output').style.display = 'block';
+  document.getElementById('prompt-phase1').textContent=lastP1;
+  document.getElementById('prompt-phase2').textContent=lastP2;
+  document.getElementById('output-title').textContent='📋 '+stampCount+'枚セット プロンプト（2フェーズ）';
+  document.getElementById('stamp-output').style.display='block';
+  const sb=document.getElementById('btn-save'); sb.textContent='💾 スプシに保存'; sb.classList.remove('done'); sb.disabled=false;
   switchTab(1);
-  setTimeout(() => document.getElementById('stamp-output').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  setTimeout(()=>document.getElementById('stamp-output').scrollIntoView({behavior:'smooth',block:'start'}),50);
 }
 
-function switchTab(n) {
-  currentTab = n;
-  document.getElementById('tab1').classList.toggle('active', n === 1);
-  document.getElementById('tab2').classList.toggle('active', n === 2);
-  document.getElementById('panel1').classList.toggle('active', n === 1);
-  document.getElementById('panel2').classList.toggle('active', n === 2);
-}
+function switchTab(n) { currentTab=n; document.getElementById('tab1').classList.toggle('active',n===1); document.getElementById('tab2').classList.toggle('active',n===2); document.getElementById('panel1').classList.toggle('active',n===1); document.getElementById('panel2').classList.toggle('active',n===2); }
 function copyPrompt() {
-  const text = document.getElementById(currentTab === 1 ? 'prompt-phase1' : 'prompt-phase2').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = 'コピー済 ✓'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'コピーする'; btn.classList.remove('copied'); }, 2200);
-  });
+  const text=document.getElementById(currentTab===1?'prompt-phase1':'prompt-phase2').textContent;
+  navigator.clipboard.writeText(text).then(()=>{ const btn=document.getElementById('copy-btn'); btn.textContent='コピー済 ✓'; btn.classList.add('done'); setTimeout(()=>{btn.textContent='コピーする';btn.classList.remove('done');},2200); });
 }
 
+// init
+try { const u=localStorage.getItem('gas_url'); if(u){document.getElementById('gas-url-input').value=u;} } catch(e){}
 updateBadge();
 </script>
 </body>

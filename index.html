@@ -703,7 +703,8 @@ Respond ONLY with this exact JSON (no markdown, no extra text):
               { text: promptText }
             ]
           }],
-          generationConfig: { temperature: 0.4, maxOutputTokens: 1024 }
+          generationConfig: { temperature: 0.4, maxOutputTokens: 1024 },
+          thinkingConfig: { thinkingBudget: 0 }
         })
       }
     );
@@ -712,8 +713,19 @@ Respond ONLY with this exact JSON (no markdown, no extra text):
       throw new Error(e.error?.message || `API error ${res.status}`);
     }
     const data = await res.json();
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const clean = raw.replace(/```json|```/g, '').trim();
+    const raw = data.candidates?.[0]?.content?.parts
+      ?.filter(p => p.text)
+      ?.map(p => p.text)
+      ?.join('') || '';
+
+    // JSONブロックを抜き出す（```json〜``` や { } で囲まれた部分）
+    let clean = raw;
+    const jsonMatch = raw.match(/```json\s*([\s\S]*?)```/) ||
+                      raw.match(/```\s*([\s\S]*?)```/) ||
+                      raw.match(/(\{[\s\S]*\})/);
+    if (jsonMatch) clean = jsonMatch[1].trim();
+    else clean = raw.replace(/```json|```/g, '').trim();
+
     const result = JSON.parse(clean);
     photoResultEn = result.prompt_en || '';
     photoResultJa = result.prompt_ja || '';

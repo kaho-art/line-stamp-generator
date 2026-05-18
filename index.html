@@ -8,44 +8,31 @@
 <style>
 :root{
   --bg:#0d0d14;--surface:#16161f;--card:#1e1e2e;--border:#2a2a3d;
-  --a1:#ff6b6b;--a2:#ffd93d;--a3:#6bcb77;--a4:#4d96ff;--a5:#c77dff;--a6:#00d4ff;
-  --text:#f0f0f8;--muted:#888899;--muted2:#aabbcc;
+  --a1:#ff6b6b;--a2:#ffd93d;--a3:#6bcb77;--a4:#4d96ff;--a5:#c77dff;
+  --text:#f0f0f8;--muted:#888899;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'M PLUS Rounded 1c',sans-serif;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(77,150,255,.07) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 85% 80%,rgba(255,107,107,.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
-.wrapper{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+.wrapper{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:2rem 1.5rem 6rem;}
 
-/* HEADER */
-header{text-align:center;padding:2.5rem 0 1.8rem;}
+header{text-align:center;padding:2.5rem 0 2rem;}
 .badge{display:inline-block;background:linear-gradient(135deg,var(--a1),var(--a2));color:#000;font-size:.7rem;font-weight:900;letter-spacing:.12em;padding:.3em 1em;border-radius:99px;margin-bottom:1.2rem;text-transform:uppercase;}
 h1{font-family:'Zen Dots',sans-serif;font-size:clamp(1.5rem,5vw,2.6rem);line-height:1.15;background:linear-gradient(135deg,#fff 30%,var(--a4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.6rem;}
 .subtitle{color:var(--muted);font-size:.9rem;}
 
-/* TOP TABS — mode switch */
-.mode-tabs{display:flex;gap:.6rem;margin:1.8rem 0 2rem;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:.4rem;}
-.mode-tab{flex:1;padding:.85rem 1rem;border-radius:14px;text-align:center;cursor:pointer;transition:all .2s;font-family:inherit;font-size:.88rem;font-weight:700;color:var(--muted);background:transparent;border:none;}
-.mode-tab .mt-icon{font-size:1.2rem;display:block;margin-bottom:.3rem;}
-.mode-tab:hover{color:var(--text);}
-.mode-tab.active{background:var(--card);color:var(--text);box-shadow:0 2px 12px rgba(0,0,0,.3);}
-.mode-tab.active.photo{color:var(--a6);}
-.mode-tab.active.stamp{color:var(--a2);}
-
-/* STEP FLOW */
 .steps{display:flex;gap:.5rem;margin:0 0 2rem;flex-wrap:wrap;}
 .step{flex:1;min-width:100px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.9rem .8rem;text-align:center;}
 .step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.78rem;margin:0 auto .5rem;}
-.step:nth-child(1) .step-num{background:var(--a6);color:#000;}
-.step:nth-child(2) .step-num{background:var(--a2);color:#000;}
-.step:nth-child(3) .step-num{background:var(--a3);color:#000;}
+.step:nth-child(1) .step-num{background:var(--a2);color:#000;}
+.step:nth-child(2) .step-num{background:var(--a3);color:#000;}
+.step:nth-child(3) .step-num{background:var(--a4);color:#000;}
 .step:nth-child(4) .step-num{background:var(--a1);color:#000;}
 .step:nth-child(5) .step-num{background:var(--a5);color:#000;}
 .step p{font-size:.72rem;color:var(--muted);line-height:1.4;}
 
-/* CARD */
 .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem 2rem;margin-bottom:1.4rem;}
 .card-title{font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:var(--a4);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem;}
-.card-title.cyan{color:var(--a6);}
 .card-title .icon{font-size:1rem;}
 .field{margin-bottom:1.1rem;}
 label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:.4rem;}
@@ -53,80 +40,6 @@ input[type=text],textarea{width:100%;background:var(--surface);border:1.5px soli
 input[type=text]:focus,textarea:focus{border-color:var(--a4);background:#1a1a28;}
 textarea{resize:vertical;min-height:72px;}
 
-/* ===== PHOTO MODE ===== */
-#mode-photo{display:block;}
-#mode-stamp{display:none;}
-
-/* drop zone */
-.drop-zone{border:2px dashed var(--border);border-radius:20px;padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all .22s;background:var(--surface);position:relative;overflow:hidden;}
-.drop-zone:hover,.drop-zone.drag-over{border-color:var(--a6);background:rgba(0,212,255,.04);}
-.drop-zone.has-image{padding:0;border-style:solid;border-color:var(--a6);}
-.drop-icon{font-size:2.6rem;display:block;margin-bottom:.8rem;}
-.drop-title{font-size:.95rem;font-weight:700;margin-bottom:.35rem;}
-.drop-sub{font-size:.78rem;color:var(--muted);}
-.drop-sub b{color:var(--a2);}
-.preview-img{width:100%;max-height:340px;object-fit:contain;border-radius:18px;display:block;}
-.img-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(8,12,16,.9),transparent);padding:1rem 1.2rem .8rem;display:flex;justify-content:space-between;align-items:flex-end;border-radius:0 0 18px 18px;}
-.img-filename{font-size:.76rem;color:var(--muted2);}
-.btn-reupload{background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.4);color:var(--a6);font-family:inherit;font-size:.73rem;font-weight:700;border-radius:8px;padding:.32em .85em;cursor:pointer;transition:all .18s;}
-.btn-reupload:hover{background:rgba(0,212,255,.28);}
-
-/* photo settings grid */
-.photo-settings{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0;}
-@media(max-width:580px){.photo-settings{grid-template-columns:1fr;}}
-.psetting{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.1rem;}
-
-/* chips */
-.chip-group{display:flex;flex-wrap:wrap;gap:.38rem;}
-.chip{background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.28em .78em;font-size:.74rem;cursor:pointer;transition:all .16s;user-select:none;color:var(--muted2);}
-.chip:hover{border-color:var(--a6);color:var(--a6);}
-.chip.active{background:rgba(0,212,255,.12);border-color:var(--a6);color:var(--a6);font-weight:700;}
-
-/* range */
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:99px;background:var(--border);outline:none;cursor:pointer;margin-top:.5rem;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--a6);box-shadow:0 0 8px rgba(0,212,255,.5);cursor:pointer;}
-.range-labels{display:flex;justify-content:space-between;font-size:.66rem;color:var(--muted);margin-top:.35rem;}
-
-/* analyze btn */
-.btn-analyze{width:100%;background:transparent;border:2px solid var(--a6);border-radius:16px;padding:1.05rem;cursor:pointer;font-family:inherit;font-size:1rem;font-weight:700;color:var(--a6);letter-spacing:.06em;transition:all .22s;margin-top:.4rem;position:relative;overflow:hidden;}
-.btn-analyze:hover:not(:disabled){box-shadow:0 0 22px rgba(0,212,255,.22);}
-.btn-analyze:disabled{opacity:.38;cursor:not-allowed;}
-.loading-bar{height:2px;background:var(--border);border-radius:99px;margin:.8rem 0;overflow:hidden;display:none;}
-.loading-bar.on{display:block;}
-.loading-fill{height:100%;width:30%;background:linear-gradient(90deg,var(--a6),var(--a2));border-radius:99px;animation:scan 1.4s ease-in-out infinite;}
-@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
-.status-msg{text-align:center;font-size:.8rem;color:var(--muted2);padding:.4rem 0;display:none;}
-.status-msg.on{display:block;}
-.error-box{background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:12px;padding:.9rem 1.1rem;font-size:.82rem;color:#ff9999;display:none;margin-top:.9rem;}
-.error-box.on{display:block;}
-
-/* photo output */
-.photo-output{display:none;margin-top:1.4rem;}
-.photo-output-card{background:var(--card);border:1.5px solid var(--a6);border-radius:20px;padding:1.8rem 2rem;box-shadow:0 0 35px rgba(0,212,255,.06);}
-.out-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.6rem;}
-.out-title{font-family:'Zen Dots',sans-serif;font-size:.9rem;color:var(--a6);}
-.copy-group{display:flex;gap:.45rem;}
-.btn-sm{font-family:inherit;font-size:.73rem;font-weight:900;border:none;border-radius:8px;padding:.42em 1em;cursor:pointer;transition:opacity .18s;}
-.btn-sm:hover{opacity:.78;}
-.btn-sm.en{background:var(--a6);color:#000;}
-.btn-sm.ja{background:var(--a2);color:#000;}
-.btn-sm.copied{background:var(--a3)!important;color:#000;}
-.analysis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.6rem;margin-bottom:1.2rem;}
-.ai-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem;}
-.ai-key{font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
-.ai-val{font-size:.8rem;color:var(--text);line-height:1.4;}
-.divider{border:none;border-top:1px solid var(--border);margin:1.1rem 0;}
-.plabel{font-size:.67rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:.45rem;display:flex;align-items:center;gap:.35rem;}
-.plabel.en{color:var(--a6);}
-.plabel.ja{color:var(--a2);}
-.pbox{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;font-size:.83rem;line-height:1.8;color:#c8dff0;white-space:pre-wrap;word-break:break-word;margin-bottom:1.1rem;}
-
-/* USE IN STAMP bridge */
-.use-stamp-btn{width:100%;background:linear-gradient(135deg,var(--a6),var(--a4));color:#000;font-family:inherit;font-size:.9rem;font-weight:900;border:none;border-radius:14px;padding:.95rem 1rem;cursor:pointer;letter-spacing:.04em;transition:opacity .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.6rem;}
-.use-stamp-btn:hover{opacity:.88;transform:translateY(-2px);}
-.use-stamp-btn:active{transform:translateY(0);}
-
-/* ===== STAMP MODE ===== */
 .count-selector{display:flex;gap:.5rem;flex-wrap:wrap;}
 .count-btn{flex:1;min-width:68px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:.75rem .5rem;text-align:center;cursor:pointer;transition:all .18s;user-select:none;}
 .count-btn:hover{border-color:var(--a2);}
@@ -134,12 +47,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .count-btn .num{font-family:'Zen Dots',sans-serif;font-size:1.4rem;color:var(--a2);display:block;line-height:1;margin-bottom:.22rem;}
 .count-btn .lbl{font-size:.68rem;color:var(--muted);}
 .count-btn.active .lbl{color:var(--text);font-weight:700;}
-
-/* imported from photo badge */
-.photo-imported-badge{display:none;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:10px;padding:.6rem 1rem;font-size:.8rem;color:var(--a6);margin-bottom:.8rem;align-items:center;gap:.5rem;}
-.photo-imported-badge.visible{display:flex;}
-.photo-imported-badge .pib-x{cursor:pointer;margin-left:auto;font-size:1rem;color:var(--muted);transition:color .15s;}
-.photo-imported-badge .pib-x:hover{color:var(--a1);}
 
 .style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.55rem;}
 .style-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:.85rem .75rem;cursor:pointer;transition:all .18s;user-select:none;display:flex;flex-direction:column;gap:.25rem;}
@@ -174,26 +81,23 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 input:checked+.slider{background:var(--a3);}
 input:checked+.slider::before{transform:translateX(18px);}
 
-.btn-generate{width:100%;background:linear-gradient(135deg,var(--a1) 0%,var(--a2) 100%);color:#000;font-family:inherit;font-size:1.02rem;font-weight:900;border:none;border-radius:16px;padding:1.05rem;cursor:pointer;letter-spacing:.05em;transition:opacity .2s,transform .15s;margin-top:.5rem;}
+.btn-generate{width:100%;background:linear-gradient(135deg,var(--a1) 0%,var(--a2) 100%);color:#000;font-family:inherit;font-size:1.05rem;font-weight:900;border:none;border-radius:16px;padding:1.1rem;cursor:pointer;letter-spacing:.05em;transition:opacity .2s,transform .15s;margin-top:.5rem;}
 .btn-generate:hover{opacity:.9;transform:translateY(-2px);}
 .btn-generate:active{transform:translateY(0);}
 
-/* mode panels — stamp hidden by default */
-#mode-stamp{display:none;}
-
-/* stamp output */
 #stamp-output{display:none;}
 .output-card{background:var(--card);border:1.5px solid var(--a4);border-radius:20px;padding:1.8rem 2rem;}
+.out-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.6rem;}
+.output-title{font-family:'Zen Dots',sans-serif;font-size:.9rem;color:var(--a4);}
 .phase-tabs{display:flex;gap:.5rem;margin-bottom:1.1rem;}
 .phase-tab{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:.82rem .5rem;text-align:center;cursor:pointer;transition:all .18s;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--muted);}
 .phase-tab:hover{border-color:var(--a4);color:var(--text);}
 .phase-tab.active{border-color:var(--a4);background:rgba(77,150,255,.13);color:var(--a4);}
 .phase-tab .pt-icon{font-size:1.1rem;display:block;margin-bottom:.28rem;}
-.output-title{font-family:'Zen Dots',sans-serif;font-size:.9rem;color:var(--a4);}
 .btn-copy{background:var(--a4);color:#000;font-family:inherit;font-size:.78rem;font-weight:900;border:none;border-radius:8px;padding:.45em 1.1em;cursor:pointer;transition:opacity .18s;}
 .btn-copy:hover{opacity:.78;}
 .btn-copy.copied{background:var(--a3);}
-.prompt-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.1rem;font-size:.82rem;line-height:1.75;color:#ccc;white-space:pre-wrap;word-break:break-word;max-height:420px;overflow-y:auto;}
+.prompt-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.1rem;font-size:.82rem;line-height:1.75;color:#ccc;white-space:pre-wrap;word-break:break-word;max-height:440px;overflow-y:auto;}
 .prompt-box::-webkit-scrollbar{width:5px;}
 .prompt-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
 .phase-panel{display:none;}
@@ -203,19 +107,6 @@ input:checked+.slider::before{transform:translateX(18px);}
 .flow{margin-top:.55rem;display:flex;flex-wrap:wrap;gap:.38rem;align-items:center;font-size:.74rem;}
 .flow-step{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:.18em .65em;color:var(--text);}
 .flow-arrow{color:var(--a2);font-weight:900;}
-
-/* API KEY CARD */
-.apikey-card{background:rgba(0,212,255,.05);border:1.5px solid rgba(0,212,255,.25);border-radius:16px;padding:1.1rem 1.3rem;margin-bottom:1rem;}
-.apikey-inner{display:flex;gap:.9rem;align-items:flex-start;}
-.apikey-icon{font-size:1.4rem;flex-shrink:0;margin-top:.15rem;}
-.apikey-body{flex:1;}
-.apikey-label{font-size:.7rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a6);margin-bottom:.45rem;}
-.apikey-body input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:monospace;font-size:.85rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;}
-.apikey-body input:focus{border-color:var(--a6);}
-.apikey-body input.ok{border-color:var(--a3);}
-.apikey-hint{font-size:.7rem;color:var(--muted);margin-top:.4rem;line-height:1.5;}
-.apikey-hint a{color:var(--a6);text-decoration:none;}
-.apikey-hint a:hover{text-decoration:underline;}
 
 @media(max-width:580px){
   .steps{flex-direction:column;}
@@ -231,591 +122,199 @@ input:checked+.slider::before{transform:translateX(18px);}
 <header>
   <div class="badge">🎨 LINE Stamp Prompt Generator</div>
   <h1>LINEスタンプ<br>プロンプトジェネレーター</h1>
-  <p class="subtitle">写真からキャラを抽出 → そのままスタンプセット作成まで一気にできるで！</p>
+  <p class="subtitle">ChatGPTに貼るだけ！2フェーズで一覧確認→ZIP出力まで完結や✨</p>
 </header>
 
-<!-- MODE TABS -->
-<div class="mode-tabs">
-  <button class="mode-tab photo active" id="tab-photo" onclick="switchMode('photo')">
-    <span class="mt-icon">📸</span>
-    写真 → プロンプト変換
-  </button>
-  <button class="mode-tab stamp" id="tab-stamp" onclick="switchMode('stamp')">
-    <span class="mt-icon">💬</span>
-    スタンプ セット生成
-  </button>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><p>枚数・キャラ・スタイルを設定</p></div>
+  <div class="step"><div class="step-num">2</div><p>感情パターンを選択</p></div>
+  <div class="step"><div class="step-num">3</div><p>【Phase1】一覧プロンプトをChatGPTへ</p></div>
+  <div class="step"><div class="step-num">4</div><p>グリッド画像を確認してOK！</p></div>
+  <div class="step"><div class="step-num">5</div><p>【Phase2】分割ZIPプロンプトを貼る</p></div>
 </div>
 
-<!-- ==================== PHOTO MODE ==================== -->
-<div id="mode-photo">
-
-  <div class="steps">
-    <div class="step"><div class="step-num">1</div><p>写真をアップロード</p></div>
-    <div class="step"><div class="step-num">2</div><p>スタイルと用途を選択</p></div>
-    <div class="step"><div class="step-num">3</div><p>AI 分析でプロンプト生成</p></div>
-    <div class="step"><div class="step-num">4</div><p>スタンプ作成に引き継ぐ！</p></div>
+<!-- COUNT -->
+<div class="card">
+  <div class="card-title"><span class="icon">🔢</span> スタンプ枚数を選択</div>
+  <div class="count-selector">
+    <div class="count-btn" data-n="8"><span class="num">8</span><span class="lbl">ミニ</span></div>
+    <div class="count-btn" data-n="16"><span class="num">16</span><span class="lbl">スモール</span></div>
+    <div class="count-btn active" data-n="24"><span class="num">24</span><span class="lbl">スタンダード</span></div>
+    <div class="count-btn" data-n="32"><span class="num">32</span><span class="lbl">ラージ</span></div>
+    <div class="count-btn" data-n="40"><span class="num">40</span><span class="lbl">メガ</span></div>
   </div>
+</div>
 
-  <!-- upload -->
-  <div class="card" style="padding:0;overflow:hidden;border-radius:20px;">
-    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-      <span class="drop-icon">📸</span>
-      <div class="drop-title">写真をドラッグ＆ドロップ</div>
-      <div class="drop-sub">クリックして選択でも OK ／ <b>JPG・PNG・WEBP</b> 対応</div>
-      <input type="file" id="file-input" accept="image/*" style="display:none">
+<!-- CHARACTER -->
+<div class="card">
+  <div class="card-title"><span class="icon">🐱</span> キャラクター設定</div>
+  <div class="field">
+    <label>キャラクターの説明（必須）</label>
+    <input type="text" id="character" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン、魔法使いの女の子">
+  </div>
+  <div class="field" style="margin-bottom:0">
+    <label>キャラクター名（任意）</label>
+    <input type="text" id="charname" placeholder="例: もちこ、たろう">
+  </div>
+</div>
+
+<!-- STYLE -->
+<div class="card">
+  <div class="card-title"><span class="icon">🎨</span> アートスタイル</div>
+  <div class="style-grid">
+    <div class="style-card active" data-val="cute kawaii anime illustration style, clean linework, bright colors"><span class="s-icon">✨</span><span class="s-name">かわいいアニメ</span><span class="s-desc">クリーンな線画・鮮やか</span></div>
+    <div class="style-card" data-val="chibi super-deformed character style, big head small body, pastel colors"><span class="s-icon">🥰</span><span class="s-name">ちびキャラ</span><span class="s-desc">頭でっかち・丸くてかわいい</span></div>
+    <div class="style-card" data-val="flat vector sticker illustration, bold outlines, minimal shading"><span class="s-icon">📐</span><span class="s-name">フラットベクター</span><span class="s-desc">シンプル・モダンな線画</span></div>
+    <div class="style-card" data-val="soft watercolor painting style, loose brushwork, gentle washes, paper texture"><span class="s-icon">🎨</span><span class="s-name">水彩画風</span><span class="s-desc">にじみ・やわらかな雰囲気</span></div>
+    <div class="style-card" data-val="crayon hand-drawn illustration style, rough textured strokes, childlike warmth"><span class="s-icon">🖍️</span><span class="s-name">クレヨン画風</span><span class="s-desc">ざらざら・温かみのある手書き</span></div>
+    <div class="style-card" data-val="colored pencil illustration style, visible hatching strokes, soft blended colors"><span class="s-icon">✏️</span><span class="s-name">色鉛筆風</span><span class="s-desc">繊細なタッチ・柔らかな色合い</span></div>
+    <div class="style-card" data-val="monochrome black and white ink illustration, bold contrast, expressive linework"><span class="s-icon">⬛</span><span class="s-name">モノクロ</span><span class="s-desc">白黒・インク・コントラスト強め</span></div>
+    <div class="style-card" data-val="retro pixel art style, 32x32 sprite aesthetic, limited color palette"><span class="s-icon">👾</span><span class="s-name">ドット絵</span><span class="s-desc">レトロゲーム風・ドットアート</span></div>
+    <div class="style-card" data-val="Japanese sumi-e ink wash painting style, minimal brushstrokes, zen aesthetic"><span class="s-icon">🖌️</span><span class="s-name">水墨画風</span><span class="s-desc">墨・かすれ・禅テイスト</span></div>
+    <div class="style-card" data-val="sticker with thick bold black outline, highly saturated pop colors, comic book energy"><span class="s-icon">💥</span><span class="s-name">太線ポップ</span><span class="s-desc">ビビッド・コミック・インパクト大</span></div>
+    <div class="style-card" data-val="oil painting style illustration, rich textured impasto brushstrokes, deep saturated colors"><span class="s-icon">🖼️</span><span class="s-name">油絵風</span><span class="s-desc">厚塗り・重厚感・クラシック</span></div>
+    <div class="style-card" data-val="hyperrealistic photorealistic digital render, subsurface scattering, ray-traced lighting"><span class="s-icon">📷</span><span class="s-name">フォトリアル</span><span class="s-desc">写真に限りなく近い超リアル</span></div>
+    <div class="style-card" data-val="3D cartoon clay render, smooth clay-like surfaces, soft global illumination, Pixar-inspired"><span class="s-icon">🎲</span><span class="s-name">3Dクレイ風</span><span class="s-desc">ピクサー風・ぬるっとした質感</span></div>
+    <div class="style-card" data-val="retro 1980s anime style, limited cel animation palette, VHS scan lines aesthetic"><span class="s-icon">📼</span><span class="s-name">レトロアニメ（80s）</span><span class="s-desc">セル画・VHS・昭和レトロ</span></div>
+    <div class="style-card" data-val="loose doodle sketch style, hand-drawn pen lines, sketchbook feel, minimal color fills"><span class="s-icon">📓</span><span class="s-name">スケッチ落書き風</span><span class="s-desc">手書きノート・ゆるゆる感</span></div>
+    <div class="style-card" data-val="neon glow dark illustration, glowing outlines, synthwave cyberpunk aesthetic"><span class="s-icon">🌈</span><span class="s-name">ネオン・サイバーパンク</span><span class="s-desc">蛍光・光の線・未来的ダーク</span></div>
+  </div>
+</div>
+
+<!-- EMOTIONS -->
+<div class="card">
+  <div class="emotion-header">
+    <div class="card-title" style="margin-bottom:0"><span class="icon">😄</span> 感情・表現パターン</div>
+    <span class="count-badge under" id="emotion-count">0 / 24 選択中</span>
+  </div>
+  <div class="quick-btns">
+    <button class="qbtn" onclick="selectAll()">すべて選択</button>
+    <button class="qbtn" onclick="clearAll()">クリア</button>
+    <button class="qbtn" onclick="autoSelect()">🎲 おすすめ自動選択</button>
+  </div>
+  <div class="tag-group" id="emotion-tags">
+    <span class="tag" data-val="happy, big smile, joy">😊 うれしい</span>
+    <span class="tag" data-val="crying, sad tears, heartbroken">😢 かなしい</span>
+    <span class="tag" data-val="angry, furious, steam from head">😠 おこ</span>
+    <span class="tag" data-val="laughing hard, tears of laughter">🤣 爆笑</span>
+    <span class="tag" data-val="surprised, shocked, jaw drop">😲 びっくり</span>
+    <span class="tag" data-val="embarrassed, blushing, shy">😳 はずかしい</span>
+    <span class="tag" data-val="sleepy, tired, heavy eyelids, yawning">😴 ねむい</span>
+    <span class="tag" data-val="cool, confident, sunglasses, smug">😎 クール</span>
+    <span class="tag" data-val="in love, heart eyes, floating hearts">🥰 ラブラブ</span>
+    <span class="tag" data-val="thumbs up, good job, approval">👍 グッド</span>
+    <span class="tag" data-val="thumbs down, disapproval, nope">👎 ダメ</span>
+    <span class="tag" data-val="waving hello, friendly greeting">👋 あいさつ</span>
+    <span class="tag" data-val="celebrating, party popper, hurray">🎉 やったー！</span>
+    <span class="tag" data-val="sweating nervously, anxious">😅 あせあせ</span>
+    <span class="tag" data-val="thinking deeply, pondering, chin scratch">🤔 かんがえてる</span>
+    <span class="tag" data-val="eating delicious food, yummy">😋 たべてる</span>
+    <span class="tag" data-val="running fast, in a hurry, late">🏃 いそいでる</span>
+    <span class="tag" data-val="sleeping soundly, snoring, ZZZ">💤 おやすみ</span>
+    <span class="tag" data-val="OK hand gesture, affirmative">🙆 オッケー</span>
+    <span class="tag" data-val="clapping hands, applause, well done">👏 パチパチ</span>
+    <span class="tag" data-val="texting on smartphone, distracted">📱 スマホ中</span>
+    <span class="tag" data-val="working hard, focused at laptop">💻 がんばる</span>
+    <span class="tag" data-val="drinking tea or coffee, cozy relaxing">☕ まったり</span>
+    <span class="tag" data-val="begging, please, hands together, puppy eyes">🙏 おねがい</span>
+    <span class="tag" data-val="disgusted, gross, eww face">🤢 きもい</span>
+    <span class="tag" data-val="shrugging, I don't know, whatever">🤷 しらんけど</span>
+    <span class="tag" data-val="listening to music with headphones, vibing">🎧 音楽中</span>
+    <span class="tag" data-val="money eyes, rich, excited about wealth">🤑 お金！</span>
+    <span class="tag" data-val="sick, under the weather, cold, sneezing">🤒 かぜっぴき</span>
+    <span class="tag" data-val="exercising, working out, pumped up, flexing">💪 きんにく</span>
+    <span class="tag" data-val="reading a book, studious, learning">📚 べんきょう</span>
+    <span class="tag" data-val="taking a selfie, posing for photo, peace sign">🤳 じどり</span>
+    <span class="tag" data-val="dancing, spinning, having fun, disco vibes">💃 おどってる</span>
+    <span class="tag" data-val="waiting, bored, tapping foot, impatient">⏳ まってる</span>
+    <span class="tag" data-val="crying ugly, sobbing uncontrollably">😭 号泣</span>
+    <span class="tag" data-val="speechless, blank stare, stunned silence">😶 ぼーっと</span>
+    <span class="tag" data-val="overwhelmed, too much to handle">🤯 むり！</span>
+    <span class="tag" data-val="giving a gift, presenting something nicely">🎁 プレゼント</span>
+    <span class="tag" data-val="heartbroken, sad love, clutching chest">💔 しつれん</span>
+    <span class="tag" data-val="triumphant, fist pump, victory pose">✊ やってやる</span>
+  </div>
+</div>
+
+<!-- OPTIONS -->
+<div class="card">
+  <div class="card-title"><span class="icon">✨</span> オプション設定</div>
+  <div class="field">
+    <label>テキスト吹き出し（任意）</label>
+    <input type="text" id="text-overlay" placeholder="例: ありがとう！／おつかれ〜／よろしく">
+    <div style="font-size:.73rem;color:var(--muted);margin-top:.28rem">感情に合ったセリフを入れたい場合に（空欄でテキストなし）</div>
+  </div>
+  <div class="field">
+    <label>追加デザインオプション</label>
+    <div class="tag-group" id="extra-tags">
+      <span class="tag extra" data-val="add simple Japanese text label matching each emotion">日本語テキスト追加</span>
+      <span class="tag extra" data-val="add decorative border/frame around each sticker">フレーム装飾</span>
+      <span class="tag extra" data-val="add sparkles and star effects around character">キラキラエフェクト</span>
+      <span class="tag extra" data-val="soft pastel color palette throughout">パステルカラー</span>
+      <span class="tag extra" data-val="bold vivid saturated colors">ビビッドカラー</span>
+      <span class="tag extra" data-val="add small themed props or accessories for each emotion">小物・アクセサリー</span>
+      <span class="tag extra" data-val="add soft drop shadow behind character">ドロップシャドウ</span>
+      <span class="tag extra" data-val="rounded cute body proportions, extra chubby and soft">まるまるボディ</span>
     </div>
   </div>
-
-  <!-- photo settings -->
-  <div class="photo-settings">
-    <div class="psetting">
-      <div class="card-title cyan"><span class="icon">🎨</span> 変換スタイル</div>
-      <div class="chip-group" id="photo-style-chips">
-        <span class="chip active" data-val="cute kawaii anime">アニメ風</span>
-        <span class="chip" data-val="chibi super deformed">ちびキャラ</span>
-        <span class="chip" data-val="watercolor illustration">水彩画</span>
-        <span class="chip" data-val="crayon drawing">クレヨン</span>
-        <span class="chip" data-val="colored pencil art">色鉛筆</span>
-        <span class="chip" data-val="flat vector art">フラットベクター</span>
-        <span class="chip" data-val="monochrome ink">モノクロ</span>
-        <span class="chip" data-val="3D clay render Pixar style">3Dクレイ</span>
-        <span class="chip" data-val="oil painting">油絵</span>
-        <span class="chip" data-val="pixel art retro">ドット絵</span>
-        <span class="chip" data-val="photorealistic ultra detailed">フォトリアル</span>
-        <span class="chip" data-val="neon cyberpunk glow">ネオン</span>
-      </div>
-    </div>
-    <div class="psetting">
-      <div class="card-title cyan"><span class="icon">📊</span> プロンプト詳細度</div>
-      <input type="range" id="detail-level" min="1" max="3" value="2">
-      <div class="range-labels"><span>シンプル</span><span>バランス</span><span>詳細</span></div>
-      <div class="card-title cyan" style="margin-top:1.1rem"><span class="icon">📤</span> 出力フォーマット</div>
-      <div class="chip-group" id="fmt-chips">
-        <span class="chip active" data-val="chatgpt">ChatGPT/DALL-E</span>
-        <span class="chip" data-val="midjourney">Midjourney</span>
-        <span class="chip" data-val="stable">Stable Diffusion</span>
-        <span class="chip" data-val="general">汎用</span>
-      </div>
-    </div>
+  <div class="field">
+    <label>カスタム追加指示（任意）</label>
+    <textarea id="custom" placeholder="例: 全体的に丸みのあるかわいいデザインで統一して、紫系の色は使わないで、など"></textarea>
   </div>
-
-  <!-- API Key -->
-  <div class="apikey-card" id="apikey-card">
-    <div class="apikey-inner">
-      <span class="apikey-icon">🔑</span>
-      <div class="apikey-body">
-        <div class="apikey-label">Google Gemini APIキー（無料）</div>
-        <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off" oninput="onApiKeyChange()">
-        <div class="apikey-hint">クレカ不要・無料で取得できるで！　<a href="https://aistudio.google.com/app/apikey" target="_blank">👉 Google AI Studio でキーを取得 →</a><br>キーはこの端末のみに保存。外部には送信されへんで。</div>
-      </div>
-    </div>
+  <div class="toggle-row">
+    <label class="switch"><input type="checkbox" id="toggle-size" checked><span class="slider"></span></label>
+    <span class="toggle-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
   </div>
+  <button class="btn-generate" onclick="generatePrompts()">✨ 2フェーズ プロンプトを生成する！</button>
+</div>
 
-  <button class="btn-analyze" id="btn-analyze" onclick="analyzePhoto()" disabled>
-    🔍 写真をアップして AI 分析スタート
-  </button>
-  <div class="loading-bar" id="loading-bar"><div class="loading-fill"></div></div>
-  <div class="status-msg" id="status-msg">🤖 Claude が写真を解析中...</div>
-  <div class="error-box" id="error-box"></div>
-
-  <!-- photo output -->
-  <div class="photo-output" id="photo-output">
-    <div class="photo-output-card">
-      <div class="out-header">
-        <div class="out-title">✦ 生成されたプロンプト</div>
-        <div class="copy-group">
-          <button class="btn-sm en" id="copy-en" onclick="copyPhoto('en')">EN コピー</button>
-          <button class="btn-sm ja" id="copy-ja" onclick="copyPhoto('ja')">JA コピー</button>
-        </div>
-      </div>
-      <div class="analysis-grid" id="analysis-grid"></div>
-      <hr class="divider">
-      <div class="plabel en">✦ English Prompt</div>
-      <div class="pbox" id="prompt-en"></div>
-      <div class="plabel ja">✦ 日本語プロンプト</div>
-      <div class="pbox" id="prompt-ja"></div>
-      <button class="use-stamp-btn" onclick="useInStamp()">
-        💬 このキャラでスタンプセットを作る →
+<!-- OUTPUT -->
+<div id="stamp-output">
+  <div class="output-card">
+    <div class="out-header">
+      <div class="output-title" id="output-title">📋 生成されたプロンプト</div>
+      <button class="btn-copy" id="copy-btn" onclick="copyPrompt()">コピーする</button>
+    </div>
+    <div class="phase-tabs">
+      <button class="phase-tab active" id="tab1" onclick="switchTab(1)">
+        <span class="pt-icon">🖼️</span>Phase 1<br><span style="font-size:.66rem;font-weight:400">一覧グリッド生成</span>
+      </button>
+      <button class="phase-tab" id="tab2" onclick="switchTab(2)">
+        <span class="pt-icon">✂️</span>Phase 2<br><span style="font-size:.66rem;font-weight:400">確認後 → 分割ZIP</span>
       </button>
     </div>
-  </div>
-
-</div><!-- /mode-photo -->
-
-<!-- ==================== STAMP MODE ==================== -->
-<div id="mode-stamp">
-
-  <div class="steps">
-    <div class="step"><div class="step-num">1</div><p>枚数・キャラ・スタイルを設定</p></div>
-    <div class="step"><div class="step-num">2</div><p>感情パターンを選択</p></div>
-    <div class="step"><div class="step-num">3</div><p>【Phase1】一覧プロンプトをChatGPTへ</p></div>
-    <div class="step"><div class="step-num">4</div><p>グリッド画像を確認</p></div>
-    <div class="step"><div class="step-num">5</div><p>【Phase2】分割ZIPプロンプトを貼る</p></div>
-  </div>
-
-  <!-- 写真から引き継ぎバッジ -->
-  <div class="photo-imported-badge" id="photo-imported-badge" style="display:none;">
-    <span>📸</span>
-    <span id="photo-imported-text">写真から引き継ぎ済み</span>
-    <span class="pib-x" onclick="clearImport()">✕</span>
-  </div>
-
-  <!-- stamp count -->
-  <div class="card">
-    <div class="card-title"><span class="icon">🔢</span> スタンプ枚数を選択</div>
-    <div class="count-selector" id="count-selector">
-      <div class="count-btn" data-n="8"><span class="num">8</span><span class="lbl">ミニ</span></div>
-      <div class="count-btn" data-n="16"><span class="num">16</span><span class="lbl">スモール</span></div>
-      <div class="count-btn active" data-n="24"><span class="num">24</span><span class="lbl">スタンダード</span></div>
-      <div class="count-btn" data-n="32"><span class="num">32</span><span class="lbl">ラージ</span></div>
-      <div class="count-btn" data-n="40"><span class="num">40</span><span class="lbl">メガ</span></div>
-    </div>
-  </div>
-
-  <!-- character -->
-  <div class="card">
-    <div class="card-title"><span class="icon">🐱</span> キャラクター設定</div>
-    <div class="field">
-      <label>キャラクターの説明（必須）</label>
-      <input type="text" id="character" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン">
-    </div>
-    <div class="field" style="margin-bottom:0">
-      <label>キャラクター名（任意）</label>
-      <input type="text" id="charname" placeholder="例: もちこ、たろう">
-    </div>
-  </div>
-
-  <!-- art style -->
-  <div class="card">
-    <div class="card-title"><span class="icon">🎨</span> アートスタイル</div>
-    <div class="style-grid" id="style-grid">
-      <div class="style-card active" data-val="cute kawaii anime illustration style, clean linework, bright colors"><span class="s-icon">✨</span><span class="s-name">かわいいアニメ</span><span class="s-desc">クリーンな線画・鮮やか</span></div>
-      <div class="style-card" data-val="chibi super-deformed character style, big head small body, pastel colors"><span class="s-icon">🥰</span><span class="s-name">ちびキャラ</span><span class="s-desc">頭でっかち・丸くてかわいい</span></div>
-      <div class="style-card" data-val="flat vector sticker illustration, bold outlines, minimal shading"><span class="s-icon">📐</span><span class="s-name">フラットベクター</span><span class="s-desc">シンプル・モダンな線画</span></div>
-      <div class="style-card" data-val="soft watercolor painting style, loose brushwork, gentle washes, paper texture"><span class="s-icon">🎨</span><span class="s-name">水彩画風</span><span class="s-desc">にじみ・やわらかな雰囲気</span></div>
-      <div class="style-card" data-val="crayon hand-drawn illustration style, rough textured strokes, childlike warmth"><span class="s-icon">🖍️</span><span class="s-name">クレヨン画風</span><span class="s-desc">ざらざら・温かみのある手書き</span></div>
-      <div class="style-card" data-val="colored pencil illustration style, visible hatching strokes, soft blended colors"><span class="s-icon">✏️</span><span class="s-name">色鉛筆風</span><span class="s-desc">繊細なタッチ・柔らかな色合い</span></div>
-      <div class="style-card" data-val="monochrome black and white ink illustration, bold contrast, expressive linework"><span class="s-icon">⬛</span><span class="s-name">モノクロ</span><span class="s-desc">白黒・インク・コントラスト強め</span></div>
-      <div class="style-card" data-val="retro pixel art style, 32x32 sprite aesthetic, limited color palette"><span class="s-icon">👾</span><span class="s-name">ドット絵</span><span class="s-desc">レトロゲーム風・ドットアート</span></div>
-      <div class="style-card" data-val="Japanese sumi-e ink wash painting style, minimal brushstrokes, zen aesthetic"><span class="s-icon">🖌️</span><span class="s-name">水墨画風</span><span class="s-desc">墨・かすれ・禅テイスト</span></div>
-      <div class="style-card" data-val="sticker with thick bold black outline, highly saturated pop colors, comic book energy"><span class="s-icon">💥</span><span class="s-name">太線ポップ</span><span class="s-desc">ビビッド・コミック・インパクト大</span></div>
-      <div class="style-card" data-val="oil painting style illustration, rich textured impasto brushstrokes, deep saturated colors"><span class="s-icon">🖼️</span><span class="s-name">油絵風</span><span class="s-desc">厚塗り・重厚感・クラシック</span></div>
-      <div class="style-card" data-val="hyperrealistic photorealistic digital render, subsurface scattering, ray-traced lighting"><span class="s-icon">📷</span><span class="s-name">フォトリアル</span><span class="s-desc">写真に限りなく近い超リアル</span></div>
-      <div class="style-card" data-val="3D cartoon clay render, smooth clay-like surfaces, soft global illumination, Pixar-inspired"><span class="s-icon">🎲</span><span class="s-name">3Dクレイ風</span><span class="s-desc">ピクサー風・ぬるっとした質感</span></div>
-      <div class="style-card" data-val="retro 1980s anime style, limited cel animation palette, VHS scan lines aesthetic"><span class="s-icon">📼</span><span class="s-name">レトロアニメ（80s）</span><span class="s-desc">セル画・VHS・昭和レトロ</span></div>
-      <div class="style-card" data-val="loose doodle sketch style, hand-drawn pen lines, sketchbook feel, minimal color fills"><span class="s-icon">📓</span><span class="s-name">スケッチ落書き風</span><span class="s-desc">手書きノート・ゆるゆる感</span></div>
-      <div class="style-card" data-val="neon glow dark illustration, glowing outlines, synthwave cyberpunk aesthetic"><span class="s-icon">🌈</span><span class="s-name">ネオン・サイバーパンク</span><span class="s-desc">蛍光・光の線・未来的ダーク</span></div>
-    </div>
-  </div>
-
-  <!-- emotions -->
-  <div class="card">
-    <div class="emotion-header">
-      <div class="card-title" style="margin-bottom:0"><span class="icon">😄</span> 感情・表現パターン</div>
-      <span class="count-badge under" id="emotion-count">0 / 24 選択中</span>
-    </div>
-    <div class="quick-btns">
-      <button class="qbtn" onclick="selectAll()">すべて選択</button>
-      <button class="qbtn" onclick="clearAll()">クリア</button>
-      <button class="qbtn" onclick="autoSelect()">🎲 おすすめ自動選択</button>
-    </div>
-    <div class="tag-group" id="emotion-tags">
-      <span class="tag emotion" data-val="happy, big smile, joy">😊 うれしい</span>
-      <span class="tag emotion" data-val="crying, sad tears, heartbroken">😢 かなしい</span>
-      <span class="tag emotion" data-val="angry, furious, steam from head">😠 おこ</span>
-      <span class="tag emotion" data-val="laughing hard, tears of laughter">🤣 爆笑</span>
-      <span class="tag emotion" data-val="surprised, shocked, jaw drop">😲 びっくり</span>
-      <span class="tag emotion" data-val="embarrassed, blushing, shy">😳 はずかしい</span>
-      <span class="tag emotion" data-val="sleepy, tired, heavy eyelids, yawning">😴 ねむい</span>
-      <span class="tag emotion" data-val="cool, confident, sunglasses, smug">😎 クール</span>
-      <span class="tag emotion" data-val="in love, heart eyes, floating hearts">🥰 ラブラブ</span>
-      <span class="tag emotion" data-val="thumbs up, good job, approval">👍 グッド</span>
-      <span class="tag emotion" data-val="thumbs down, disapproval, nope">👎 ダメ</span>
-      <span class="tag emotion" data-val="waving hello, friendly greeting">👋 あいさつ</span>
-      <span class="tag emotion" data-val="celebrating, party popper, hurray">🎉 やったー！</span>
-      <span class="tag emotion" data-val="sweating nervously, anxious">😅 あせあせ</span>
-      <span class="tag emotion" data-val="thinking deeply, pondering, chin scratch">🤔 かんがえてる</span>
-      <span class="tag emotion" data-val="eating delicious food, yummy">😋 たべてる</span>
-      <span class="tag emotion" data-val="running fast, in a hurry, late">🏃 いそいでる</span>
-      <span class="tag emotion" data-val="sleeping soundly, snoring, ZZZ">💤 おやすみ</span>
-      <span class="tag emotion" data-val="OK hand gesture, affirmative">🙆 オッケー</span>
-      <span class="tag emotion" data-val="clapping hands, applause, well done">👏 パチパチ</span>
-      <span class="tag emotion" data-val="texting on smartphone, distracted">📱 スマホ中</span>
-      <span class="tag emotion" data-val="working hard, focused at laptop">💻 がんばる</span>
-      <span class="tag emotion" data-val="drinking tea or coffee, cozy relaxing">☕ まったり</span>
-      <span class="tag emotion" data-val="begging, please, hands together, puppy eyes">🙏 おねがい</span>
-      <span class="tag emotion" data-val="disgusted, gross, eww face">🤢 きもい</span>
-      <span class="tag emotion" data-val="shrugging, I don't know, whatever">🤷 しらんけど</span>
-      <span class="tag emotion" data-val="listening to music with headphones, vibing">🎧 音楽中</span>
-      <span class="tag emotion" data-val="money eyes, rich, excited about wealth">🤑 お金！</span>
-      <span class="tag emotion" data-val="sick, under the weather, cold, sneezing">🤒 かぜっぴき</span>
-      <span class="tag emotion" data-val="exercising, working out, pumped up, flexing">💪 きんにく</span>
-      <span class="tag emotion" data-val="reading a book, studious, learning">📚 べんきょう</span>
-      <span class="tag emotion" data-val="taking a selfie, posing for photo, peace sign">🤳 じどり</span>
-      <span class="tag emotion" data-val="dancing, spinning, having fun, disco vibes">💃 おどってる</span>
-      <span class="tag emotion" data-val="waiting, bored, tapping foot, impatient">⏳ まってる</span>
-      <span class="tag emotion" data-val="crying ugly, sobbing uncontrollably">😭 号泣</span>
-      <span class="tag emotion" data-val="speechless, blank stare, stunned silence">😶 ぼーっと</span>
-      <span class="tag emotion" data-val="overwhelmed, too much to handle">🤯 むり！</span>
-      <span class="tag emotion" data-val="giving a gift, presenting something nicely">🎁 プレゼント</span>
-      <span class="tag emotion" data-val="heartbroken, sad love, clutching chest">💔 しつれん</span>
-      <span class="tag emotion" data-val="triumphant, fist pump, victory pose">✊ やってやる</span>
-    </div>
-  </div>
-
-  <!-- options -->
-  <div class="card">
-    <div class="card-title"><span class="icon">✨</span> オプション設定</div>
-    <div class="field">
-      <label>テキスト吹き出し（任意）</label>
-      <input type="text" id="text-overlay" placeholder="例: ありがとう！／おつかれ〜／よろしく">
-      <div style="font-size:.73rem;color:var(--muted);margin-top:.28rem">感情に合ったセリフを入れたい場合に（空欄でテキストなし）</div>
-    </div>
-    <div class="field">
-      <label>追加デザインオプション</label>
-      <div class="tag-group" id="extra-tags">
-        <span class="tag extra" data-val="add simple Japanese text label matching each emotion">日本語テキスト追加</span>
-        <span class="tag extra" data-val="add decorative border/frame around each sticker">フレーム装飾</span>
-        <span class="tag extra" data-val="add sparkles and star effects around character">キラキラエフェクト</span>
-        <span class="tag extra" data-val="soft pastel color palette throughout">パステルカラー</span>
-        <span class="tag extra" data-val="bold vivid saturated colors">ビビッドカラー</span>
-        <span class="tag extra" data-val="add small themed props or accessories for each emotion">小物・アクセサリー</span>
-        <span class="tag extra" data-val="add soft drop shadow behind character">ドロップシャドウ</span>
-        <span class="tag extra" data-val="rounded cute body proportions, extra chubby and soft">まるまるボディ</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>カスタム追加指示（任意）</label>
-      <textarea id="custom" placeholder="例: 全体的に丸みのあるかわいいデザインで統一して、紫系の色は使わないで、など"></textarea>
-    </div>
-    <div class="toggle-row">
-      <label class="switch"><input type="checkbox" id="toggle-size" checked><span class="slider"></span></label>
-      <span class="toggle-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
-    </div>
-    <button class="btn-generate" onclick="generatePrompts()">✨ 2フェーズ プロンプトを生成する！</button>
-  </div>
-
-  <!-- stamp output -->
-  <div id="stamp-output">
-    <div class="output-card">
-      <div class="out-header">
-        <div class="output-title" id="output-main-title">📋 生成されたプロンプト</div>
-        <button class="btn-copy" id="copy-btn" onclick="copyStamp()">コピーする</button>
-      </div>
-      <div class="phase-tabs">
-        <button class="phase-tab active" id="stab1" onclick="switchStampTab(1)">
-          <span class="pt-icon">🖼️</span>Phase 1<br><span style="font-size:.66rem;font-weight:400">一覧グリッド生成</span>
-        </button>
-        <button class="phase-tab" id="stab2" onclick="switchStampTab(2)">
-          <span class="pt-icon">✂️</span>Phase 2<br><span style="font-size:.66rem;font-weight:400">確認後 → 分割ZIP</span>
-        </button>
-      </div>
-      <div class="phase-panel active" id="spanel1">
-        <div class="prompt-box" id="prompt-phase1"></div>
-        <div class="tip-box">💡 <b>Phase 1：</b>ChatGPT（GPT-4o）に貼って全スタンプを<b>1枚のグリッド画像</b>で確認！
-          <div class="flow"><span class="flow-step">コピー</span><span class="flow-arrow">→</span><span class="flow-step">ChatGPTに貼る</span><span class="flow-arrow">→</span><span class="flow-step">一覧グリッド画像が届く</span><span class="flow-arrow">→</span><span class="flow-step">OKならPhase2へ</span></div>
+    <div class="phase-panel active" id="panel1">
+      <div class="prompt-box" id="prompt-phase1"></div>
+      <div class="tip-box">💡 <b>Phase 1：</b>ChatGPT（GPT-4o）に貼って全スタンプを<b>1枚のグリッド画像</b>で確認！
+        <div class="flow">
+          <span class="flow-step">コピー</span><span class="flow-arrow">→</span>
+          <span class="flow-step">ChatGPTに貼る</span><span class="flow-arrow">→</span>
+          <span class="flow-step">一覧グリッド画像が届く</span><span class="flow-arrow">→</span>
+          <span class="flow-step">OKならPhase2へ！</span>
         </div>
       </div>
-      <div class="phase-panel" id="spanel2">
-        <div class="prompt-box" id="prompt-phase2"></div>
-        <div class="tip-box">💡 <b>Phase 2：</b>同じチャットに貼るだけ！分割→透明PNG→<b>ZIP</b>でダウンロード！
-          <div class="flow"><span class="flow-step">Phase1でOK確認</span><span class="flow-arrow">→</span><span class="flow-step">このプロンプトをコピー</span><span class="flow-arrow">→</span><span class="flow-step">同じチャットに貼る</span><span class="flow-arrow">→</span><span class="flow-step">line_stamps.zip ダウンロード！</span></div>
+    </div>
+    <div class="phase-panel" id="panel2">
+      <div class="prompt-box" id="prompt-phase2"></div>
+      <div class="tip-box">💡 <b>Phase 2：</b>同じチャットに貼るだけ！分割→透明PNG→<b>ZIP</b>でダウンロード！
+        <div class="flow">
+          <span class="flow-step">Phase1でOK確認</span><span class="flow-arrow">→</span>
+          <span class="flow-step">このプロンプトをコピー</span><span class="flow-arrow">→</span>
+          <span class="flow-step">同じチャットに貼る</span><span class="flow-arrow">→</span>
+          <span class="flow-step">line_stamps.zip ダウンロード！</span>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-</div><!-- /mode-stamp -->
-</div><!-- /wrapper -->
-
+</div>
 <script>
-// ===================== SHARED STATE =====================
-let currentMode = 'photo';
-
-function switchMode(mode) {
-  currentMode = mode;
-  document.getElementById('mode-photo').style.display = mode === 'photo' ? 'block' : 'none';
-  document.getElementById('mode-stamp').style.display = mode === 'stamp' ? 'block' : 'none';
-  document.getElementById('tab-photo').classList.toggle('active', mode === 'photo');
-  document.getElementById('tab-stamp').classList.toggle('active', mode === 'stamp');
-}
-
-// ===================== PHOTO MODE =====================
-let imageBase64 = null;
-let imageMime = 'image/jpeg';
-let photoStyleVal = 'cute kawaii anime';
-let fmtVal = 'chatgpt';
-let photoResultEn = '';
-let photoResultJa = '';
-
-function getApiKey() {
-  return document.getElementById('api-key-input').value.trim();
-}
-
-function onApiKeyChange() {
-  const key = getApiKey();
-  const input = document.getElementById('api-key-input');
-  input.classList.toggle('ok', key.startsWith('AIza') && key.length > 20);
-  updateAnalyzeBtn();
-}
-
-function updateAnalyzeBtn() {
-  const btn = document.getElementById('btn-analyze');
-  const hasImage = !!imageBase64;
-  const hasKey = getApiKey().startsWith('AIza');
-  btn.disabled = !(hasImage && hasKey);
-  if (!hasImage && !hasKey) btn.textContent = '🔍 写真とAPIキーを入力してください';
-  else if (!hasImage) btn.textContent = '🔍 写真をアップしてください';
-  else if (!hasKey) btn.textContent = '🔑 Gemini APIキーを入力してください';
-  else btn.textContent = '🚀 AI 分析してプロンプト生成！';
-}
-
-// load saved key
-try {
-  const saved = localStorage.getItem('gemini_api_key');
-  if (saved) { document.getElementById('api-key-input').value = saved; onApiKeyChange(); }
-} catch(e) {}
-
-// drag & drop
-const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
-document.getElementById('file-input').addEventListener('change', e => { if(e.target.files[0]) loadFile(e.target.files[0]); });
-
-function loadFile(file) {
-  if (!file.type.startsWith('image/')) return;
-  imageMime = file.type;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    imageBase64 = ev.target.result.split(',')[1];
-    dz.classList.add('has-image');
-    dz.innerHTML = `<img src="${ev.target.result}" class="preview-img" alt="preview">
-      <div class="img-overlay">
-        <span class="img-filename">📎 ${file.name}</span>
-        <button class="btn-reupload" onclick="resetUpload(event)">変更</button>
-      </div>`;
-    updateAnalyzeBtn();
-    hideError();
-  };
-  reader.readAsDataURL(file);
-}
-
-function resetUpload(e) {
-  e.stopPropagation();
-  imageBase64 = null;
-  dz.classList.remove('has-image');
-  dz.innerHTML = `<span class="drop-icon">📸</span>
-    <div class="drop-title">写真をドラッグ＆ドロップ</div>
-    <div class="drop-sub">クリックして選択でも OK ／ <b>JPG・PNG・WEBP</b> 対応</div>
-    <input type="file" id="file-input" accept="image/*" style="display:none">`;
-  dz.onclick = () => document.getElementById('file-input').click();
-  document.getElementById('file-input').addEventListener('change', e => { if(e.target.files[0]) loadFile(e.target.files[0]); });
-  imageBase64 = null;
-  updateAnalyzeBtn();
-  document.getElementById('photo-output').style.display = 'none';
-}
-
-document.querySelectorAll('#photo-style-chips .chip').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('#photo-style-chips .chip').forEach(x => x.classList.remove('active'));
-    c.classList.add('active'); photoStyleVal = c.dataset.val;
-  });
-});
-document.querySelectorAll('#fmt-chips .chip').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('#fmt-chips .chip').forEach(x => x.classList.remove('active'));
-    c.classList.add('active'); fmtVal = c.dataset.val;
-  });
-});
-
-async function getGeminiModel(apiKey) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
-  );
-  if (!res.ok) throw new Error('モデル一覧の取得に失敗したで。APIキーを確認してな。');
-  const data = await res.json();
-  const models = data.models || [];
-  // flashモデルを優先、generateContentに対応してるやつ
-  const preferred = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
-  for (const pref of preferred) {
-    const found = models.find(m =>
-      m.name.includes(pref) &&
-      (m.supportedGenerationMethods || []).includes('generateContent')
-    );
-    if (found) return found.name.replace('models/', '');
-  }
-  // fallback: 最初のgenerateContent対応モデル
-  const any = models.find(m => (m.supportedGenerationMethods || []).includes('generateContent'));
-  if (any) return any.name.replace('models/', '');
-  throw new Error('使えるGeminiモデルが見つからへんかったで。');
-}
-
-async function analyzePhoto() {
-  if (!imageBase64) return;
-  const apiKey = getApiKey();
-  if (!apiKey) { showError('Gemini APIキーを入力してな！'); return; }
-  try { localStorage.setItem('gemini_api_key', apiKey); } catch(e) {}
-
-  const btn = document.getElementById('btn-analyze');
-  btn.disabled = true;
-  document.getElementById('loading-bar').classList.add('on');
-  document.getElementById('status-msg').classList.add('on');
-  document.getElementById('status-msg').textContent = '🔍 使えるモデルを確認中...';
-  hideError();
-  document.getElementById('photo-output').style.display = 'none';
-
-  const detail = parseInt(document.getElementById('detail-level').value);
-  const detailInstr = detail===1
-    ? 'Keep the prompt concise (under 30 words for English).'
-    : detail===2
-    ? 'Create a balanced prompt (40-70 words for English).'
-    : 'Create a highly detailed prompt (80-120 words for English).';
-  const fmtInstr = {
-    chatgpt: 'Format for ChatGPT/DALL-E: natural descriptive sentences.',
-    midjourney: 'Format for Midjourney: comma-separated tags, end with --ar 1:1 --niji 6.',
-    stable: 'Format for Stable Diffusion: comma-separated weighted tags.',
-    general: 'Format as a general-purpose illustration prompt.'
-  }[fmtVal];
-
-  const promptText = `Analyze this photo and generate illustration prompts.
-Target style: ${photoStyleVal}
-Target use: LINE stamp sticker, transparent background PNG
-${detailInstr}
-${fmtInstr}
-
-Respond ONLY with this exact JSON (no markdown, no extra text):
-{"analysis":{"subject":"...","composition":"...","colors":"...","mood":"...","key_features":"...","style_notes":"..."},"prompt_en":"full English prompt ready to paste","prompt_ja":"日本語プロンプト（そのまま貼り付けられる形式）"}`;
-
-  try {
-    const model = await getGeminiModel(apiKey);
-    document.getElementById('status-msg').textContent = `🤖 ${model} で解析中...`;
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { inline_data: { mime_type: imageMime, data: imageBase64 } },
-              { text: promptText }
-            ]
-          }],
-          generationConfig: { temperature: 0.4, maxOutputTokens: 1024 },
-          thinkingConfig: { thinkingBudget: 0 }
-        })
-      }
-    );
-    if (!res.ok) {
-      const e = await res.json();
-      throw new Error(e.error?.message || `API error ${res.status}`);
-    }
-    const data = await res.json();
-    const raw = data.candidates?.[0]?.content?.parts
-      ?.filter(p => p.text)
-      ?.map(p => p.text)
-      ?.join('') || '';
-
-    // JSONブロックを抜き出す（```json〜``` や { } で囲まれた部分）
-    let clean = raw;
-    const jsonMatch = raw.match(/```json\s*([\s\S]*?)```/) ||
-                      raw.match(/```\s*([\s\S]*?)```/) ||
-                      raw.match(/(\{[\s\S]*\})/);
-    if (jsonMatch) clean = jsonMatch[1].trim();
-    else clean = raw.replace(/```json|```/g, '').trim();
-
-    const result = JSON.parse(clean);
-    photoResultEn = result.prompt_en || '';
-    photoResultJa = result.prompt_ja || '';
-    renderPhotoOutput(result);
-  } catch(err) {
-    if (err instanceof SyntaxError) {
-      showError('AIの返答のパースに失敗したで。もう一回試してみてな。');
-    } else {
-      showError(err.message || '不明なエラーが発生したで。');
-    }
-  } finally {
-    btn.disabled = false;
-    document.getElementById('loading-bar').classList.remove('on');
-    document.getElementById('status-msg').classList.remove('on');
-  }
-}
-
-function renderPhotoOutput(data) {
-  const a = data.analysis || {};
-  const items = [
-    {k:'👤 被写体', v:a.subject},{k:'📐 構図', v:a.composition},
-    {k:'🎨 カラー', v:a.colors},{k:'✨ ムード', v:a.mood},
-    {k:'🔑 特徴', v:a.key_features},{k:'🖌️ スタイル提案', v:a.style_notes}
-  ].filter(i=>i.v);
-  document.getElementById('analysis-grid').innerHTML = items.map(i=>`<div class="ai-item"><div class="ai-key">${i.k}</div><div class="ai-val">${i.v}</div></div>`).join('');
-  document.getElementById('prompt-en').textContent = data.prompt_en || '';
-  document.getElementById('prompt-ja').textContent = data.prompt_ja || '';
-  document.getElementById('photo-output').style.display = 'block';
-  setTimeout(() => document.getElementById('photo-output').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-}
-
-function copyPhoto(lang) {
-  const text = document.getElementById(lang==='en'?'prompt-en':'prompt-ja').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById(lang==='en'?'copy-en':'copy-ja');
-    const orig = btn.textContent; btn.textContent = 'コピー済 ✓'; btn.classList.add('copied');
-    setTimeout(()=>{ btn.textContent=orig; btn.classList.remove('copied'); }, 2000);
-  });
-}
-
-// ★ USE IN STAMP — core feature!
-function useInStamp() {
-  const enText = document.getElementById('prompt-en').textContent;
-  // Fill character field with the EN prompt (truncated nicely)
-  const charInput = document.getElementById('character');
-  charInput.value = enText.slice(0, 300);
-  // Try to match art style chip
-  const activeStyleChip = document.querySelector('#photo-style-chips .chip.active');
-  if (activeStyleChip) {
-    const styleVal = activeStyleChip.dataset.val;
-    // find matching style-card in stamp grid
-    let matched = false;
-    document.querySelectorAll('.style-card').forEach(card => {
-      card.classList.remove('active');
-      if (!matched && card.dataset.val.toLowerCase().includes(styleVal.split(' ')[0].toLowerCase())) {
-        card.classList.add('active');
-        selectedStyle.val = card.dataset.val;
-        selectedStyle.name = card.querySelector('.s-name').textContent;
-        matched = true;
-      }
-    });
-    if (!matched) {
-      // default to first
-      const first = document.querySelector('.style-card');
-      if (first) { first.classList.add('active'); selectedStyle.val = first.dataset.val; selectedStyle.name = first.querySelector('.s-name').textContent; }
-    }
-  }
-  // show badge
-  const badge = document.getElementById('photo-imported-badge');
-  badge.classList.add('visible');
-  document.getElementById('photo-imported-text').textContent = `📸 写真から引き継ぎ済み（${enText.slice(0,40)}…）`;
-  // switch to stamp mode
-  switchMode('stamp');
-  setTimeout(() => document.getElementById('mode-stamp').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
-}
-
-function clearImport() {
-  document.getElementById('character').value = '';
-  document.getElementById('photo-imported-badge').classList.remove('visible');
-}
-
-function showError(msg) { const e=document.getElementById('error-box'); e.textContent='⚠️ '+msg; e.classList.add('on'); }
-function hideError() { document.getElementById('error-box').classList.remove('on'); }
-
-// ===================== STAMP MODE =====================
 let stampCount = 24;
-let selectedStyle = { val: 'cute kawaii anime illustration style, clean linework, bright colors', name: 'かわいいアニメ' };
+let selectedStyle = { val: 'cute kawaii anime illustration style, clean linework, bright colors' };
 let selectedEmotions = [];
 let selectedExtras = [];
-let currentStampTab = 1;
+let currentTab = 1;
 
 const DEFAULT_POOL = [
   'happy, big smile, joy','crying, sad tears, heartbroken','angry, furious, steam from head',
@@ -828,10 +327,9 @@ const DEFAULT_POOL = [
   'working hard, focused at laptop','drinking tea or coffee, cozy','begging, please, puppy eyes',
   'dancing, spinning, having fun','waiting, bored, impatient','reading a book, studious',
   'overwhelmed, too much','triumphant, fist pump, victory','taking a selfie, peace sign',
-  'sick, sneezing, under the weather','exercising, working out, flexing',
-  'listening to music, headphones','money eyes, excited about wealth',
-  'crying ugly, sobbing','speechless, blank stare','shrugging, whatever',
-  'giving a gift, presenting','heartbroken, sad love','disgusted, eww face'
+  'sick, sneezing','exercising, working out, flexing','listening to music, headphones',
+  'money eyes, excited about wealth','crying ugly, sobbing','speechless, blank stare',
+  'shrugging, whatever','giving a gift','heartbroken, sad love','disgusted, eww face'
 ];
 
 document.querySelectorAll('.count-btn').forEach(btn => {
@@ -839,7 +337,7 @@ document.querySelectorAll('.count-btn').forEach(btn => {
     document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     stampCount = parseInt(btn.dataset.n);
-    updateEmotionBadge();
+    updateBadge();
   });
 });
 document.querySelectorAll('.style-card').forEach(card => {
@@ -847,7 +345,6 @@ document.querySelectorAll('.style-card').forEach(card => {
     document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
     selectedStyle.val = card.dataset.val;
-    selectedStyle.name = card.querySelector('.s-name').textContent;
   });
 });
 document.querySelectorAll('#emotion-tags .tag').forEach(t => {
@@ -855,7 +352,7 @@ document.querySelectorAll('#emotion-tags .tag').forEach(t => {
     const idx = selectedEmotions.indexOf(t.dataset.val);
     if (idx === -1) { selectedEmotions.push(t.dataset.val); t.classList.add('active'); }
     else { selectedEmotions.splice(idx, 1); t.classList.remove('active'); }
-    updateEmotionBadge();
+    updateBadge();
   });
 });
 document.querySelectorAll('#extra-tags .tag').forEach(t => {
@@ -866,26 +363,30 @@ document.querySelectorAll('#extra-tags .tag').forEach(t => {
   });
 });
 
-function updateEmotionBadge() {
+function updateBadge() {
   const n = selectedEmotions.length;
-  const badge = document.getElementById('emotion-count');
-  badge.textContent = `${n} / ${stampCount} 選択中`;
-  badge.className = 'count-badge ' + (n === stampCount ? 'ok' : n > stampCount ? 'over' : 'under');
+  const b = document.getElementById('emotion-count');
+  b.textContent = `${n} / ${stampCount} 選択中`;
+  b.className = 'count-badge ' + (n === stampCount ? 'ok' : n > stampCount ? 'over' : 'under');
 }
 function selectAll() {
-  document.querySelectorAll('#emotion-tags .tag').forEach(t => { if(!selectedEmotions.includes(t.dataset.val)) selectedEmotions.push(t.dataset.val); t.classList.add('active'); });
-  updateEmotionBadge();
+  document.querySelectorAll('#emotion-tags .tag').forEach(t => {
+    if (!selectedEmotions.includes(t.dataset.val)) selectedEmotions.push(t.dataset.val);
+    t.classList.add('active');
+  });
+  updateBadge();
 }
 function clearAll() {
   selectedEmotions = [];
   document.querySelectorAll('#emotion-tags .tag').forEach(t => t.classList.remove('active'));
-  updateEmotionBadge();
+  updateBadge();
 }
 function autoSelect() {
   clearAll();
-  const all = Array.from(document.querySelectorAll('#emotion-tags .tag')).sort(() => Math.random() - .5).slice(0, stampCount);
-  all.forEach(t => { selectedEmotions.push(t.dataset.val); t.classList.add('active'); });
-  updateEmotionBadge();
+  Array.from(document.querySelectorAll('#emotion-tags .tag'))
+    .sort(() => Math.random() - .5).slice(0, stampCount)
+    .forEach(t => { selectedEmotions.push(t.dataset.val); t.classList.add('active'); });
+  updateBadge();
 }
 
 function generatePrompts() {
@@ -903,14 +404,18 @@ function generatePrompts() {
 
   const padded = [...selectedEmotions];
   let pi = 0;
-  while (padded.length < stampCount) { const c = DEFAULT_POOL[pi % DEFAULT_POOL.length]; if (!padded.includes(c)) padded.push(c); pi++; }
+  while (padded.length < stampCount) {
+    const c = DEFAULT_POOL[pi % DEFAULT_POOL.length];
+    if (!padded.includes(c)) padded.push(c);
+    pi++;
+  }
   const emotions = padded.slice(0, stampCount);
   const charDesc = charname ? `${charname}（${character}）` : character;
   const sizeNote = wantSize ? '\n- 各セル推奨サイズ: 370×320px' : '';
   const textNote = textOverlay ? `\n- 各スタンプには感情に合ったひと言（例:「${textOverlay}」）を添える` : '';
   const extrasBlock = selectedExtras.length > 0 ? selectedExtras.map(e => `  - ${e}`).join('\n') : '  - (なし)';
   const customNote = custom ? `\n\n【追加指示】\n${custom}` : '';
-  const cols = stampCount <= 8 ? 4 : stampCount <= 16 ? 4 : stampCount <= 24 ? 6 : 8;
+  const cols = stampCount <= 16 ? 4 : stampCount <= 24 ? 6 : 8;
   const rows = Math.ceil(stampCount / cols);
   const pad = n => String(n).padStart(2, '0');
   const eBlock = emotions.map((e, i) => `  ${pad(i+1)}. ${e}`).join('\n');
@@ -966,7 +471,7 @@ ${customNote}
 - 先ほど生成したグリッド画像から各コマを切り出す
 - フォーマット: PNG（背景は完全に透明 / transparent background）
 - ★背景の白またはグレーを除去し、キャラクター部分のみを残すこと★
-- ファイル名: stamp_01.png 〜 stamp_${pad(stampCount)}.png${wantSize?'\n- 各画像サイズ: 370×320px にリサイズ':''}
+- ファイル名: stamp_01.png 〜 stamp_${pad(stampCount)}.png${wantSize ? '\n- 各画像サイズ: 370×320px にリサイズ' : ''}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【キャラクター・スタイル（参照）】
@@ -991,21 +496,21 @@ ${eBlock}
 
   document.getElementById('prompt-phase1').textContent = p1;
   document.getElementById('prompt-phase2').textContent = p2;
-  document.getElementById('output-main-title').textContent = `📋 ${stampCount}枚セット プロンプト（2フェーズ）`;
+  document.getElementById('output-title').textContent = `📋 ${stampCount}枚セット プロンプト（2フェーズ）`;
   document.getElementById('stamp-output').style.display = 'block';
-  switchStampTab(1);
+  switchTab(1);
   setTimeout(() => document.getElementById('stamp-output').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
-function switchStampTab(n) {
-  currentStampTab = n;
-  document.getElementById('stab1').classList.toggle('active', n===1);
-  document.getElementById('stab2').classList.toggle('active', n===2);
-  document.getElementById('spanel1').classList.toggle('active', n===1);
-  document.getElementById('spanel2').classList.toggle('active', n===2);
+function switchTab(n) {
+  currentTab = n;
+  document.getElementById('tab1').classList.toggle('active', n === 1);
+  document.getElementById('tab2').classList.toggle('active', n === 2);
+  document.getElementById('panel1').classList.toggle('active', n === 1);
+  document.getElementById('panel2').classList.toggle('active', n === 2);
 }
-function copyStamp() {
-  const text = document.getElementById(currentStampTab===1?'prompt-phase1':'prompt-phase2').textContent;
+function copyPrompt() {
+  const text = document.getElementById(currentTab === 1 ? 'prompt-phase1' : 'prompt-phase2').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copy-btn');
     btn.textContent = 'コピー済 ✓'; btn.classList.add('copied');
@@ -1013,8 +518,7 @@ function copyStamp() {
   });
 }
 
-updateEmotionBadge();
-switchMode('photo');
+updateBadge();
 </script>
 </body>
 </html>

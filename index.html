@@ -204,6 +204,19 @@ input:checked+.slider::before{transform:translateX(18px);}
 .flow-step{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:.18em .65em;color:var(--text);}
 .flow-arrow{color:var(--a2);font-weight:900;}
 
+/* API KEY CARD */
+.apikey-card{background:rgba(0,212,255,.05);border:1.5px solid rgba(0,212,255,.25);border-radius:16px;padding:1.1rem 1.3rem;margin-bottom:1rem;}
+.apikey-inner{display:flex;gap:.9rem;align-items:flex-start;}
+.apikey-icon{font-size:1.4rem;flex-shrink:0;margin-top:.15rem;}
+.apikey-body{flex:1;}
+.apikey-label{font-size:.7rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a6);margin-bottom:.45rem;}
+.apikey-body input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:monospace;font-size:.85rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;}
+.apikey-body input:focus{border-color:var(--a6);}
+.apikey-body input.ok{border-color:var(--a3);}
+.apikey-hint{font-size:.7rem;color:var(--muted);margin-top:.4rem;line-height:1.5;}
+.apikey-hint a{color:var(--a6);text-decoration:none;}
+.apikey-hint a:hover{text-decoration:underline;}
+
 @media(max-width:580px){
   .steps{flex-direction:column;}
   .step{flex-direction:row;text-align:left;align-items:flex-start;gap:.6rem;}
@@ -282,6 +295,18 @@ input:checked+.slider::before{transform:translateX(18px);}
         <span class="chip" data-val="midjourney">Midjourney</span>
         <span class="chip" data-val="stable">Stable Diffusion</span>
         <span class="chip" data-val="general">汎用</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key -->
+  <div class="apikey-card" id="apikey-card">
+    <div class="apikey-inner">
+      <span class="apikey-icon">🔑</span>
+      <div class="apikey-body">
+        <div class="apikey-label">Anthropic APIキー</div>
+        <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" oninput="onApiKeyChange()">
+        <div class="apikey-hint">キーは端末内にのみ保存。外部送信なし。<a href="https://console.anthropic.com/settings/keys" target="_blank">取得はこちら →</a></div>
       </div>
     </div>
   </div>
@@ -523,6 +548,34 @@ let fmtVal = 'chatgpt';
 let photoResultEn = '';
 let photoResultJa = '';
 
+function getApiKey() {
+  return document.getElementById('api-key-input').value.trim();
+}
+
+function onApiKeyChange() {
+  const key = getApiKey();
+  const input = document.getElementById('api-key-input');
+  input.classList.toggle('ok', key.startsWith('sk-ant-') && key.length > 20);
+  updateAnalyzeBtn();
+}
+
+function updateAnalyzeBtn() {
+  const btn = document.getElementById('btn-analyze');
+  const hasImage = !!imageBase64;
+  const hasKey = getApiKey().startsWith('sk-ant-');
+  btn.disabled = !(hasImage && hasKey);
+  if (!hasImage && !hasKey) btn.textContent = '🔍 写真とAPIキーを入力してください';
+  else if (!hasImage) btn.textContent = '🔍 写真をアップしてください';
+  else if (!hasKey) btn.textContent = '🔑 APIキーを入力してください';
+  else btn.textContent = '🚀 AI 分析してプロンプト生成！';
+}
+
+// load saved key
+try {
+  const saved = localStorage.getItem('anthropic_api_key');
+  if (saved) { document.getElementById('api-key-input').value = saved; onApiKeyChange(); }
+} catch(e) {}
+
 // drag & drop
 const dz = document.getElementById('drop-zone');
 dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
@@ -542,9 +595,7 @@ function loadFile(file) {
         <span class="img-filename">📎 ${file.name}</span>
         <button class="btn-reupload" onclick="resetUpload(event)">変更</button>
       </div>`;
-    const btn = document.getElementById('btn-analyze');
-    btn.disabled = false;
-    btn.textContent = '🚀 AI 分析してプロンプト生成！';
+    updateAnalyzeBtn();
     hideError();
   };
   reader.readAsDataURL(file);
@@ -560,9 +611,8 @@ function resetUpload(e) {
     <input type="file" id="file-input" accept="image/*" style="display:none">`;
   dz.onclick = () => document.getElementById('file-input').click();
   document.getElementById('file-input').addEventListener('change', e => { if(e.target.files[0]) loadFile(e.target.files[0]); });
-  const btn = document.getElementById('btn-analyze');
-  btn.disabled = true;
-  btn.textContent = '🔍 写真をアップして AI 分析スタート';
+  imageBase64 = null;
+  updateAnalyzeBtn();
   document.getElementById('photo-output').style.display = 'none';
 }
 
@@ -581,6 +631,11 @@ document.querySelectorAll('#fmt-chips .chip').forEach(c => {
 
 async function analyzePhoto() {
   if (!imageBase64) return;
+  const apiKey = getApiKey();
+  if (!apiKey) { showError('APIキーを入力してな！'); return; }
+  // save key for convenience
+  try { localStorage.setItem('anthropic_api_key', apiKey); } catch(e) {}
+
   const btn = document.getElementById('btn-analyze');
   btn.disabled = true;
   document.getElementById('loading-bar').classList.add('on');
@@ -595,7 +650,12 @@ async function analyzePhoto() {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,

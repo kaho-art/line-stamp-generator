@@ -489,17 +489,18 @@ async function testConnection() {
   if (!url) { setGasStatus('URLを入力してや！', 'err'); return; }
   setGasStatus('接続テスト中...', 'loading');
   try {
-    const res = await fetch(url + '?action=getAll');
-    const data = await res.json();
+    const res = await fetch(url + '?action=getAll', { redirect: 'follow' });
+    const text = await res.text();
+    const data = JSON.parse(text);
     if (data.ok) {
-      setGasStatus('✅ 接続成功！スプレッドシートと繋がったで！', 'ok');
+      setGasStatus('✅ 接続成功！' + (data.data||[]).length + '件のデータが見つかったで！', 'ok');
       cachedPrompts = data.data || [];
       renderSaved();
     } else {
       setGasStatus('❌ エラー: ' + (data.error || '不明'), 'err');
     }
   } catch(e) {
-    setGasStatus('❌ 接続失敗。URLを確認してな。CORSエラーの場合はGASの設定でアクセスを「全員」にしてや。', 'err');
+    setGasStatus('❌ 接続失敗: ' + e.message, 'err');
   }
 }
 
@@ -511,19 +512,42 @@ function setGasStatus(msg, type) {
 async function loadFromGas() {
   const url = getGasUrl();
   if (!url) return;
+  setGasStatus('読み込み中...', 'loading');
   try {
-    const res = await fetch(url + '?action=getAll');
-    const data = await res.json();
-    if (data.ok) { cachedPrompts = data.data || []; renderSaved(); }
-  } catch(e) { /* silent */ }
+    const res = await fetch(url + '?action=getAll', { redirect: 'follow' });
+    const text = await res.text();
+    const data = JSON.parse(text);
+    if (data.ok) {
+      cachedPrompts = data.data || [];
+      setGasStatus('✅ ' + cachedPrompts.length + '件読み込み完了！', 'ok');
+      renderSaved();
+    } else {
+      setGasStatus('❌ エラー: ' + (data.error || '不明'), 'err');
+    }
+  } catch(e) {
+    setGasStatus('❌ 読み込み失敗: ' + e.message, 'err');
+  }
 }
 
 async function gasRequest(params) {
   const url = getGasUrl();
   if (!url) { alert('スプシURLを設定してや！「プロンプト保存庫」タブで設定できるで。'); return null; }
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(url + '?' + qs);
-  return await res.json();
+
+  if (params.action === 'save') {
+    const res = await fetch(url, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'save', data: JSON.parse(params.data) })
+    });
+    const text = await res.text();
+    return JSON.parse(text);
+  } else {
+    const qs = new URLSearchParams(params).toString();
+    const res = await fetch(url + '?' + qs, { redirect: 'follow' });
+    const text = await res.text();
+    return JSON.parse(text);
+  }
 }
 
 // ===== SAVE =====

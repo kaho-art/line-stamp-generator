@@ -304,9 +304,9 @@ input:checked+.slider::before{transform:translateX(18px);}
     <div class="apikey-inner">
       <span class="apikey-icon">🔑</span>
       <div class="apikey-body">
-        <div class="apikey-label">Anthropic APIキー</div>
-        <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" oninput="onApiKeyChange()">
-        <div class="apikey-hint">キーは端末内にのみ保存。外部送信なし。<a href="https://console.anthropic.com/settings/keys" target="_blank">取得はこちら →</a></div>
+        <div class="apikey-label">Google Gemini APIキー（無料）</div>
+        <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off" oninput="onApiKeyChange()">
+        <div class="apikey-hint">クレカ不要・無料で取得できるで！　<a href="https://aistudio.google.com/app/apikey" target="_blank">👉 Google AI Studio でキーを取得 →</a><br>キーはこの端末のみに保存。外部には送信されへんで。</div>
       </div>
     </div>
   </div>
@@ -555,24 +555,24 @@ function getApiKey() {
 function onApiKeyChange() {
   const key = getApiKey();
   const input = document.getElementById('api-key-input');
-  input.classList.toggle('ok', key.startsWith('sk-ant-') && key.length > 20);
+  input.classList.toggle('ok', key.startsWith('AIza') && key.length > 20);
   updateAnalyzeBtn();
 }
 
 function updateAnalyzeBtn() {
   const btn = document.getElementById('btn-analyze');
   const hasImage = !!imageBase64;
-  const hasKey = getApiKey().startsWith('sk-ant-');
+  const hasKey = getApiKey().startsWith('AIza');
   btn.disabled = !(hasImage && hasKey);
   if (!hasImage && !hasKey) btn.textContent = '🔍 写真とAPIキーを入力してください';
   else if (!hasImage) btn.textContent = '🔍 写真をアップしてください';
-  else if (!hasKey) btn.textContent = '🔑 APIキーを入力してください';
+  else if (!hasKey) btn.textContent = '🔑 Gemini APIキーを入力してください';
   else btn.textContent = '🚀 AI 分析してプロンプト生成！';
 }
 
 // load saved key
 try {
-  const saved = localStorage.getItem('anthropic_api_key');
+  const saved = localStorage.getItem('gemini_api_key');
   if (saved) { document.getElementById('api-key-input').value = saved; onApiKeyChange(); }
 } catch(e) {}
 
@@ -632,49 +632,73 @@ document.querySelectorAll('#fmt-chips .chip').forEach(c => {
 async function analyzePhoto() {
   if (!imageBase64) return;
   const apiKey = getApiKey();
-  if (!apiKey) { showError('APIキーを入力してな！'); return; }
-  // save key for convenience
-  try { localStorage.setItem('anthropic_api_key', apiKey); } catch(e) {}
+  if (!apiKey) { showError('Gemini APIキーを入力してな！'); return; }
+  try { localStorage.setItem('gemini_api_key', apiKey); } catch(e) {}
 
   const btn = document.getElementById('btn-analyze');
   btn.disabled = true;
   document.getElementById('loading-bar').classList.add('on');
   document.getElementById('status-msg').classList.add('on');
+  document.getElementById('status-msg').textContent = '🤖 Gemini が写真を解析中...';
   hideError();
   document.getElementById('photo-output').style.display = 'none';
 
   const detail = parseInt(document.getElementById('detail-level').value);
-  const detailInstr = detail===1?'Keep the prompt concise (under 30 words for English).':detail===2?'Create a balanced prompt (40-70 words for English).':'Create a highly detailed prompt (80-120 words for English).';
-  const fmtInstr = {chatgpt:'Format for ChatGPT/DALL-E: natural descriptive sentences.',midjourney:'Format for Midjourney: comma-separated tags, end with --ar 1:1 --niji 6.',stable:'Format for Stable Diffusion: comma-separated weighted tags.',general:'Format as a general-purpose illustration prompt.'}[fmtVal];
+  const detailInstr = detail===1
+    ? 'Keep the prompt concise (under 30 words for English).'
+    : detail===2
+    ? 'Create a balanced prompt (40-70 words for English).'
+    : 'Create a highly detailed prompt (80-120 words for English).';
+  const fmtInstr = {
+    chatgpt: 'Format for ChatGPT/DALL-E: natural descriptive sentences.',
+    midjourney: 'Format for Midjourney: comma-separated tags, end with --ar 1:1 --niji 6.',
+    stable: 'Format for Stable Diffusion: comma-separated weighted tags.',
+    general: 'Format as a general-purpose illustration prompt.'
+  }[fmtVal];
+
+  const promptText = `Analyze this photo and generate illustration prompts.
+Target style: ${photoStyleVal}
+Target use: LINE stamp sticker, transparent background PNG
+${detailInstr}
+${fmtInstr}
+
+Respond ONLY with this exact JSON (no markdown, no extra text):
+{"analysis":{"subject":"...","composition":"...","colors":"...","mood":"...","key_features":"...","style_notes":"..."},"prompt_en":"full English prompt ready to paste","prompt_ja":"日本語プロンプト（そのまま貼り付けられる形式）"}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: 'You are an expert AI image prompt engineer. Analyze photos and generate illustration prompts. Respond in valid JSON only. No markdown, no extra text.',
-        messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: imageMime, data: imageBase64 } },
-          { type: 'text', text: `Analyze this photo and generate illustration prompts.\nTarget style: ${photoStyleVal}\nTarget use: LINE stamp sticker, transparent background PNG\n${detailInstr}\n${fmtInstr}\n\nRespond with this exact JSON:\n{"analysis":{"subject":"...","composition":"...","colors":"...","mood":"...","key_features":"...","style_notes":"..."},"prompt_en":"full English prompt","prompt_ja":"日本語プロンプト（そのまま貼り付けられる形式）"}` }
-        ]}]
-      })
-    });
-    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `API error ${res.status}`); }
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { inline_data: { mime_type: imageMime, data: imageBase64 } },
+              { text: promptText }
+            ]
+          }],
+          generationConfig: { temperature: 0.4, maxOutputTokens: 1024 }
+        })
+      }
+    );
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(e.error?.message || `API error ${res.status}`);
+    }
     const data = await res.json();
-    const raw = data.content.map(b => b.text||'').join('').replace(/```json|```/g,'').trim();
-    const result = JSON.parse(raw);
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
     photoResultEn = result.prompt_en || '';
     photoResultJa = result.prompt_ja || '';
     renderPhotoOutput(result);
   } catch(err) {
-    showError(err.message || '不明なエラーが発生したで。');
+    if (err instanceof SyntaxError) {
+      showError('AIの返答のパースに失敗したで。もう一回試してみてな。');
+    } else {
+      showError(err.message || '不明なエラーが発生したで。');
+    }
   } finally {
     btn.disabled = false;
     document.getElementById('loading-bar').classList.remove('on');

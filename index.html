@@ -3,224 +3,246 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LINEスタンプ プロンプトジェネレーター</title>
+<title>AI プロンプトメーカー</title>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0d0d14;--surface:#16161f;--card:#1e1e2e;--border:#2a2a3d;
-  --a1:#ff6b6b;--a2:#ffd93d;--a3:#6bcb77;--a4:#4d96ff;--a5:#c77dff;--a6:#ff9f43;
-  --text:#f0f0f8;--muted:#888899;
+  --bg:#0a0a12;--surface:#13131e;--card:#1a1a28;--border:#252538;
+  --a1:#ff6b6b;--a2:#ffd93d;--a3:#6bcb77;--a4:#4d96ff;--a5:#c77dff;--a6:#ff9f43;--a7:#00d4ff;
+  --text:#f0f0f8;--muted:#777899;--muted2:#aab0cc;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'M PLUS Rounded 1c',sans-serif;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(77,150,255,.07) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 85% 80%,rgba(255,107,107,.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
-.wrapper{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 50% 35% at 20% 15%,rgba(77,150,255,.06) 0%,transparent 65%),radial-gradient(ellipse 45% 40% at 80% 85%,rgba(199,125,255,.06) 0%,transparent 65%);pointer-events:none;z-index:0;}
+.wrapper{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1.5rem 1.2rem 6rem;}
 
-header{text-align:center;padding:2.5rem 0 2rem;}
-.badge{display:inline-block;background:linear-gradient(135deg,var(--a1),var(--a2));color:#000;font-size:.7rem;font-weight:900;letter-spacing:.12em;padding:.3em 1em;border-radius:99px;margin-bottom:1.2rem;text-transform:uppercase;}
-h1{font-family:'Zen Dots',sans-serif;font-size:clamp(1.5rem,5vw,2.6rem);line-height:1.15;background:linear-gradient(135deg,#fff 30%,var(--a4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.6rem;}
-.subtitle{color:var(--muted);font-size:.9rem;}
+/* HEADER */
+header{text-align:center;padding:2rem 0 1.5rem;}
+.logo{font-family:'Zen Dots',sans-serif;font-size:clamp(1.6rem,5vw,2.8rem);background:linear-gradient(135deg,var(--a7),var(--a4),var(--a5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.4rem;}
+.logo-sub{color:var(--muted2);font-size:.85rem;}
 
-.nav-tabs{display:flex;gap:.5rem;margin-bottom:2rem;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:.35rem;}
-.nav-tab{flex:1;padding:.75rem .5rem;border-radius:12px;text-align:center;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;color:var(--muted);background:transparent;border:none;transition:all .2s;}
-.nav-tab:hover{color:var(--text);}
-.nav-tab.active{background:var(--card);color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.3);}
-.nav-tab.active.gen{color:var(--a2);}
-.nav-tab.active.saved{color:var(--a5);}
-.tab-content{display:none;}
-.tab-content.active{display:block;}
+/* TOP MENU */
+.top-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin:1.5rem 0 2rem;}
+@media(min-width:600px){.top-menu{grid-template-columns:repeat(4,1fr);}}
+.menu-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .22s;user-select:none;position:relative;overflow:hidden;}
+.menu-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .22s;}
+.menu-card:hover{transform:translateY(-3px);}
+.menu-card.active{transform:translateY(-3px);}
+.menu-card.c-illust{--mc:#ffd93d;} .menu-card.c-illust::before{background:rgba(255,217,61,.07);}
+.menu-card.c-analyze{--mc:#4d96ff;} .menu-card.c-analyze::before{background:rgba(77,150,255,.07);}
+.menu-card.c-edit{--mc:#6bcb77;} .menu-card.c-edit::before{background:rgba(107,203,119,.07);}
+.menu-card.c-stamp{--mc:#ff6b6b;} .menu-card.c-stamp::before{background:rgba(255,107,107,.07);}
+.menu-card:hover::before,.menu-card.active::before{opacity:1;}
+.menu-card:hover{border-color:var(--mc);} .menu-card.active{border-color:var(--mc);}
+.mc-icon{font-size:2rem;display:block;margin-bottom:.6rem;}
+.mc-title{font-size:.9rem;font-weight:900;color:var(--text);margin-bottom:.25rem;}
+.mc-desc{font-size:.68rem;color:var(--muted);line-height:1.4;}
+.menu-card.active .mc-title{color:var(--mc);}
 
-.steps{display:flex;gap:.5rem;margin:0 0 2rem;flex-wrap:wrap;}
-.step{flex:1;min-width:100px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.9rem .8rem;text-align:center;}
-.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.78rem;margin:0 auto .5rem;}
-.step:nth-child(1) .step-num{background:var(--a2);color:#000;}
-.step:nth-child(2) .step-num{background:var(--a3);color:#000;}
-.step:nth-child(3) .step-num{background:var(--a4);color:#000;}
-.step:nth-child(4) .step-num{background:var(--a1);color:#000;}
-.step:nth-child(5) .step-num{background:var(--a5);color:#000;}
-.step p{font-size:.72rem;color:var(--muted);line-height:1.4;}
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem 2rem;margin-bottom:1.4rem;}
-.card-title{font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:var(--a4);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem;}
-.card-title .icon{font-size:1rem;}
-.field{margin-bottom:1.1rem;}
-label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:.4rem;}
-input[type=text],textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.9rem;padding:.7rem 1rem;outline:none;transition:border-color .2s;}
-input[type=text]:focus,textarea:focus{border-color:var(--a4);background:#1a1a28;}
-textarea{resize:vertical;min-height:72px;}
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem 1.7rem;margin-bottom:1.2rem;}
+.card-title{font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--a4);margin-bottom:1rem;display:flex;align-items:center;gap:.45rem;}
+.card-title .icon{font-size:.95rem;}
+.field{margin-bottom:1rem;}
+label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:.38rem;}
+input[type=text],textarea,select{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;color:var(--text);font-family:inherit;font-size:.88rem;padding:.65rem .95rem;outline:none;transition:border-color .2s;}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--a4);background:#15152a;}
+textarea{resize:vertical;min-height:80px;}
+select option{background:var(--surface);}
 
-.count-selector{display:flex;gap:.5rem;flex-wrap:wrap;}
-.count-btn{flex:1;min-width:68px;background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:.75rem .5rem;text-align:center;cursor:pointer;transition:all .18s;user-select:none;}
-.count-btn:hover{border-color:var(--a2);}
-.count-btn.active{background:rgba(255,217,61,.13);border-color:var(--a2);}
-.count-btn .num{font-family:'Zen Dots',sans-serif;font-size:1.4rem;color:var(--a2);display:block;line-height:1;margin-bottom:.22rem;}
-.count-btn .lbl{font-size:.68rem;color:var(--muted);}
-.count-btn.active .lbl{color:var(--text);font-weight:700;}
-
-.attr-label{font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;}
-.attr-chips{display:flex;flex-wrap:wrap;gap:.35rem;}
-.chip{background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.28em .78em;font-size:.75rem;cursor:pointer;transition:all .16s;user-select:none;color:var(--muted);}
+/* CHIPS */
+.chip-group{display:flex;flex-wrap:wrap;gap:.35rem;}
+.chip{background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.26em .75em;font-size:.74rem;cursor:pointer;transition:all .16s;user-select:none;color:var(--muted2);}
 .chip:hover{border-color:var(--a4);color:var(--a4);}
 .chip.active{font-weight:700;}
-.chip.gender.active{background:rgba(255,159,67,.15);border-color:var(--a6);color:var(--a6);}
+.chip.yellow.active{background:rgba(255,217,61,.15);border-color:var(--a2);color:var(--a2);}
+.chip.blue.active{background:rgba(77,150,255,.15);border-color:var(--a4);color:var(--a4);}
+.chip.green.active{background:rgba(107,203,119,.15);border-color:var(--a3);color:var(--a3);}
+.chip.red.active{background:rgba(255,107,107,.15);border-color:var(--a1);color:var(--a1);}
+.chip.purple.active{background:rgba(199,125,255,.15);border-color:var(--a5);color:var(--a5);}
+.chip.orange.active{background:rgba(255,159,67,.15);border-color:var(--a6);color:var(--a6);}
 
-input.age-range,input.androgyny-range{-webkit-appearance:none;width:100%;height:4px;border-radius:99px;outline:none;cursor:pointer;margin-top:.5rem;}
-input.age-range{background:var(--border);}
-input.age-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--a3);box-shadow:0 0 8px rgba(107,203,119,.4);cursor:pointer;}
-.slider-track-wrap{position:relative;margin-top:.5rem;}
-.slider-track-bg{height:4px;border-radius:99px;background:linear-gradient(90deg,#4d96ff,#c77dff,#ff6b6b);}
-input.androgyny-range{background:transparent;margin-top:-4px;position:relative;}
-input.androgyny-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);box-shadow:0 0 8px rgba(0,0,0,.5);cursor:pointer;border:2px solid var(--border);}
-.age-display{text-align:center;font-family:'Zen Dots',sans-serif;font-size:1rem;color:var(--a3);margin-top:.3rem;}
-.range-labels{display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);margin-top:.3rem;}
+/* SLIDERS */
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:99px;background:var(--border);outline:none;cursor:pointer;margin-top:.5rem;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--a4);box-shadow:0 0 8px rgba(77,150,255,.4);cursor:pointer;}
+.range-labels{display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);margin-top:.28rem;}
+.androgyny-track{height:4px;border-radius:99px;background:linear-gradient(90deg,#4d96ff,#c77dff,#ff6b6b);margin-top:.5rem;}
+input.androgyny-r{-webkit-appearance:none;width:100%;height:4px;background:transparent;outline:none;cursor:pointer;margin-top:-4px;position:relative;}
+input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);box-shadow:0 0 8px rgba(0,0,0,.5);cursor:pointer;border:2px solid var(--border);}
 
-.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:.55rem;}
-.style-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:.85rem .75rem;cursor:pointer;transition:all .18s;user-select:none;display:flex;flex-direction:column;gap:.25rem;}
-.style-card:hover{border-color:var(--a5);}
-.style-card.active{background:rgba(199,125,255,.12);border-color:var(--a5);}
-.style-card .s-icon{font-size:1.3rem;line-height:1;}
-.style-card .s-name{font-size:.8rem;font-weight:700;color:var(--text);}
-.style-card .s-desc{font-size:.68rem;color:var(--muted);line-height:1.3;}
+/* UPLOAD */
+.upload-box{border:2px dashed var(--border);border-radius:14px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);position:relative;overflow:hidden;}
+.upload-box:hover,.upload-box.drag{border-color:var(--a4);background:rgba(77,150,255,.04);}
+.upload-box.has-img{padding:0;border-style:solid;border-color:var(--a4);}
+.upload-box.has-img img{width:100%;max-height:280px;object-fit:contain;border-radius:12px;display:block;}
+.upload-icon{font-size:2rem;display:block;margin-bottom:.6rem;}
+.upload-text{font-size:.82rem;color:var(--muted);line-height:1.5;}
+.upload-text b{color:var(--a4);}
+.img-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(10,10,18,.9),transparent);padding:.8rem 1rem;display:flex;justify-content:space-between;align-items:center;border-radius:0 0 12px 12px;}
+.img-overlay span{font-size:.72rem;color:var(--muted2);}
+.btn-change{background:rgba(77,150,255,.2);border:1px solid rgba(77,150,255,.4);color:var(--a4);font-family:inherit;font-size:.7rem;font-weight:700;border-radius:7px;padding:.28em .75em;cursor:pointer;}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem;}
+.toggle-label{font-size:.8rem;color:var(--muted);}
+.sw{position:relative;display:inline-block;width:38px;height:21px;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;}
+.sw-slider{position:absolute;inset:0;background:var(--border);border-radius:99px;cursor:pointer;transition:background .2s;}
+.sw-slider::before{content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
+.sw input:checked+.sw-slider{background:var(--a3);}
+.sw input:checked+.sw-slider::before{transform:translateX(17px);}
+
+/* BTNS */
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--a4),var(--a5));color:#fff;font-family:inherit;font-size:1rem;font-weight:900;border:none;border-radius:14px;padding:1rem;cursor:pointer;letter-spacing:.05em;transition:opacity .2s,transform .15s;margin-top:.5rem;}
+.btn-primary:hover{opacity:.88;transform:translateY(-2px);}
+.btn-primary.yellow{background:linear-gradient(135deg,var(--a1),var(--a2));color:#000;}
+.btn-primary.green{background:linear-gradient(135deg,var(--a3),var(--a7));color:#000;}
+.btn-primary.stamp{background:linear-gradient(135deg,var(--a1),var(--a2));color:#000;}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+
+/* API KEY */
+.apikey-bar{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:.8rem 1rem;margin-bottom:1rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;}
+.apikey-bar label{font-size:.7rem;font-weight:900;color:var(--a7);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;margin:0;}
+.apikey-bar input{flex:1;min-width:180px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;color:var(--text);font-family:monospace;font-size:.8rem;padding:.5rem .8rem;outline:none;}
+.apikey-bar input.ok{border-color:var(--a3);}
+.apikey-bar a{font-size:.7rem;color:var(--a7);text-decoration:none;white-space:nowrap;}
+.apikey-bar a:hover{text-decoration:underline;}
+
+/* OUTPUT */
+.output-section{display:none;margin-top:1.2rem;}
+.output-card{background:var(--card);border:1.5px solid var(--a4);border-radius:18px;padding:1.5rem 1.7rem;}
+.output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
+.output-title{font-family:'Zen Dots',sans-serif;font-size:.88rem;color:var(--a4);}
+.btn-copy{background:var(--a4);color:#000;font-family:inherit;font-size:.76rem;font-weight:900;border:none;border-radius:8px;padding:.42em 1em;cursor:pointer;transition:opacity .18s;}
+.btn-copy:hover{opacity:.78;} .btn-copy.done{background:var(--a3);}
+.prompt-box{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:1rem;font-size:.8rem;line-height:1.8;color:#c5d5ee;white-space:pre-wrap;word-break:break-word;max-height:400px;overflow-y:auto;}
+.prompt-box::-webkit-scrollbar{width:4px;} .prompt-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.tip-box{background:rgba(77,150,255,.06);border:1px solid rgba(77,150,255,.18);border-radius:11px;padding:.8rem .95rem;font-size:.76rem;color:#9ab5dd;margin-top:.9rem;line-height:1.6;}
+.tip-box b{color:var(--a4);}
+
+/* STATUS */
+.status-line{font-size:.76rem;padding:.35rem 0;display:none;}
+.status-line.on{display:block;}
+.loading-bar{height:2px;background:var(--border);border-radius:99px;margin:.5rem 0;overflow:hidden;display:none;}
+.loading-bar.on{display:block;}
+.loading-fill{height:100%;width:30%;background:linear-gradient(90deg,var(--a7),var(--a5));border-radius:99px;animation:scan 1.3s ease-in-out infinite;}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
+.err-box{background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.28);border-radius:11px;padding:.8rem 1rem;font-size:.8rem;color:#ff9999;display:none;margin-top:.8rem;}
+.err-box.on{display:block;}
+
+/* STAMP specific */
+.count-selector{display:flex;gap:.45rem;flex-wrap:wrap;}
+.count-btn{flex:1;min-width:60px;background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:.65rem .4rem;text-align:center;cursor:pointer;transition:all .18s;user-select:none;}
+.count-btn:hover{border-color:var(--a2);} .count-btn.active{background:rgba(255,217,61,.12);border-color:var(--a2);}
+.count-btn .num{font-family:'Zen Dots',sans-serif;font-size:1.3rem;color:var(--a2);display:block;line-height:1;margin-bottom:.18rem;}
+.count-btn .lbl{font-size:.64rem;color:var(--muted);}
+.count-btn.active .lbl{color:var(--text);font-weight:700;}
+.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.48rem;}
+.style-card{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:.75rem .65rem;cursor:pointer;transition:all .18s;user-select:none;display:flex;flex-direction:column;gap:.2rem;}
+.style-card:hover{border-color:var(--a5);} .style-card.active{background:rgba(199,125,255,.1);border-color:var(--a5);}
+.style-card .s-icon{font-size:1.2rem;} .style-card .s-name{font-size:.76rem;font-weight:700;color:var(--text);} .style-card .s-desc{font-size:.64rem;color:var(--muted);line-height:1.3;}
 .style-card.active .s-name{color:var(--a5);}
-.style-custom-wrap{margin-top:.8rem;display:flex;gap:.5rem;display:none;}
-.style-custom-wrap input{flex:1;}
-.btn-sm-purple{background:var(--a5);color:#000;font-family:inherit;font-size:.78rem;font-weight:900;border:none;border-radius:10px;padding:.5em 1em;cursor:pointer;white-space:nowrap;transition:opacity .18s;}
-.btn-sm-purple:hover{opacity:.8;}
-
-.tag-group{display:flex;flex-wrap:wrap;gap:.42rem;}
-.tag{background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.3em .85em;font-size:.76rem;cursor:pointer;transition:all .18s;user-select:none;}
+.tag-group{display:flex;flex-wrap:wrap;gap:.38rem;}
+.tag{background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:.27em .8em;font-size:.73rem;cursor:pointer;transition:all .18s;user-select:none;}
 .tag:hover{border-color:var(--a4);color:var(--a4);}
 .tag.active{background:var(--a1);border-color:var(--a1);color:#000;font-weight:700;}
 .tag.extra.active{background:var(--a3);border-color:var(--a3);color:#000;}
-
-.emotion-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem;}
-.count-badge{display:inline-flex;align-items:center;border-radius:99px;padding:.23em .75em;font-size:.71rem;font-weight:700;transition:all .3s;}
-.count-badge.ok{background:rgba(107,203,119,.15);border:1px solid rgba(107,203,119,.35);color:var(--a3);}
-.count-badge.over{background:rgba(255,107,107,.15);border:1px solid rgba(255,107,107,.35);color:var(--a1);}
-.count-badge.under{background:rgba(77,150,255,.12);border:1px solid rgba(77,150,255,.3);color:var(--a4);}
-.quick-btns{display:flex;gap:.38rem;flex-wrap:wrap;margin-bottom:.75rem;}
-.qbtn{font-size:.71rem;font-weight:700;background:transparent;border:1.5px solid var(--border);border-radius:8px;color:var(--muted);padding:.28em .75em;cursor:pointer;font-family:inherit;transition:all .15s;}
+.emotion-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.4rem;}
+.count-badge{display:inline-flex;border-radius:99px;padding:.2em .7em;font-size:.68rem;font-weight:700;}
+.count-badge.ok{background:rgba(107,203,119,.15);border:1px solid rgba(107,203,119,.3);color:var(--a3);}
+.count-badge.over{background:rgba(255,107,107,.15);border:1px solid rgba(255,107,107,.3);color:var(--a1);}
+.count-badge.under{background:rgba(77,150,255,.12);border:1px solid rgba(77,150,255,.25);color:var(--a4);}
+.quick-btns{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.7rem;}
+.qbtn{font-size:.68rem;font-weight:700;background:transparent;border:1.5px solid var(--border);border-radius:7px;color:var(--muted);padding:.25em .7em;cursor:pointer;font-family:inherit;transition:all .15s;}
 .qbtn:hover{border-color:var(--a4);color:var(--a4);}
+.phase-tabs{display:flex;gap:.45rem;margin-bottom:.9rem;}
+.phase-tab{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:11px;padding:.72rem .4rem;text-align:center;cursor:pointer;font-family:inherit;font-size:.76rem;font-weight:700;color:var(--muted);transition:all .18s;}
+.phase-tab:hover{border-color:var(--a4);} .phase-tab.active{border-color:var(--a4);background:rgba(77,150,255,.12);color:var(--a4);}
+.phase-tab .pt-icon{font-size:1rem;display:block;margin-bottom:.22rem;}
+.phase-panel{display:none;} .phase-panel.active{display:block;}
 
-.toggle-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.85rem;}
-.toggle-label{font-size:.82rem;color:var(--muted);}
-.switch{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0;}
-.switch input{opacity:0;width:0;height:0;}
-.slider-sw{position:absolute;inset:0;background:var(--border);border-radius:99px;cursor:pointer;transition:background .2s;}
-.slider-sw::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
-input:checked+.slider-sw{background:var(--a3);}
-input:checked+.slider-sw::before{transform:translateX(18px);}
+/* ANALYZE mode sub-tabs */
+.sub-tabs{display:flex;gap:.4rem;margin-bottom:1.2rem;}
+.sub-tab{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:11px;padding:.65rem .4rem;text-align:center;cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:700;color:var(--muted);transition:all .18s;}
+.sub-tab:hover{border-color:var(--a4);} .sub-tab.active{border-color:var(--a4);background:rgba(77,150,255,.12);color:var(--a4);}
+.sub-panel{display:none;} .sub-panel.active{display:block;}
 
-.btn-generate{width:100%;background:linear-gradient(135deg,var(--a1) 0%,var(--a2) 100%);color:#000;font-family:inherit;font-size:1.05rem;font-weight:900;border:none;border-radius:16px;padding:1.1rem;cursor:pointer;letter-spacing:.05em;transition:opacity .2s,transform .15s;margin-top:.5rem;}
-.btn-generate:hover{opacity:.9;transform:translateY(-2px);}
-.btn-generate:active{transform:translateY(0);}
+/* SAVED prompts picker */
+.saved-picker{background:var(--surface);border:1.5px solid var(--border);border-radius:11px;max-height:160px;overflow-y:auto;margin-top:.5rem;}
+.saved-picker-item{padding:.6rem 1rem;font-size:.78rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;display:flex;justify-content:space-between;align-items:center;}
+.saved-picker-item:last-child{border-bottom:none;}
+.saved-picker-item:hover{background:rgba(77,150,255,.07);}
+.saved-picker-item.selected{background:rgba(77,150,255,.12);color:var(--a4);font-weight:700;}
+.saved-picker-item .sp-tag{font-size:.65rem;color:var(--muted);background:var(--card);border-radius:99px;padding:.1em .5em;}
+.saved-picker-empty{padding:1.2rem;text-align:center;font-size:.78rem;color:var(--muted);}
 
-#stamp-output{display:none;}
-.output-card{background:var(--card);border:1.5px solid var(--a4);border-radius:20px;padding:1.8rem 2rem;}
-.out-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.6rem;}
-.output-title{font-family:'Zen Dots',sans-serif;font-size:.9rem;color:var(--a4);}
-.out-btns{display:flex;gap:.45rem;flex-wrap:wrap;}
-.phase-tabs{display:flex;gap:.5rem;margin-bottom:1.1rem;}
-.phase-tab{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:.82rem .5rem;text-align:center;cursor:pointer;transition:all .18s;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--muted);}
-.phase-tab:hover{border-color:var(--a4);color:var(--text);}
-.phase-tab.active{border-color:var(--a4);background:rgba(77,150,255,.13);color:var(--a4);}
-.phase-tab .pt-icon{font-size:1.1rem;display:block;margin-bottom:.28rem;}
-.btn-action{font-family:inherit;font-size:.78rem;font-weight:900;border:none;border-radius:8px;padding:.45em 1.1em;cursor:pointer;transition:all .18s;}
-.btn-action.copy{background:var(--a4);color:#000;}
-.btn-action.save{background:var(--a5);color:#000;}
-.btn-action.done{background:var(--a3);color:#000;}
-.btn-action:hover{opacity:.8;}
-.prompt-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.1rem;font-size:.82rem;line-height:1.75;color:#ccc;white-space:pre-wrap;word-break:break-word;max-height:440px;overflow-y:auto;}
-.prompt-box::-webkit-scrollbar{width:5px;}
-.prompt-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-.phase-panel{display:none;}
-.phase-panel.active{display:block;}
-.tip-box{background:rgba(77,150,255,.07);border:1px solid rgba(77,150,255,.2);border-radius:12px;padding:.85rem 1rem;font-size:.78rem;color:#aab5cc;margin-top:1rem;line-height:1.6;}
-.tip-box b{color:var(--a4);}
-.flow{margin-top:.55rem;display:flex;flex-wrap:wrap;gap:.38rem;align-items:center;font-size:.74rem;}
-.flow-step{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;padding:.18em .65em;color:var(--text);}
-.flow-arrow{color:var(--a2);font-weight:900;}
+/* age display */
+.age-display{text-align:center;font-family:'Zen Dots',sans-serif;font-size:.95rem;color:var(--a3);margin-top:.25rem;}
 
-/* ===== SAVED TAB ===== */
-.gas-setup-card{background:rgba(107,203,119,.06);border:1.5px solid rgba(107,203,119,.25);border-radius:18px;padding:1.4rem 1.6rem;margin-bottom:1.4rem;}
-.gas-setup-title{font-size:.7rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a3);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem;}
-.gas-url-row{display:flex;gap:.5rem;margin-bottom:.5rem;}
-.gas-url-row input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:monospace;font-size:.82rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;}
-.gas-url-row input:focus{border-color:var(--a3);}
-.gas-url-row input.ok{border-color:var(--a3);}
-.btn-connect{background:var(--a3);color:#000;font-family:inherit;font-size:.8rem;font-weight:900;border:none;border-radius:10px;padding:.55em 1.1em;cursor:pointer;white-space:nowrap;transition:opacity .18s;}
-.btn-connect:hover{opacity:.8;}
-.gas-hint{font-size:.72rem;color:#7acc8a;line-height:1.6;}
-.gas-hint a{color:var(--a3);}
-.gas-status{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:700;margin-top:.5rem;}
-.gas-status.ok{color:var(--a3);}
-.gas-status.err{color:var(--a1);}
-.gas-status.loading{color:var(--a2);}
+/* LIBRARY */
+.menu-card.c-library{--mc:#00d4ff;}
+.menu-card.c-library::before{background:rgba(0,212,255,.07);}
 
-.saved-add-card{background:var(--card);border:2px dashed var(--border);border-radius:20px;padding:1.5rem 2rem;margin-bottom:1.4rem;transition:border-color .2s;}
-.saved-add-card:focus-within{border-color:var(--a5);}
-.saved-add-title{font-size:.7rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a5);margin-bottom:.8rem;}
-.saved-add-row{display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap;}
-.saved-add-row input{flex:1;min-width:120px;}
-.saved-add-area{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.85rem;padding:.7rem 1rem;outline:none;resize:vertical;min-height:100px;transition:border-color .2s;}
-.saved-add-area:focus{border-color:var(--a5);}
-.saved-add-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;flex-wrap:wrap;gap:.5rem;}
-.btn-add-saved{background:var(--a5);color:#000;font-family:inherit;font-size:.82rem;font-weight:900;border:none;border-radius:10px;padding:.6em 1.3em;cursor:pointer;transition:opacity .18s;}
-.btn-add-saved:hover{opacity:.8;}
-.saved-note{font-size:.72rem;color:var(--muted);}
+/* サムネイル付きカード */
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.9rem;margin-top:.5rem;}
+@media(max-width:400px){.lib-grid{grid-template-columns:repeat(2,1fr);}}
+.lib-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
+.lib-card:hover{border-color:var(--a5);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3);}
+.lib-thumb{width:100%;height:130px;object-fit:cover;display:block;background:var(--surface);}
+.lib-thumb-empty{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface);}
+.lib-info{padding:.7rem .8rem;}
+.lib-title{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lib-tag{font-size:.64rem;background:rgba(199,125,255,.15);border:1px solid rgba(199,125,255,.25);color:var(--a5);border-radius:99px;padding:.1em .55em;display:inline-block;}
+.lib-date{font-size:.62rem;color:var(--muted);margin-top:.25rem;}
+.lib-actions{display:flex;gap:.3rem;padding:.5rem .8rem .7rem;border-top:1px solid var(--border);}
+.lib-btn{flex:1;font-family:inherit;font-size:.68rem;font-weight:700;border:none;border-radius:7px;padding:.35em .4em;cursor:pointer;transition:opacity .18s;}
+.lib-btn.copy{background:var(--a4);color:#000;}
+.lib-btn.del{background:rgba(255,107,107,.15);color:var(--a1);border:1px solid rgba(255,107,107,.25);}
+.lib-btn:hover{opacity:.75;}
+.lib-empty{text-align:center;color:var(--muted);padding:3rem 1rem;font-size:.88rem;line-height:1.8;}
+.lib-empty .em-icon{font-size:2.5rem;display:block;margin-bottom:.7rem;}
 
-.saved-toolbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;}
-.saved-toolbar input{flex:1;min-width:160px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.85rem;padding:.6rem 1rem;outline:none;transition:border-color .2s;}
-.saved-toolbar input:focus{border-color:var(--a5);}
-.btn-refresh{background:transparent;border:1.5px solid var(--border);border-radius:10px;color:var(--muted);font-family:inherit;font-size:.78rem;font-weight:700;padding:.5em .9em;cursor:pointer;transition:all .18s;}
-.btn-refresh:hover{border-color:var(--a3);color:var(--a3);}
+/* 追加フォーム */
+.lib-add-card{background:var(--card);border:2px dashed var(--border);border-radius:18px;padding:1.4rem 1.6rem;margin-bottom:1.2rem;transition:border-color .2s;}
+.lib-add-card:focus-within{border-color:var(--a5);}
+.lib-add-title{font-size:.68rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a5);margin-bottom:.8rem;}
+.lib-add-row{display:flex;gap:.5rem;margin-bottom:.55rem;flex-wrap:wrap;}
+.lib-add-row input{flex:1;min-width:120px;}
+.lib-add-thumb-wrap{display:flex;gap:.8rem;align-items:flex-start;margin-bottom:.6rem;}
+.lib-thumb-upload{width:80px;height:80px;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.5rem;transition:all .2s;flex-shrink:0;overflow:hidden;background:var(--surface);}
+.lib-thumb-upload:hover{border-color:var(--a5);}
+.lib-thumb-upload img{width:100%;height:100%;object-fit:cover;}
+.lib-add-area{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;color:var(--text);font-family:inherit;font-size:.83rem;padding:.65rem .9rem;outline:none;resize:vertical;min-height:90px;transition:border-color .2s;width:100%;}
+.lib-add-area:focus{border-color:var(--a5);}
+.lib-add-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.btn-lib-add{background:var(--a5);color:#000;font-family:inherit;font-size:.82rem;font-weight:900;border:none;border-radius:10px;padding:.58em 1.3em;cursor:pointer;transition:opacity .18s;}
+.btn-lib-add:hover{opacity:.8;}
 
-.saved-list{display:flex;flex-direction:column;gap:.9rem;}
-.saved-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem 1.4rem;transition:border-color .2s;}
-.saved-item:hover{border-color:var(--a5);}
-.saved-item-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem;margin-bottom:.6rem;}
-.saved-item-title{font-size:.88rem;font-weight:700;color:var(--text);}
-.saved-item-tag{display:inline-block;font-size:.65rem;background:rgba(199,125,255,.15);border:1px solid rgba(199,125,255,.3);color:var(--a5);border-radius:99px;padding:.15em .6em;margin-left:.4rem;}
-.saved-item-actions{display:flex;gap:.4rem;flex-shrink:0;}
-.btn-item{font-family:inherit;font-size:.7rem;font-weight:700;border:1px solid transparent;border-radius:7px;padding:.35em .8em;cursor:pointer;transition:opacity .18s;}
-.btn-item.copy{background:var(--a4);color:#000;}
-.btn-item.del{background:rgba(255,107,107,.12);color:var(--a1);border-color:rgba(255,107,107,.25);}
-.btn-item:hover{opacity:.72;}
-.saved-item-preview{font-size:.76rem;color:var(--muted);line-height:1.5;max-height:60px;overflow:hidden;cursor:pointer;position:relative;}
-.saved-item-preview.expanded{max-height:none;}
-.saved-item-preview::after{content:'▼ もっと見る';position:absolute;bottom:0;right:0;font-size:.65rem;color:var(--a5);background:var(--card);padding-left:.3em;}
-.saved-item-preview.expanded::after{display:none;}
-.saved-item-date{font-size:.65rem;color:var(--muted);margin-top:.5rem;}
-.saved-empty{text-align:center;color:var(--muted);padding:3rem 1rem;font-size:.88rem;line-height:1.8;}
-.saved-empty .em-icon{font-size:2.5rem;display:block;margin-bottom:.7rem;}
+/* モーダル */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;display:none;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;}
+.modal-img{width:100%;border-radius:12px;margin-bottom:1rem;}
+.modal-title{font-size:1rem;font-weight:900;margin-bottom:.5rem;}
+.modal-body{font-size:.8rem;color:var(--muted2);white-space:pre-wrap;line-height:1.7;max-height:200px;overflow-y:auto;background:var(--bg);border-radius:10px;padding:.8rem;}
+.modal-footer{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;}
+.modal-btn{flex:1;font-family:inherit;font-size:.82rem;font-weight:900;border:none;border-radius:10px;padding:.65em 1em;cursor:pointer;transition:opacity .18s;}
+.modal-btn.copy{background:var(--a4);color:#000;}
+.modal-btn.close{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+.modal-btn:hover{opacity:.8;}
 
-/* 写真解析ボックス */
-.photo-analyze-box{background:rgba(77,150,255,.06);border:1.5px solid rgba(77,150,255,.2);border-radius:16px;padding:1.1rem 1.2rem;margin-bottom:1.1rem;}
-.pa-title{font-size:.7rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--a4);margin-bottom:.8rem;}
-.pa-row{display:flex;gap:.8rem;margin-bottom:.8rem;flex-wrap:wrap;}
-.pa-upload{flex:0 0 100px;height:80px;background:var(--surface);border:2px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.72rem;color:var(--muted);text-align:center;padding:.4rem;}
-.pa-upload:hover{border-color:var(--a4);color:var(--a4);}
-.pa-upload.has-img{border-style:solid;border-color:var(--a4);padding:0;overflow:hidden;}
-.pa-upload.has-img img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
-.pa-options{flex:1;display:flex;flex-direction:column;gap:.35rem;}
-.pa-opt-label{font-size:.68rem;font-weight:700;color:var(--muted);margin-bottom:.1rem;}
-.pa-check{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--muted2);cursor:pointer;}
-.pa-check input{accent-color:var(--a4);width:14px;height:14px;}
-.pa-key-row{display:flex;gap:.5rem;}
-.pa-key-row input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;color:var(--text);padding:.55rem .8rem;outline:none;transition:border-color .2s;}
-.pa-key-row input:focus{border-color:var(--a4);}
-.btn-pa-analyze{background:var(--a4);color:#000;font-family:inherit;font-size:.8rem;font-weight:900;border:none;border-radius:10px;padding:.55em 1.1em;cursor:pointer;white-space:nowrap;transition:opacity .18s;}
-.btn-pa-analyze:disabled{opacity:.4;cursor:not-allowed;}
-.btn-pa-analyze:not(:disabled):hover{opacity:.8;}
-textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:.9rem;padding:.7rem 1rem;outline:none;transition:border-color .2s;resize:vertical;}
-textarea:focus{border-color:var(--a4);background:#1a1a28;}
+/* ツールバー */
+.lib-toolbar{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;}
+.lib-toolbar input{flex:1;min-width:150px;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;color:var(--text);font-family:inherit;font-size:.85rem;padding:.58rem .9rem;outline:none;}
+.lib-toolbar input:focus{border-color:var(--a5);}
 
-@media(max-width:580px){
-  .steps{flex-direction:column;}
-  .step{flex-direction:row;text-align:left;align-items:flex-start;gap:.6rem;}
-  .step-num{flex-shrink:0;margin:0;}
+@media(max-width:520px){
   .style-grid{grid-template-columns:repeat(2,1fr);}
-  .style-custom-wrap{flex-direction:column;}
+  .top-menu{grid-template-columns:repeat(2,1fr);}
 }
 </style>
 </head>
@@ -228,839 +250,1155 @@ textarea:focus{border-color:var(--a4);background:#1a1a28;}
 <div class="wrapper">
 
 <header>
-  <div class="badge">🎨 LINE Stamp Prompt Generator</div>
-  <h1>LINEスタンプ<br>プロンプトジェネレーター</h1>
-  <p class="subtitle">ChatGPTに貼るだけ！2フェーズで一覧確認→ZIP出力まで完結や✨</p>
+  <div class="logo">AI Prompt Maker</div>
+  <div class="logo-sub">ChatGPT に貼るだけ！なんでもプロンプトに変換するで✨</div>
 </header>
 
-<div class="nav-tabs">
-  <button class="nav-tab gen active" onclick="switchNav('gen')">✨ プロンプト生成</button>
-  <button class="nav-tab saved" onclick="switchNav('saved')">📚 プロンプト保存庫</button>
-</div>
-
-<!-- ===== 生成タブ ===== -->
-<div class="tab-content active" id="tab-gen">
-
-<div class="steps">
-  <div class="step"><div class="step-num">1</div><p>枚数・キャラ・スタイルを設定</p></div>
-  <div class="step"><div class="step-num">2</div><p>感情パターンを選択</p></div>
-  <div class="step"><div class="step-num">3</div><p>【Phase1】一覧プロンプトをChatGPTへ</p></div>
-  <div class="step"><div class="step-num">4</div><p>グリッド画像を確認してOK！</p></div>
-  <div class="step"><div class="step-num">5</div><p>【Phase2】分割ZIPプロンプトを貼る</p></div>
-</div>
-
-<div class="card">
-  <div class="card-title"><span class="icon">🔢</span> スタンプ枚数を選択</div>
-  <div class="count-selector">
-    <div class="count-btn" data-n="8"><span class="num">8</span><span class="lbl">ミニ</span></div>
-    <div class="count-btn" data-n="16"><span class="num">16</span><span class="lbl">スモール</span></div>
-    <div class="count-btn active" data-n="24"><span class="num">24</span><span class="lbl">スタンダード</span></div>
-    <div class="count-btn" data-n="32"><span class="num">32</span><span class="lbl">ラージ</span></div>
-    <div class="count-btn" data-n="40"><span class="num">40</span><span class="lbl">メガ</span></div>
+<!-- TOP MENU -->
+<div class="top-menu" style="grid-template-columns:repeat(2,1fr);">
+  <div class="menu-card c-illust" onclick="gotoPage('illust')">
+    <span class="mc-icon">🎨</span>
+    <div class="mc-title">イラスト生成</div>
+    <div class="mc-desc">画風・スタイル指定でプロンプト作成</div>
+  </div>
+  <div class="menu-card c-analyze" onclick="gotoPage('analyze')">
+    <span class="mc-icon">🔍</span>
+    <div class="mc-title">画像解析</div>
+    <div class="mc-desc">画像からプロンプトを自動抽出</div>
+  </div>
+  <div class="menu-card c-edit" onclick="gotoPage('edit')">
+    <span class="mc-icon">✏️</span>
+    <div class="mc-title">画像編集</div>
+    <div class="mc-desc">編集内容をプロンプトに変換</div>
+  </div>
+  <div class="menu-card c-stamp" onclick="gotoPage('stamp')">
+    <span class="mc-icon">💬</span>
+    <div class="mc-title">LINEスタンプ</div>
+    <div class="mc-desc">スタンプセット用プロンプト生成</div>
+  </div>
+  <div class="menu-card c-library" onclick="gotoPage('library')" style="grid-column:1/-1;">
+    <span class="mc-icon">📚</span>
+    <div class="mc-title">プロンプト保存庫</div>
+    <div class="mc-desc">サムネイル付きでプロンプトを管理</div>
   </div>
 </div>
 
-<div class="card">
-  <div class="card-title"><span class="icon">🎭</span> キャラクター設定</div>
-
-  <!-- キャラタイプ選択 -->
-  <div class="field">
-    <div class="attr-label">🐾 キャラクタータイプ</div>
-    <div class="attr-chips" id="char-type-chips">
-      <span class="chip chartype active" data-type="human">👤 人間</span>
-      <span class="chip chartype" data-type="pet">🐾 犬・猫・うさぎなど</span>
-      <span class="chip chartype" data-type="animal">🐘 その他の動物</span>
-      <span class="chip chartype" data-type="other">✨ その他（ロボット・妖精など）</span>
-    </div>
-  </div>
-
-  <!-- 写真から読み取るボタン -->
-  <div class="photo-analyze-box" id="photo-analyze-box">
-    <div class="pa-title">📸 写真からキャラを自動抽出（Gemini API）</div>
-    <div class="pa-row">
-      <div class="pa-upload" id="pa-upload" onclick="document.getElementById('pa-file').click()">
-        <span id="pa-upload-label">📷 写真をタップ／クリック</span>
-        <input type="file" id="pa-file" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">
-      </div>
-      <div class="pa-options">
-        <div class="pa-opt-label">抽出する情報</div>
-        <label class="pa-check"><input type="checkbox" id="pa-clothing" checked> 👗 服・アクセサリー</label>
-        <label class="pa-check"><input type="checkbox" id="pa-pose"> 🤸 ポーズをそのまま維持</label>
-        <label class="pa-check"><input type="checkbox" id="pa-hair" checked> 💇 髪型・毛並み</label>
-        <label class="pa-check"><input type="checkbox" id="pa-color" checked> 🎨 カラー・色合い</label>
-        <label class="pa-check"><input type="checkbox" id="pa-feature" checked> ✨ 特徴的なパーツ</label>
-      </div>
-    </div>
-    <div class="pa-key-row">
-      <input type="password" id="pa-apikey" placeholder="Gemini APIキー（AIza...）無料取得→ aistudio.google.com" style="flex:1;font-family:monospace;font-size:.78rem;">
-      <button class="btn-pa-analyze" id="btn-pa-analyze" onclick="analyzeCharPhoto()" disabled>🔍 解析</button>
-    </div>
-    <div id="pa-status" style="font-size:.75rem;color:var(--muted);margin-top:.4rem;display:none;"></div>
-  </div>
-
-  <div class="field">
-    <label>キャラクターの説明（必須）</label>
-    <textarea id="character" rows="3" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン、魔法使いの女の子&#10;写真から自動抽出することもできるで👆"></textarea>
-  </div>
-  <div class="field">
-    <label>キャラクター名（任意）</label>
-    <input type="text" id="charname" placeholder="例: もちこ、たろう">
-  </div>
-
-  <!-- 人間用パネル -->
-  <div id="panel-human">
+<!-- ==================== ILLUST PAGE ==================== -->
+<div class="page" id="page-illust">
+  <div class="card">
+    <div class="card-title"><span class="icon">🎨</span> イラスト生成プロンプト</div>
     <div class="field">
-      <div class="attr-label">👤 性別</div>
-      <div class="attr-chips" id="gender-chips">
-        <span class="chip gender active" data-val="">指定なし</span>
-        <span class="chip gender" data-val="male character, masculine, adult man">男性</span>
-        <span class="chip gender" data-val="female character, feminine, adult woman">女性</span>
-        <span class="chip gender" data-val="otokoyaku, Takarazuka male role, elegant androgynous woman dressed and performing as a man, sharp masculine features on female face, slicked-back hair, princely bearing">🌹 宝塚・男役</span>
-        <span class="chip gender" data-val="musumeyaku, Takarazuka female role, ultra-feminine woman, graceful, large expressive eyes, flowing hair, delicate features">🌸 宝塚・娘役</span>
-        <span class="chip gender" data-val="non-binary, gender-neutral character">ノンバイナリー</span>
+      <label>何を描きたい？（被写体・シーン）</label>
+      <input type="text" id="il-subject" placeholder="例: 夕暮れの街を歩く女性、猫と本棚、宇宙を漂う宇宙飛行士">
+    </div>
+    <div class="field">
+      <label>🎨 画風・アーティスト風</label>
+      <div class="chip-group" id="il-style-chips">
+        <span class="chip yellow" data-val="in the style of Salvador Dali, surrealist, melting clocks, dreamlike">ダリ風</span>
+        <span class="chip yellow" data-val="in the style of Van Gogh, thick impasto brushstrokes, swirling skies, vibrant colors">ゴッホ風</span>
+        <span class="chip yellow" data-val="in the style of Monet, impressionist, soft light, water reflections, painterly">モネ風</span>
+        <span class="chip yellow" data-val="in the style of Picasso, cubist, geometric fragmentation, multiple perspectives">ピカソ風</span>
+        <span class="chip yellow" data-val="Studio Ghibli style, soft warm illustration, detailed nature, magical atmosphere">ジブリ風</span>
+        <span class="chip yellow" data-val="ukiyo-e woodblock print style, Japanese traditional art, bold outlines, flat colors">浮世絵風</span>
+        <span class="chip yellow" data-val="art nouveau style, organic flowing lines, ornate decorative borders, Belle Epoque">アールヌーボー</span>
+        <span class="chip yellow" data-val="pop art style, bold flat colors, halftone dots, Andy Warhol inspired">ポップアート</span>
+        <span class="chip yellow" data-val="cyberpunk style, neon lights, dystopian cityscape, rain-soaked streets">サイバーパンク</span>
+        <span class="chip yellow" data-val="minimalist illustration, clean lines, negative space, simple shapes, monochrome">ミニマリスト</span>
+        <span class="chip yellow" data-val="baroque painting style, dramatic lighting, chiaroscuro, classical oil painting">バロック</span>
+        <span class="chip yellow" data-val="concept art, digital painting, detailed environment, cinematic lighting">コンセプトアート</span>
+      </div>
+      <input type="text" id="il-style-custom" style="margin-top:.6rem;" placeholder="その他（例: フェルメール風、鉛筆スケッチ、水墨画...）">
+    </div>
+    <div class="field">
+      <label>🖼️ 構図・カメラ</label>
+      <div class="chip-group">
+        <span class="chip blue" data-group="il-comp" data-val="wide shot, full scene">ワイドショット</span>
+        <span class="chip blue" data-group="il-comp" data-val="close-up portrait">クローズアップ</span>
+        <span class="chip blue" data-group="il-comp" data-val="bird's eye view, top down">俯瞰</span>
+        <span class="chip blue" data-group="il-comp" data-val="low angle, looking up">ローアングル</span>
+        <span class="chip blue" data-group="il-comp" data-val="symmetrical composition">シンメトリー</span>
+        <span class="chip blue" data-group="il-comp" data-val="rule of thirds composition">三分割</span>
       </div>
     </div>
     <div class="field">
-      <div class="attr-label">🎂 年齢イメージ</div>
-      <input type="range" class="age-range" id="age-range" min="5" max="80" value="25" oninput="updateAgeDisplay()">
-      <div class="age-display" id="age-display">25歳ごろ</div>
-      <div class="range-labels"><span>子ども(5)</span><span>ティーン(15)</span><span>青年(25)</span><span>中年(45)</span><span>シニア(80)</span></div>
-    </div>
-    <div class="field" style="margin-bottom:0">
-      <div class="attr-label">⚡ 中性度（左:男性的 ↔ 右:女性的）</div>
-      <div class="slider-track-wrap">
-        <div class="slider-track-bg"></div>
-        <input type="range" class="androgyny-range" id="androgyny-range" min="0" max="100" value="50">
+      <label>💡 ライティング・雰囲気</label>
+      <div class="chip-group">
+        <span class="chip purple" data-group="il-light" data-val="golden hour lighting, warm sunset glow">夕暮れ・ゴールデンアワー</span>
+        <span class="chip purple" data-group="il-light" data-val="dramatic cinematic lighting, rim light">シネマティック</span>
+        <span class="chip purple" data-group="il-light" data-val="soft diffused natural light, overcast">ソフトナチュラル</span>
+        <span class="chip purple" data-group="il-light" data-val="neon glow, dark night, colorful artificial lights">ネオン・夜</span>
+        <span class="chip purple" data-group="il-light" data-val="moonlit night, cool blue tones, mysterious">月明かり・神秘的</span>
+        <span class="chip purple" data-group="il-light" data-val="backlit silhouette, contre-jour">逆光・シルエット</span>
       </div>
-      <div class="range-labels"><span>💙 男性的</span><span>⚡ 中性</span><span>💗 女性的</span></div>
-      <div style="font-size:.7rem;color:var(--muted);margin-top:.4rem">性別×中性度で「男役っぽい女性」「女性っぽい男性」なども細かく指定できるで</div>
     </div>
-  </div>
-
-  <!-- ペット用パネル -->
-  <div id="panel-pet" style="display:none">
     <div class="field">
-      <div class="attr-label">🐾 性別</div>
-      <div class="attr-chips">
-        <span class="chip petgender active" data-val="">指定なし</span>
-        <span class="chip petgender" data-val="male, boy">オス（男の子）</span>
-        <span class="chip petgender" data-val="female, girl">メス（女の子）</span>
+      <label>📐 出力比率</label>
+      <div class="chip-group">
+        <span class="chip green active" data-group="il-ratio" data-val="aspect ratio 1:1, square format">1:1 正方形</span>
+        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 16:9, widescreen landscape">16:9 横長</span>
+        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 9:16, vertical portrait format">9:16 縦長</span>
+        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 4:3">4:3</span>
+        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 2:3, portrait">2:3 ポートレート</span>
       </div>
     </div>
-    <div class="field" style="margin-bottom:0">
-      <div class="attr-label">📅 年齢イメージ</div>
-      <div class="attr-chips">
-        <span class="chip petage active" data-val="very young puppy or kitten, baby animal, tiny and chubby">赤ちゃん・子</span>
-        <span class="chip petage" data-val="young adult animal, energetic and playful">若い・元気</span>
-        <span class="chip petage" data-val="mature adult animal, calm and dignified">大人・落ち着き</span>
-        <span class="chip petage" data-val="elderly animal, senior, gentle and wise looking">シニア・おじいちゃん風</span>
+    <div class="field">
+      <label>その他追加指示（任意）</label>
+      <textarea id="il-extra" placeholder="例: 高解像度、8K、細部まで描き込んで、背景なし、など"></textarea>
+    </div>
+    <button class="btn-primary yellow" onclick="genIllust()">✨ プロンプトを生成する</button>
+  </div>
+  <div class="output-section" id="il-output">
+    <div class="output-card">
+      <div class="output-header">
+        <div class="output-title">🎨 イラスト生成プロンプト</div>
+        <button class="btn-copy" id="il-copy" onclick="copyOutput('il-result','il-copy')">コピー</button>
       </div>
-    </div>
-  </div>
-
-  <!-- その他動物・その他はシンプルに説明だけ -->
-  <div id="panel-animal" style="display:none">
-    <div style="font-size:.78rem;color:var(--muted);padding:.5rem 0">🐘 動物の種類はキャラクターの説明欄に書いてや！性別・年齢の細かい指定は不要なことが多いで。</div>
-  </div>
-  <div id="panel-other" style="display:none">
-    <div style="font-size:.78rem;color:var(--muted);padding:.5rem 0">✨ キャラクターの説明欄に詳しく書いてや！（例: 青いロボット、森の妖精、ドラゴンなど）</div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-title"><span class="icon">🎨</span> アートスタイル</div>
-  <div class="style-grid" id="style-grid">
-    <div class="style-card active" data-val="cute kawaii anime illustration style, clean linework, bright colors"><span class="s-icon">✨</span><span class="s-name">かわいいアニメ</span><span class="s-desc">クリーンな線画・鮮やか</span></div>
-    <div class="style-card" data-val="chibi super-deformed character style, big head small body, pastel colors"><span class="s-icon">🥰</span><span class="s-name">ちびキャラ</span><span class="s-desc">頭でっかち・丸くてかわいい</span></div>
-    <div class="style-card" data-val="flat vector sticker illustration, bold outlines, minimal shading"><span class="s-icon">📐</span><span class="s-name">フラットベクター</span><span class="s-desc">シンプル・モダンな線画</span></div>
-    <div class="style-card" data-val="soft watercolor painting style, loose brushwork, gentle washes, paper texture"><span class="s-icon">🎨</span><span class="s-name">水彩画風</span><span class="s-desc">にじみ・やわらかな雰囲気</span></div>
-    <div class="style-card" data-val="crayon hand-drawn illustration style, rough textured strokes, childlike warmth"><span class="s-icon">🖍️</span><span class="s-name">クレヨン画風</span><span class="s-desc">ざらざら・温かみのある手書き</span></div>
-    <div class="style-card" data-val="colored pencil illustration style, visible hatching strokes, soft blended colors"><span class="s-icon">✏️</span><span class="s-name">色鉛筆風</span><span class="s-desc">繊細なタッチ・柔らかな色合い</span></div>
-    <div class="style-card" data-val="monochrome black and white ink illustration, bold contrast, expressive linework"><span class="s-icon">⬛</span><span class="s-name">モノクロ</span><span class="s-desc">白黒・インク・コントラスト強め</span></div>
-    <div class="style-card" data-val="retro pixel art style, 32x32 sprite aesthetic, limited color palette"><span class="s-icon">👾</span><span class="s-name">ドット絵</span><span class="s-desc">レトロゲーム風・ドットアート</span></div>
-    <div class="style-card" data-val="Japanese sumi-e ink wash painting style, minimal brushstrokes, zen aesthetic"><span class="s-icon">🖌️</span><span class="s-name">水墨画風</span><span class="s-desc">墨・かすれ・禅テイスト</span></div>
-    <div class="style-card" data-val="sticker with thick bold black outline, highly saturated pop colors, comic book energy"><span class="s-icon">💥</span><span class="s-name">太線ポップ</span><span class="s-desc">ビビッド・コミック・インパクト大</span></div>
-    <div class="style-card" data-val="oil painting style illustration, rich textured impasto brushstrokes, deep saturated colors"><span class="s-icon">🖼️</span><span class="s-name">油絵風</span><span class="s-desc">厚塗り・重厚感・クラシック</span></div>
-    <div class="style-card" data-val="hyperrealistic photorealistic digital render, subsurface scattering, ray-traced lighting"><span class="s-icon">📷</span><span class="s-name">フォトリアル</span><span class="s-desc">写真に限りなく近い超リアル</span></div>
-    <div class="style-card" data-val="3D cartoon clay render, smooth clay-like surfaces, soft global illumination, Pixar-inspired"><span class="s-icon">🎲</span><span class="s-name">3Dクレイ風</span><span class="s-desc">ピクサー風・ぬるっとした質感</span></div>
-    <div class="style-card" data-val="retro 1980s anime style, limited cel animation palette, VHS scan lines aesthetic"><span class="s-icon">📼</span><span class="s-name">レトロアニメ（80s）</span><span class="s-desc">セル画・VHS・昭和レトロ</span></div>
-    <div class="style-card" data-val="loose doodle sketch style, hand-drawn pen lines, sketchbook feel, minimal color fills"><span class="s-icon">📓</span><span class="s-name">スケッチ落書き風</span><span class="s-desc">手書きノート・ゆるゆる感</span></div>
-    <div class="style-card" data-val="neon glow dark illustration, glowing outlines, synthwave cyberpunk aesthetic"><span class="s-icon">🌈</span><span class="s-name">ネオン・サイバーパンク</span><span class="s-desc">蛍光・光の線・未来的ダーク</span></div>
-    <div class="style-card" data-val="__custom__"><span class="s-icon">✏️</span><span class="s-name">その他（自由入力）</span><span class="s-desc">好きなスタイルを入力</span></div>
-  </div>
-  <div class="style-custom-wrap" id="custom-style-wrap">
-    <input type="text" id="custom-style-input" placeholder="例: ukiyo-e woodblock print style, traditional Japanese art">
-    <button class="btn-sm-purple" onclick="applyCustomStyle()">適用</button>
-  </div>
-</div>
-
-<div class="card">
-  <div class="emotion-header">
-    <div class="card-title" style="margin-bottom:0"><span class="icon">😄</span> 感情・表現パターン</div>
-    <span class="count-badge under" id="emotion-count">0 / 24 選択中</span>
-  </div>
-  <div class="quick-btns">
-    <button class="qbtn" onclick="selectAll()">すべて選択</button>
-    <button class="qbtn" onclick="clearAll()">クリア</button>
-    <button class="qbtn" onclick="autoSelect()">🎲 おすすめ自動選択</button>
-  </div>
-  <div class="tag-group" id="emotion-tags">
-    <span class="tag" data-val="happy, big smile, joy">😊 うれしい</span>
-    <span class="tag" data-val="crying, sad tears, heartbroken">😢 かなしい</span>
-    <span class="tag" data-val="angry, furious, steam from head">😠 おこ</span>
-    <span class="tag" data-val="laughing hard, tears of laughter">🤣 爆笑</span>
-    <span class="tag" data-val="surprised, shocked, jaw drop">😲 びっくり</span>
-    <span class="tag" data-val="embarrassed, blushing, shy">😳 はずかしい</span>
-    <span class="tag" data-val="sleepy, tired, heavy eyelids, yawning">😴 ねむい</span>
-    <span class="tag" data-val="cool, confident, smug">😎 クール</span>
-    <span class="tag" data-val="in love, heart eyes, floating hearts">🥰 ラブラブ</span>
-    <span class="tag" data-val="thumbs up, good job, approval">👍 グッド</span>
-    <span class="tag" data-val="thumbs down, disapproval, nope">👎 ダメ</span>
-    <span class="tag" data-val="waving hello, friendly greeting">👋 あいさつ</span>
-    <span class="tag" data-val="celebrating, party popper, hurray">🎉 やったー！</span>
-    <span class="tag" data-val="sweating nervously, anxious">😅 あせあせ</span>
-    <span class="tag" data-val="thinking deeply, pondering">🤔 かんがえてる</span>
-    <span class="tag" data-val="eating delicious food, yummy">😋 たべてる</span>
-    <span class="tag" data-val="running fast, in a hurry, late">🏃 いそいでる</span>
-    <span class="tag" data-val="sleeping soundly, snoring, ZZZ">💤 おやすみ</span>
-    <span class="tag" data-val="OK hand gesture, affirmative">🙆 オッケー</span>
-    <span class="tag" data-val="clapping hands, applause, well done">👏 パチパチ</span>
-    <span class="tag" data-val="texting on smartphone, distracted">📱 スマホ中</span>
-    <span class="tag" data-val="working hard, focused at laptop">💻 がんばる</span>
-    <span class="tag" data-val="drinking tea or coffee, cozy relaxing">☕ まったり</span>
-    <span class="tag" data-val="begging, please, hands together, puppy eyes">🙏 おねがい</span>
-    <span class="tag" data-val="disgusted, gross, eww face">🤢 きもい</span>
-    <span class="tag" data-val="shrugging, I don't know, whatever">🤷 しらんけど</span>
-    <span class="tag" data-val="listening to music with headphones, vibing">🎧 音楽中</span>
-    <span class="tag" data-val="money eyes, rich, excited about wealth">🤑 お金！</span>
-    <span class="tag" data-val="sick, under the weather, cold, sneezing">🤒 かぜっぴき</span>
-    <span class="tag" data-val="exercising, working out, pumped up, flexing">💪 きんにく</span>
-    <span class="tag" data-val="reading a book, studious, learning">📚 べんきょう</span>
-    <span class="tag" data-val="taking a selfie, posing for photo, peace sign">🤳 じどり</span>
-    <span class="tag" data-val="dancing, spinning, having fun, disco vibes">💃 おどってる</span>
-    <span class="tag" data-val="waiting, bored, tapping foot, impatient">⏳ まってる</span>
-    <span class="tag" data-val="crying ugly, sobbing uncontrollably">😭 号泣</span>
-    <span class="tag" data-val="speechless, blank stare, stunned silence">😶 ぼーっと</span>
-    <span class="tag" data-val="overwhelmed, too much to handle">🤯 むり！</span>
-    <span class="tag" data-val="giving a gift, presenting something nicely">🎁 プレゼント</span>
-    <span class="tag" data-val="heartbroken, sad love, clutching chest">💔 しつれん</span>
-    <span class="tag" data-val="triumphant, fist pump, victory pose">✊ やってやる</span>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-title"><span class="icon">✨</span> オプション設定</div>
-  <div class="field">
-    <label>テキスト吹き出し（任意）</label>
-    <input type="text" id="text-overlay" placeholder="例: ありがとう！／おつかれ〜／よろしく">
-  </div>
-  <div class="field">
-    <label>追加デザインオプション</label>
-    <div class="tag-group" id="extra-tags">
-      <span class="tag extra" data-val="add simple Japanese text label matching each emotion">日本語テキスト追加</span>
-      <span class="tag extra" data-val="add decorative border/frame around each sticker">フレーム装飾</span>
-      <span class="tag extra" data-val="add sparkles and star effects around character">キラキラエフェクト</span>
-      <span class="tag extra" data-val="soft pastel color palette throughout">パステルカラー</span>
-      <span class="tag extra" data-val="bold vivid saturated colors">ビビッドカラー</span>
-      <span class="tag extra" data-val="add small themed props or accessories for each emotion">小物・アクセサリー</span>
-      <span class="tag extra" data-val="add soft drop shadow behind character">ドロップシャドウ</span>
-      <span class="tag extra" data-val="rounded cute body proportions, extra chubby and soft">まるまるボディ</span>
-    </div>
-  </div>
-  <div class="field">
-    <label>カスタム追加指示（任意）</label>
-    <textarea id="custom" placeholder="例: 全体的に丸みのあるかわいいデザインで統一して、紫系の色は使わないで、など"></textarea>
-  </div>
-  <div class="toggle-row">
-    <label class="switch"><input type="checkbox" id="toggle-size" checked><span class="slider-sw"></span></label>
-    <span class="toggle-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
-  </div>
-  <button class="btn-generate" onclick="generatePrompts()">✨ 2フェーズ プロンプトを生成する！</button>
-</div>
-
-<div id="stamp-output">
-  <div class="output-card">
-    <div class="out-header">
-      <div class="output-title" id="output-title">📋 生成されたプロンプト</div>
-      <div class="out-btns">
-        <button class="btn-action save" id="btn-save" onclick="saveCurrentPrompt()">💾 スプシに保存</button>
-        <button class="btn-action copy" id="copy-btn" onclick="copyPrompt()">コピーする</button>
-      </div>
-    </div>
-    <div class="phase-tabs">
-      <button class="phase-tab active" id="tab1" onclick="switchTab(1)"><span class="pt-icon">🖼️</span>Phase 1<br><span style="font-size:.66rem;font-weight:400">一覧グリッド生成</span></button>
-      <button class="phase-tab" id="tab2" onclick="switchTab(2)"><span class="pt-icon">✂️</span>Phase 2<br><span style="font-size:.66rem;font-weight:400">確認後 → 分割ZIP</span></button>
-    </div>
-    <div class="phase-panel active" id="panel1">
-      <div class="prompt-box" id="prompt-phase1"></div>
-      <div class="tip-box">💡 <b>Phase 1：</b>ChatGPT（GPT-4o）に貼って全スタンプを<b>1枚のグリッド画像</b>で確認！
-        <div class="flow"><span class="flow-step">コピー</span><span class="flow-arrow">→</span><span class="flow-step">ChatGPTに貼る</span><span class="flow-arrow">→</span><span class="flow-step">一覧グリッド画像が届く</span><span class="flow-arrow">→</span><span class="flow-step">OKならPhase2へ！</span></div>
-      </div>
-    </div>
-    <div class="phase-panel" id="panel2">
-      <div class="prompt-box" id="prompt-phase2"></div>
-      <div class="tip-box">💡 <b>Phase 2：</b>同じチャットに貼るだけ！分割→透明PNG→<b>ZIP</b>でダウンロード！
-        <div class="flow"><span class="flow-step">Phase1でOK確認</span><span class="flow-arrow">→</span><span class="flow-step">このプロンプトをコピー</span><span class="flow-arrow">→</span><span class="flow-step">同じチャットに貼る</span><span class="flow-arrow">→</span><span class="flow-step">line_stamps.zip ダウンロード！</span></div>
-      </div>
+      <div class="prompt-box" id="il-result"></div>
+      <div class="tip-box">💡 <b>使い方：</b>ChatGPT（GPT-4o）またはDALL-E・Midjourneyに貼り付けてや！</div>
     </div>
   </div>
 </div>
-</div><!-- /tab-gen -->
 
-<!-- ===== 保存タブ ===== -->
-<div class="tab-content" id="tab-saved">
+<!-- ==================== ANALYZE PAGE ==================== -->
+<div class="page" id="page-analyze">
 
-  <!-- GAS設定 -->
-  <div class="gas-setup-card">
-    <div class="gas-setup-title">🔗 Googleスプレッドシート連携設定</div>
-    <div class="gas-url-row">
-      <input type="text" id="gas-url-input" placeholder="GAS WebアプリのURL（https://script.google.com/macros/s/...）" oninput="onGasUrlChange()">
-      <button class="btn-connect" onclick="testConnection()">接続テスト</button>
-    </div>
-    <div id="gas-status"></div>
-    <div class="gas-hint" style="margin-top:.7rem">
-      📋 <b>設定手順：</b><br>
-      1. <a href="https://sheets.new" target="_blank">Googleスプレッドシートを新規作成</a> する<br>
-      2. 「拡張機能」→「Apps Script」を開く<br>
-      3. ダウンロードした <b>gas-code.gs</b> の中身を全部貼り付けて保存<br>
-      4. 「デプロイ」→「新しいデプロイ」→ 種類:ウェブアプリ、アクセス:<b>全員</b> に設定<br>
-      5. 表示されたURLをこの欄に貼り付けて「接続テスト」をクリック！
-    </div>
+  <!-- APIキー -->
+  <div class="apikey-bar">
+    <label>🔑 Gemini API</label>
+    <input type="password" id="az-apikey" placeholder="AIza... （無料）" oninput="onAzKeyChange()">
+    <a href="https://aistudio.google.com/app/apikey" target="_blank">無料取得 →</a>
   </div>
 
-  <!-- 手動追加 -->
-  <div class="saved-add-card">
-    <div class="saved-add-title">📥 プロンプトを手動で追加</div>
-    <div class="saved-add-row">
-      <input type="text" id="new-prompt-title" placeholder="タイトル（例: もちこちゃん24枚セット）">
-      <input type="text" id="new-prompt-tag" placeholder="タグ（例: アニメ風）" style="max-width:140px;">
-    </div>
-    <textarea class="saved-add-area" id="new-prompt-body" placeholder="プロンプトをここに貼り付けてね。SNSで拾ったやつでもOK！"></textarea>
-    <div class="saved-add-footer">
-      <button class="btn-add-saved" onclick="addSavedPrompt()">💾 保存する</button>
-      <span class="saved-note">スプシに直接保存されるで</span>
-    </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSubTab('az','illust-az')">🖼️ イラスト画像解析</button>
+    <button class="sub-tab" onclick="switchSubTab('az','person-az')">👤 人物写真解析</button>
   </div>
 
-  <!-- 一覧 -->
-  <div class="saved-toolbar">
-    <input type="text" id="search-input" placeholder="🔍 タイトルやタグで検索..." oninput="renderSaved()">
-    <button class="btn-refresh" onclick="loadFromGas()">🔄 再読み込み</button>
-  </div>
-  <div class="saved-list" id="saved-list">
-    <div class="saved-empty"><span class="em-icon">🔗</span>まずスプレッドシートと接続してや！<br>上の設定欄でGASのURLを入力してな。</div>
-  </div>
-</div>
-
-</div>
-<script>
-// ===== NAV =====
-function switchNav(tab) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelector('.nav-tab.' + tab).classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'saved') { loadFromGas(); }
-}
-
-// ===== GAS =====
-let gasUrl = '';
-let cachedPrompts = [];
-
-function getGasUrl() { return document.getElementById('gas-url-input').value.trim(); }
-
-function onGasUrlChange() {
-  const url = getGasUrl();
-  try { localStorage.setItem('gas_url', url); } catch(e) {}
-}
-
-async function testConnection() {
-  const url = getGasUrl();
-  if (!url) { setGasStatus('URLを入力してや！', 'err'); return; }
-  setGasStatus('接続テスト中...', 'loading');
-  try {
-    const res = await fetch(url + '?action=getAll', { redirect: 'follow' });
-    const text = await res.text();
-    const data = JSON.parse(text);
-    if (data.ok) {
-      setGasStatus('✅ 接続成功！' + (data.data||[]).length + '件のデータが見つかったで！', 'ok');
-      cachedPrompts = data.data || [];
-      renderSaved();
-    } else {
-      setGasStatus('❌ エラー: ' + (data.error || '不明'), 'err');
-    }
-  } catch(e) {
-    setGasStatus('❌ 接続失敗: ' + e.message, 'err');
-  }
-}
-
-function setGasStatus(msg, type) {
-  const el = document.getElementById('gas-status');
-  el.innerHTML = `<div class="gas-status ${type}">${msg}</div>`;
-}
-
-async function loadFromGas() {
-  const url = getGasUrl();
-  if (!url) return;
-  setGasStatus('読み込み中...', 'loading');
-  try {
-    const res = await fetch(url + '?action=getAll', { redirect: 'follow' });
-    const text = await res.text();
-    const data = JSON.parse(text);
-    if (data.ok) {
-      cachedPrompts = data.data || [];
-      setGasStatus('✅ ' + cachedPrompts.length + '件読み込み完了！', 'ok');
-      renderSaved();
-    } else {
-      setGasStatus('❌ エラー: ' + (data.error || '不明'), 'err');
-    }
-  } catch(e) {
-    setGasStatus('❌ 読み込み失敗: ' + e.message, 'err');
-  }
-}
-
-async function gasRequest(params) {
-  const url = getGasUrl();
-  if (!url) { alert('スプシURLを設定してや！「プロンプト保存庫」タブで設定できるで。'); return null; }
-
-  if (params.action === 'save') {
-    const res = await fetch(url, {
-      method: 'POST',
-      redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'save', data: JSON.parse(params.data) })
-    });
-    const text = await res.text();
-    return JSON.parse(text);
-  } else {
-    const qs = new URLSearchParams(params).toString();
-    const res = await fetch(url + '?' + qs, { redirect: 'follow' });
-    const text = await res.text();
-    return JSON.parse(text);
-  }
-}
-
-// ===== SAVE =====
-async function saveCurrentPrompt() {
-  if (!lastP1) return;
-  const btn = document.getElementById('btn-save');
-  btn.textContent = '保存中...'; btn.disabled = true;
-  const data = { id: Date.now(), title: lastTitle, tag: '', body: lastP1 + '\n\n---Phase2---\n\n' + lastP2, date: new Date().toLocaleDateString('ja-JP') };
-  try {
-    const result = await gasRequest({ action: 'save', data: JSON.stringify(data) });
-    if (result && result.ok) {
-      btn.textContent = '✓ 保存済み！'; btn.classList.add('done');
-      cachedPrompts.unshift(data);
-    } else {
-      btn.textContent = '❌ 失敗';
-    }
-  } catch(e) {
-    btn.textContent = '❌ エラー';
-  } finally {
-    btn.disabled = false;
-    setTimeout(() => { btn.textContent = '💾 スプシに保存'; btn.classList.remove('done'); }, 2500);
-  }
-}
-
-async function addSavedPrompt() {
-  const title = document.getElementById('new-prompt-title').value.trim();
-  const tag = document.getElementById('new-prompt-tag').value.trim();
-  const body = document.getElementById('new-prompt-body').value.trim();
-  if (!title || !body) { alert('タイトルとプロンプトを入力してや！'); return; }
-  const data = { id: Date.now(), title, tag, body, date: new Date().toLocaleDateString('ja-JP') };
-  const result = await gasRequest({ action: 'save', data: JSON.stringify(data) });
-  if (result && result.ok) {
-    document.getElementById('new-prompt-title').value = '';
-    document.getElementById('new-prompt-tag').value = '';
-    document.getElementById('new-prompt-body').value = '';
-    cachedPrompts.unshift(data);
-    renderSaved();
-    alert('保存したで！');
-  } else {
-    alert('保存に失敗したで。GASのURL設定を確認してや。');
-  }
-}
-
-async function deleteSaved(id) {
-  if (!confirm('このプロンプトを削除してもええ？')) return;
-  const result = await gasRequest({ action: 'delete', id });
-  if (result && result.ok) {
-    cachedPrompts = cachedPrompts.filter(p => String(p.id) !== String(id));
-    renderSaved();
-  } else {
-    alert('削除に失敗したで。');
-  }
-}
-
-function copySaved(id) {
-  const p = cachedPrompts.find(p => String(p.id) === String(id));
-  if (!p) return;
-  navigator.clipboard.writeText(p.body).then(() => {
-    const btn = document.querySelector('[data-copy="' + id + '"]');
-    if (btn) { const o = btn.textContent; btn.textContent = 'コピー済 ✓'; setTimeout(() => btn.textContent = o, 2000); }
-  });
-}
-
-function toggleExpand(id) {
-  const el = document.querySelector('[data-preview="' + id + '"]');
-  if (el) el.classList.toggle('expanded');
-}
-
-function renderSaved() {
-  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
-  const arr = cachedPrompts.filter(p => !q || p.title.toLowerCase().includes(q) || (p.tag||'').toLowerCase().includes(q) || p.body.toLowerCase().includes(q));
-  const list = document.getElementById('saved-list');
-  if (arr.length === 0) {
-    const noGas = !getGasUrl();
-    list.innerHTML = `<div class="saved-empty"><span class="em-icon">${noGas ? '🔗' : '📭'}</span>${noGas ? 'まずスプレッドシートと接続してや！<br>上の設定欄でGASのURLを入力してな。' : q ? '検索結果が見つからへんかったで。' : 'まだ保存されてへんで！<br>プロンプトを生成して「💾 スプシに保存」を押すか、上の入力欄から追加してや。'}</div>`;
-    return;
-  }
-  list.innerHTML = arr.map(p => `
-    <div class="saved-item">
-      <div class="saved-item-header">
-        <div><span class="saved-item-title">${escHtml(p.title)}</span>${p.tag ? `<span class="saved-item-tag">${escHtml(p.tag)}</span>` : ''}</div>
-        <div class="saved-item-actions">
-          <button class="btn-item copy" data-copy="${p.id}" onclick="copySaved(${p.id})">📋 コピー</button>
-          <button class="btn-item del" onclick="deleteSaved(${p.id})">🗑️ 削除</button>
+  <!-- イラスト解析 -->
+  <div class="sub-panel active" id="sub-illust-az">
+    <div class="card">
+      <div class="card-title"><span class="icon">🖼️</span> イラスト画像 → テイスト抽出</div>
+      <div class="field">
+        <label>解析したいイラスト画像をアップ</label>
+        <div class="upload-box" id="az1-upload" onclick="triggerUpload('az1-file')">
+          <span class="upload-icon">🖼️</span>
+          <div class="upload-text">タップ／クリックで画像を選択<br><b>JPG・PNG・WEBP</b></div>
+          <input type="file" id="az1-file" accept="image/*" style="display:none" onchange="loadUpload(event,'az1-upload','az1')">
         </div>
       </div>
-      <div class="saved-item-preview" data-preview="${p.id}" onclick="toggleExpand(${p.id})">${escHtml(p.body.slice(0, 120))}${p.body.length > 120 ? '…' : ''}</div>
-      <div class="saved-item-date">📅 ${p.date}</div>
-    </div>`).join('');
+      <div class="field">
+        <label>抽出する情報</label>
+        <div class="chip-group">
+          <span class="chip blue active" data-group="az1-extract" data-val="art style and technique">画風・技法</span>
+          <span class="chip blue active" data-group="az1-extract" data-val="color palette and mood">色彩・ムード</span>
+          <span class="chip blue active" data-group="az1-extract" data-val="composition and framing">構図</span>
+          <span class="chip blue" data-group="az1-extract" data-val="character design details">キャラデザイン</span>
+          <span class="chip blue" data-group="az1-extract" data-val="background and environment">背景・環境</span>
+          <span class="chip blue" data-group="az1-extract" data-val="lighting and atmosphere">ライティング</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>このイラストで描きたいもの（任意）</label>
+        <input type="text" id="az1-target" placeholder="例: 同じテイストで猫を描いてほしい、別のキャラで同じ雰囲気で">
+      </div>
+      <button class="btn-primary" id="az1-btn" onclick="analyzeIllust()" disabled>🔍 解析してプロンプト生成</button>
+      <div class="loading-bar" id="az1-loading"><div class="loading-fill"></div></div>
+      <div class="status-line" id="az1-status"></div>
+      <div class="err-box" id="az1-err"></div>
+    </div>
+    <div class="output-section" id="az1-output">
+      <div class="output-card">
+        <div class="output-header">
+          <div class="output-title">🖼️ イラストテイスト プロンプト</div>
+          <button class="btn-copy" id="az1-copy" onclick="copyOutput('az1-result','az1-copy')">コピー</button>
+        </div>
+        <div class="prompt-box" id="az1-result"></div>
+        <div class="tip-box">💡 このプロンプトをChatGPTに貼って「この通りのテイストで〇〇を描いて」と追加するとええで！</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 人物解析 -->
+  <div class="sub-panel" id="sub-person-az">
+    <div class="card">
+      <div class="card-title"><span class="icon">👤</span> 人物写真 → キャラクタープロンプト</div>
+      <div class="field">
+        <label>解析したい人物写真をアップ</label>
+        <div class="upload-box" id="az2-upload" onclick="triggerUpload('az2-file')">
+          <span class="upload-icon">📸</span>
+          <div class="upload-text">タップ／クリックで画像を選択<br><b>JPG・PNG・WEBP</b></div>
+          <input type="file" id="az2-file" accept="image/*" style="display:none" onchange="loadUpload(event,'az2-upload','az2')">
+        </div>
+      </div>
+      <div class="field">
+        <label>抽出する情報</label>
+        <div class="chip-group">
+          <span class="chip blue active" data-group="az2-extract" data-val="face features, eye color, facial structure">顔の特徴・目の色</span>
+          <span class="chip blue active" data-group="az2-extract" data-val="hair style and hair color">髪型・髪色</span>
+          <span class="chip blue active" data-group="az2-extract" data-val="clothing and outfit details">服装・コーデ</span>
+          <span class="chip blue active" data-group="az2-extract" data-val="accessories and props">アクセサリー・小物</span>
+          <span class="chip blue" data-group="az2-extract" data-val="body type and proportions">体型・プロポーション</span>
+          <span class="chip blue" data-group="az2-extract" data-val="pose and body language">ポーズ（そのまま維持）</span>
+          <span class="chip blue" data-group="az2-extract" data-val="skin tone and texture">肌の色・質感</span>
+        </div>
+      </div>
+
+      <!-- 変更指示 -->
+      <div class="field">
+        <label>✏️ 変更したい部分（任意）</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+          <div>
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">髪型を変える</div>
+            <input type="text" id="az2-hair-change" placeholder="例: ショートボブ、ポニーテール">
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">髪色を変える</div>
+            <input type="text" id="az2-haircolor-change" placeholder="例: 金髪、ピンク、黒">
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">服装を変える</div>
+            <input type="text" id="az2-clothes-change" placeholder="例: 着物、スーツ、ドレス">
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">その他変更</div>
+            <input type="text" id="az2-other-change" placeholder="例: メガネをはずす、帽子追加">
+          </div>
+        </div>
+      </div>
+
+      <!-- 出力テイスト -->
+      <div class="field">
+        <label>🎨 出力テイスト</label>
+        <div class="chip-group" id="az2-teiст-chips">
+          <span class="chip purple active" data-group="az2-teist" data-val="cute kawaii anime illustration style, clean linework">アニメ風</span>
+          <span class="chip purple" data-group="az2-teist" data-val="chibi super deformed style, big head small body">ちびキャラ</span>
+          <span class="chip purple" data-group="az2-teist" data-val="realistic digital portrait, detailed render">リアル</span>
+          <span class="chip purple" data-group="az2-teist" data-val="watercolor illustration, soft brushwork">水彩</span>
+          <span class="chip purple" data-group="az2-teist" data-val="flat vector illustration, bold outlines">フラットベクター</span>
+          <span class="chip purple" data-group="az2-teist" data-val="3D clay render, Pixar inspired">3Dクレイ</span>
+          <span class="chip purple" data-group="az2-teist" data-val="line art sticker style, transparent background">ステッカー風</span>
+        </div>
+      </div>
+
+      <!-- 保存済みキャラプロンプト -->
+      <div class="field">
+        <label>📚 保存済みキャラプロンプトを使う（任意）</label>
+        <div id="az2-saved-picker" class="saved-picker">
+          <div class="saved-picker-empty">「プロンプト保存庫」に保存されたプロンプトがここに出るで！</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="az2-btn" onclick="analyzePerson()" disabled>🔍 解析してプロンプト生成</button>
+      <div class="loading-bar" id="az2-loading"><div class="loading-fill"></div></div>
+      <div class="status-line" id="az2-status"></div>
+      <div class="err-box" id="az2-err"></div>
+    </div>
+    <div class="output-section" id="az2-output">
+      <div class="output-card">
+        <div class="output-header">
+          <div class="output-title">👤 キャラクタープロンプト</div>
+          <button class="btn-copy" id="az2-copy" onclick="copyOutput('az2-result','az2-copy')">コピー</button>
+        </div>
+        <div class="prompt-box" id="az2-result"></div>
+        <div class="tip-box">💡 ChatGPTに貼って「この人物の特徴を使って〇〇を描いて」と追加するとええで！<br>LINEスタンプタブと組み合わせるとスタンプも作れるで。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== EDIT PAGE ==================== -->
+<div class="page" id="page-edit">
+  <div class="card">
+    <div class="card-title"><span class="icon">✏️</span> 画像編集プロンプト生成</div>
+    <div class="field">
+      <label>📷 編集したい画像（任意・内容説明用）</label>
+      <div class="upload-box" id="ed-upload" onclick="triggerUpload('ed-file')">
+        <span class="upload-icon">📷</span>
+        <div class="upload-text">画像をアップすると編集内容がより正確になるで<br><b>任意・アップしなくてもOK</b></div>
+        <input type="file" id="ed-file" accept="image/*" style="display:none" onchange="loadUpload(event,'ed-upload','ed')">
+      </div>
+    </div>
+    <div class="field">
+      <label>✏️ 何をしたい？（複数選択OK）</label>
+      <div class="chip-group" id="ed-action-chips">
+        <span class="chip green" data-group="ed-action" data-val="increase saturation and vibrance, make colors more vivid and punchy">🎨 彩度を上げる</span>
+        <span class="chip green" data-group="ed-action" data-val="decrease saturation, make colors more muted and desaturated">🩶 彩度を下げる</span>
+        <span class="chip green" data-group="ed-action" data-val="fix blur and improve sharpness, enhance fine details">🔭 ピンボケを直す</span>
+        <span class="chip green" data-group="ed-action" data-val="remove grain and noise, denoise the image, smooth textures">✨ ノイズ・ざらつきを消す</span>
+        <span class="chip green" data-group="ed-action" data-val="remove background completely, isolate subject with transparent background">🪄 背景を消す</span>
+        <span class="chip green" data-group="ed-action" data-val="brighten the image, increase exposure and highlights">☀️ 明るくする</span>
+        <span class="chip green" data-group="ed-action" data-val="darken the image, reduce exposure, deeper shadows">🌑 暗くする</span>
+        <span class="chip green" data-group="ed-action" data-val="increase contrast, make darks darker and lights lighter">⬛ コントラストを上げる</span>
+        <span class="chip green" data-group="ed-action" data-val="apply warm color grading, golden tones, film look">🟡 暖色フィルター</span>
+        <span class="chip green" data-group="ed-action" data-val="apply cool color grading, blue tones, cinematic">🔵 寒色フィルター</span>
+        <span class="chip green" data-group="ed-action" data-val="convert to black and white, monochrome">⬜ 白黒に変換</span>
+        <span class="chip green" data-group="ed-action" data-val="upscale image resolution, enhance quality to 4K">📐 解像度を上げる（4K）</span>
+        <span class="chip green" data-group="ed-action" data-val="remove wrinkles and smooth skin, portrait retouching">💆 肌補正・レタッチ</span>
+        <span class="chip green" data-group="ed-action" data-val="straighten horizon, fix perspective distortion">📏 傾きを直す</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>指定の人物・物だけ残す（任意）</label>
+      <input type="text" id="ed-keep" placeholder="例: 右側の女性だけ残して他は消して、前景の猫だけ残す">
+    </div>
+    <div class="field">
+      <label>背景を変える（任意）</label>
+      <input type="text" id="ed-bg" placeholder="例: 青空の公園に変えて、スタジオ白背景に">
+    </div>
+    <div class="field">
+      <label>その他の編集指示（任意）</label>
+      <textarea id="ed-extra" placeholder="例: 全体的にレトロフィルム風に加工して、ロゴを消して、など"></textarea>
+    </div>
+    <button class="btn-primary green" onclick="genEdit()">✨ 編集プロンプトを生成する</button>
+  </div>
+  <div class="output-section" id="ed-output">
+    <div class="output-card">
+      <div class="output-header">
+        <div class="output-title">✏️ 画像編集プロンプト</div>
+        <button class="btn-copy" id="ed-copy" onclick="copyOutput('ed-result','ed-copy')">コピー</button>
+      </div>
+      <div class="prompt-box" id="ed-result"></div>
+      <div class="tip-box">💡 <b>使い方：</b>ChatGPT（GPT-4o）に画像と一緒にこのプロンプトを貼り付けてや！<br>画像編集AIツール（Adobe Firefly、Canvaなど）のプロンプト欄にも使えるで。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== STAMP PAGE ==================== -->
+<div class="page" id="page-stamp">
+  <div class="card">
+    <div class="card-title"><span class="icon">🔢</span> スタンプ枚数</div>
+    <div class="count-selector">
+      <div class="count-btn" data-n="8"><span class="num">8</span><span class="lbl">ミニ</span></div>
+      <div class="count-btn" data-n="16"><span class="num">16</span><span class="lbl">スモール</span></div>
+      <div class="count-btn active" data-n="24"><span class="num">24</span><span class="lbl">スタンダード</span></div>
+      <div class="count-btn" data-n="32"><span class="num">32</span><span class="lbl">ラージ</span></div>
+      <div class="count-btn" data-n="40"><span class="num">40</span><span class="lbl">メガ</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🎭</span> キャラクター設定</div>
+    <div class="field">
+      <label>🐾 キャラクタータイプ</label>
+      <div class="chip-group">
+        <span class="chip orange active" data-group="st-chartype" data-val="human">👤 人間</span>
+        <span class="chip orange" data-group="st-chartype" data-val="pet">🐾 犬・猫など</span>
+        <span class="chip orange" data-group="st-chartype" data-val="animal">🐘 その他動物</span>
+        <span class="chip orange" data-group="st-chartype" data-val="other">✨ その他</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>キャラクターの説明（必須）</label>
+      <textarea id="st-character" rows="2" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン、魔法使いの女の子"></textarea>
+    </div>
+    <div class="field">
+      <label>キャラクター名（任意）</label>
+      <input type="text" id="st-charname" placeholder="例: もちこ、たろう">
+    </div>
+    <!-- 人間パネル -->
+    <div id="st-panel-human">
+      <div class="field">
+        <label>👤 性別</label>
+        <div class="chip-group">
+          <span class="chip orange active" data-group="st-gender" data-val="">指定なし</span>
+          <span class="chip orange" data-group="st-gender" data-val="male character, masculine">男性</span>
+          <span class="chip orange" data-group="st-gender" data-val="female character, feminine">女性</span>
+          <span class="chip orange" data-group="st-gender" data-val="otokoyaku, Takarazuka male role, elegant androgynous woman as a man, princely bearing">🌹 宝塚・男役</span>
+          <span class="chip orange" data-group="st-gender" data-val="musumeyaku, Takarazuka female role, ultra-feminine, graceful, large expressive eyes">🌸 宝塚・娘役</span>
+          <span class="chip orange" data-group="st-gender" data-val="non-binary, gender-neutral">ノンバイナリー</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>🎂 年齢イメージ</label>
+        <input type="range" id="st-age" min="5" max="80" value="25" oninput="document.getElementById('st-age-disp').textContent=this.value+'歳ごろ'">
+        <div class="age-display" id="st-age-disp">25歳ごろ</div>
+        <div class="range-labels"><span>子ども</span><span>ティーン</span><span>青年</span><span>中年</span><span>シニア</span></div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>⚡ 中性度</label>
+        <div class="androgyny-track"></div>
+        <input type="range" class="androgyny-r" id="st-androgyny" min="0" max="100" value="50">
+        <div class="range-labels"><span>💙 男性的</span><span>⚡ 中性</span><span>💗 女性的</span></div>
+      </div>
+    </div>
+    <!-- ペットパネル -->
+    <div id="st-panel-pet" style="display:none">
+      <div class="field">
+        <label>🐾 性別</label>
+        <div class="chip-group">
+          <span class="chip orange active" data-group="st-petgender" data-val="">指定なし</span>
+          <span class="chip orange" data-group="st-petgender" data-val="male, boy">オス</span>
+          <span class="chip orange" data-group="st-petgender" data-val="female, girl">メス</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>📅 年齢</label>
+        <div class="chip-group">
+          <span class="chip orange active" data-group="st-petage" data-val="very young puppy or kitten, baby animal, tiny chubby">赤ちゃん・子</span>
+          <span class="chip orange" data-group="st-petage" data-val="young adult animal, energetic and playful">若い・元気</span>
+          <span class="chip orange" data-group="st-petage" data-val="mature adult animal, calm">大人</span>
+          <span class="chip orange" data-group="st-petage" data-val="elderly animal, senior, gentle">シニア</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🎨</span> アートスタイル</div>
+    <div class="style-grid">
+      <div class="style-card active" data-val="cute kawaii anime illustration style, clean linework, bright colors"><span class="s-icon">✨</span><span class="s-name">かわいいアニメ</span><span class="s-desc">クリーンな線画</span></div>
+      <div class="style-card" data-val="chibi super-deformed style, big head small body, pastel colors"><span class="s-icon">🥰</span><span class="s-name">ちびキャラ</span><span class="s-desc">頭でっかち・かわいい</span></div>
+      <div class="style-card" data-val="flat vector sticker illustration, bold outlines"><span class="s-icon">📐</span><span class="s-name">フラットベクター</span><span class="s-desc">シンプル・モダン</span></div>
+      <div class="style-card" data-val="soft watercolor painting style, loose brushwork, paper texture"><span class="s-icon">🎨</span><span class="s-name">水彩画風</span><span class="s-desc">にじみ・やわらか</span></div>
+      <div class="style-card" data-val="crayon hand-drawn illustration, rough textured strokes, childlike warmth"><span class="s-icon">🖍️</span><span class="s-name">クレヨン風</span><span class="s-desc">ざらざら・手書き</span></div>
+      <div class="style-card" data-val="colored pencil illustration, visible hatching, soft blended colors"><span class="s-icon">✏️</span><span class="s-name">色鉛筆風</span><span class="s-desc">繊細・柔らか</span></div>
+      <div class="style-card" data-val="monochrome black and white ink illustration, bold contrast"><span class="s-icon">⬛</span><span class="s-name">モノクロ</span><span class="s-desc">白黒・インク</span></div>
+      <div class="style-card" data-val="retro pixel art style, limited color palette"><span class="s-icon">👾</span><span class="s-name">ドット絵</span><span class="s-desc">レトロゲーム風</span></div>
+      <div class="style-card" data-val="sticker with thick bold black outline, saturated pop colors"><span class="s-icon">💥</span><span class="s-name">太線ポップ</span><span class="s-desc">ビビッド・コミック</span></div>
+      <div class="style-card" data-val="oil painting illustration, rich textured brushstrokes"><span class="s-icon">🖼️</span><span class="s-name">油絵風</span><span class="s-desc">厚塗り・重厚感</span></div>
+      <div class="style-card" data-val="3D cartoon clay render, Pixar-inspired, soft global illumination"><span class="s-icon">🎲</span><span class="s-name">3Dクレイ風</span><span class="s-desc">ピクサー風</span></div>
+      <div class="style-card" data-val="retro 1980s anime style, cel animation palette, VHS aesthetic"><span class="s-icon">📼</span><span class="s-name">レトロアニメ</span><span class="s-desc">セル画・VHS</span></div>
+      <div class="style-card" data-val="loose doodle sketch style, hand-drawn pen lines, sketchbook feel"><span class="s-icon">📓</span><span class="s-name">スケッチ風</span><span class="s-desc">手書き・ゆるゆる</span></div>
+      <div class="style-card" data-val="neon glow dark illustration, glowing outlines, synthwave cyberpunk"><span class="s-icon">🌈</span><span class="s-name">ネオン・サイバー</span><span class="s-desc">蛍光・未来的</span></div>
+      <div class="style-card" data-val="hyperrealistic photorealistic render, subsurface scattering, ray-traced"><span class="s-icon">📷</span><span class="s-name">フォトリアル</span><span class="s-desc">超リアル</span></div>
+      <div class="style-card" data-val="__custom_st__"><span class="s-icon">✏️</span><span class="s-name">その他</span><span class="s-desc">自由入力</span></div>
+    </div>
+    <div id="st-custom-style-wrap" style="display:none;margin-top:.7rem;display:none;">
+      <input type="text" id="st-custom-style" placeholder="例: ukiyo-e woodblock print style">
+    </div>
+  </div>
+  <div class="card">
+    <div class="emotion-header">
+      <div class="card-title" style="margin-bottom:0"><span class="icon">😄</span> 感情パターン</div>
+      <span class="count-badge under" id="st-emotion-count">0 / 24 選択中</span>
+    </div>
+    <div class="quick-btns">
+      <button class="qbtn" onclick="stSelectAll()">すべて選択</button>
+      <button class="qbtn" onclick="stClearAll()">クリア</button>
+      <button class="qbtn" onclick="stAutoSelect()">🎲 自動選択</button>
+    </div>
+    <div class="tag-group" id="st-emotion-tags">
+      <span class="tag" data-val="happy, big smile, joy">😊 うれしい</span>
+      <span class="tag" data-val="crying, sad tears">😢 かなしい</span>
+      <span class="tag" data-val="angry, furious">😠 おこ</span>
+      <span class="tag" data-val="laughing hard, tears of laughter">🤣 爆笑</span>
+      <span class="tag" data-val="surprised, shocked, jaw drop">😲 びっくり</span>
+      <span class="tag" data-val="embarrassed, blushing, shy">😳 はずかしい</span>
+      <span class="tag" data-val="sleepy, tired, yawning">😴 ねむい</span>
+      <span class="tag" data-val="cool, confident, smug">😎 クール</span>
+      <span class="tag" data-val="in love, heart eyes">🥰 ラブラブ</span>
+      <span class="tag" data-val="thumbs up, good job">👍 グッド</span>
+      <span class="tag" data-val="thumbs down, nope">👎 ダメ</span>
+      <span class="tag" data-val="waving hello, greeting">👋 あいさつ</span>
+      <span class="tag" data-val="celebrating, party, hurray">🎉 やったー！</span>
+      <span class="tag" data-val="sweating nervously, anxious">😅 あせあせ</span>
+      <span class="tag" data-val="thinking deeply, pondering">🤔 かんがえてる</span>
+      <span class="tag" data-val="eating delicious food, yummy">😋 たべてる</span>
+      <span class="tag" data-val="running fast, in a hurry">🏃 いそいでる</span>
+      <span class="tag" data-val="sleeping soundly, snoring ZZZ">💤 おやすみ</span>
+      <span class="tag" data-val="OK hand gesture">🙆 オッケー</span>
+      <span class="tag" data-val="clapping hands, applause">👏 パチパチ</span>
+      <span class="tag" data-val="texting on smartphone">📱 スマホ中</span>
+      <span class="tag" data-val="working hard, focused at laptop">💻 がんばる</span>
+      <span class="tag" data-val="drinking tea, cozy relaxing">☕ まったり</span>
+      <span class="tag" data-val="begging, please, puppy eyes">🙏 おねがい</span>
+      <span class="tag" data-val="disgusted, eww face">🤢 きもい</span>
+      <span class="tag" data-val="shrugging, whatever">🤷 しらんけど</span>
+      <span class="tag" data-val="listening to music, headphones">🎧 音楽中</span>
+      <span class="tag" data-val="money eyes, excited about wealth">🤑 お金！</span>
+      <span class="tag" data-val="sick, sneezing">🤒 かぜっぴき</span>
+      <span class="tag" data-val="exercising, working out">💪 きんにく</span>
+      <span class="tag" data-val="reading a book, studious">📚 べんきょう</span>
+      <span class="tag" data-val="taking a selfie, peace sign">🤳 じどり</span>
+      <span class="tag" data-val="dancing, spinning, disco vibes">💃 おどってる</span>
+      <span class="tag" data-val="waiting, bored, impatient">⏳ まってる</span>
+      <span class="tag" data-val="crying ugly, sobbing">😭 号泣</span>
+      <span class="tag" data-val="speechless, blank stare">😶 ぼーっと</span>
+      <span class="tag" data-val="overwhelmed, too much">🤯 むり！</span>
+      <span class="tag" data-val="giving a gift, presenting">🎁 プレゼント</span>
+      <span class="tag" data-val="heartbroken, sad love">💔 しつれん</span>
+      <span class="tag" data-val="triumphant, fist pump, victory">✊ やってやる</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">✨</span> オプション</div>
+    <div class="field">
+      <label>テキスト吹き出し（任意）</label>
+      <input type="text" id="st-text-overlay" placeholder="例: ありがとう！／おつかれ〜">
+    </div>
+    <div class="field">
+      <label>追加オプション</label>
+      <div class="tag-group">
+        <span class="tag extra" data-val="add simple Japanese text label matching each emotion">日本語テキスト</span>
+        <span class="tag extra" data-val="add decorative border/frame">フレーム装飾</span>
+        <span class="tag extra" data-val="add sparkles and star effects">キラキラ</span>
+        <span class="tag extra" data-val="soft pastel color palette">パステル</span>
+        <span class="tag extra" data-val="bold vivid saturated colors">ビビッド</span>
+        <span class="tag extra" data-val="add small themed props or accessories">小物追加</span>
+        <span class="tag extra" data-val="add soft drop shadow">ドロップシャドウ</span>
+        <span class="tag extra" data-val="rounded chubby body proportions">まるまるボディ</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>カスタム追加指示（任意）</label>
+      <textarea id="st-custom" placeholder="例: 全体的に丸みのあるかわいいデザインで統一して"></textarea>
+    </div>
+    <div class="toggle-row">
+      <label class="sw"><input type="checkbox" id="st-size" checked><span class="sw-slider"></span></label>
+      <span class="toggle-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
+    </div>
+    <button class="btn-primary stamp" onclick="genStamp()">✨ 2フェーズ プロンプトを生成する！</button>
+  </div>
+  <div id="st-output" style="display:none;">
+    <div class="output-card">
+      <div class="output-header">
+        <div class="output-title" id="st-output-title">📋 スタンププロンプト</div>
+        <button class="btn-copy" id="st-copy" onclick="copyOutput(stCurrentTab===1?'st-p1':'st-p2','st-copy')">コピー</button>
+      </div>
+      <div class="phase-tabs">
+        <button class="phase-tab active" id="st-tab1" onclick="switchStTab(1)"><span class="pt-icon">🖼️</span>Phase 1<br><span style="font-size:.63rem;font-weight:400">一覧グリッド</span></button>
+        <button class="phase-tab" id="st-tab2" onclick="switchStTab(2)"><span class="pt-icon">✂️</span>Phase 2<br><span style="font-size:.63rem;font-weight:400">分割ZIP</span></button>
+      </div>
+      <div class="phase-panel active" id="st-panel1"><div class="prompt-box" id="st-p1"></div></div>
+      <div class="phase-panel" id="st-panel2"><div class="prompt-box" id="st-p2"></div></div>
+      <div class="tip-box">💡 <b>Phase1</b>→ChatGPTに貼って一覧グリッド確認→<b>Phase2</b>→同じチャットに貼って分割ZIP！</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LIBRARY PAGE ==================== -->
+<div class="page" id="page-library">
+
+  <!-- 追加フォーム -->
+  <div class="lib-add-card">
+    <div class="lib-add-title">📥 プロンプトを追加</div>
+    <div class="lib-add-row">
+      <input type="text" id="lib-new-title" placeholder="タイトル（例: もちこちゃん・アニメ風）">
+      <input type="text" id="lib-new-tag" placeholder="タグ" style="max-width:110px;">
+    </div>
+    <div class="lib-add-thumb-wrap">
+      <div class="lib-thumb-upload" id="lib-thumb-upload" onclick="document.getElementById('lib-thumb-file').click()" title="サムネイル画像（任意）">
+        <span id="lib-thumb-icon">🖼️</span>
+        <input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">
+      </div>
+      <textarea class="lib-add-area" id="lib-new-body" placeholder="プロンプトをここに貼り付けてや。SNSで拾ったやつでもOK！&#10;サムネイルは左の画像アイコンからアップできるで。"></textarea>
+    </div>
+    <div class="lib-add-footer">
+      <button class="btn-lib-add" onclick="addLibItem()">💾 保存する</button>
+      <span style="font-size:.72rem;color:var(--muted)">画像はこの端末に保存されるで</span>
+    </div>
+  </div>
+
+  <!-- ツールバー -->
+  <div class="lib-toolbar">
+    <input type="text" id="lib-search" placeholder="🔍 タイトル・タグ・プロンプトで検索..." oninput="renderLib()">
+  </div>
+
+  <!-- グリッド -->
+  <div class="lib-grid" id="lib-grid">
+    <div class="lib-empty"><span class="em-icon">📭</span>まだ保存されてへんで！<br>上の入力欄からプロンプトを追加してや。</div>
+  </div>
+</div>
+
+<!-- モーダル -->
+<div class="modal-overlay" id="lib-modal" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <img id="modal-img" class="modal-img" src="" alt="" style="display:none">
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-tag-wrap" style="margin-bottom:.6rem;"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="modal-btn copy" onclick="copyModalPrompt()">📋 コピー</button>
+      <button class="modal-btn copy" style="background:var(--a5)" onclick="useInStamp()">💬 スタンプに使う</button>
+      <button class="modal-btn close" onclick="document.getElementById('lib-modal').classList.remove('open')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrapper -->
+<script>
+// ===== NAVIGATION =====
+let currentPage = null;
+function gotoPage(page) {
+  document.querySelectorAll('.menu-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const mc = document.querySelector('.menu-card.c-' + page);
+  if (mc) mc.classList.add('active');
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  currentPage = page;
+  if (page === 'analyze') loadSavedPicker();
+  if (page === 'library') renderLib();
 }
 
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-// ===== CHAR TYPE =====
-let charType = 'human';
-let selectedGender = '', selectedPetGender = '', selectedPetAge = 'very young puppy or kitten, baby animal, tiny and chubby';
-
-document.querySelectorAll('.chip.chartype').forEach(c => {
+// ===== GENERIC CHIP (single select per group) =====
+document.querySelectorAll('.chip[data-group]').forEach(c => {
   c.addEventListener('click', () => {
-    document.querySelectorAll('.chip.chartype').forEach(x => x.classList.remove('active'));
+    const g = c.dataset.group;
+    document.querySelectorAll(`.chip[data-group="${g}"]`).forEach(x => x.classList.remove('active'));
     c.classList.add('active');
-    charType = c.dataset.type;
-    document.getElementById('panel-human').style.display = charType === 'human' ? 'block' : 'none';
-    document.getElementById('panel-pet').style.display = charType === 'pet' ? 'block' : 'none';
-    document.getElementById('panel-animal').style.display = charType === 'animal' ? 'block' : 'none';
-    document.getElementById('panel-other').style.display = charType === 'other' ? 'block' : 'none';
+    // special: stamp char type panels
+    if (g === 'st-chartype') {
+      const t = c.dataset.val;
+      document.getElementById('st-panel-human').style.display = t==='human'?'block':'none';
+      document.getElementById('st-panel-pet').style.display = t==='pet'?'block':'none';
+    }
   });
 });
-document.querySelectorAll('.chip.gender').forEach(c => {
-  c.addEventListener('click', () => { document.querySelectorAll('.chip.gender').forEach(x => x.classList.remove('active')); c.classList.add('active'); selectedGender = c.dataset.val; });
+// multi select chips (no group attr)
+document.querySelectorAll('.chip:not([data-group])').forEach(c => {
+  c.addEventListener('click', () => c.classList.toggle('active'));
 });
-document.querySelectorAll('.chip.petgender').forEach(c => {
-  c.addEventListener('click', () => { document.querySelectorAll('.chip.petgender').forEach(x => x.classList.remove('active')); c.classList.add('active'); selectedPetGender = c.dataset.val; });
-});
-document.querySelectorAll('.chip.petage').forEach(c => {
-  c.addEventListener('click', () => { document.querySelectorAll('.chip.petage').forEach(x => x.classList.remove('active')); c.classList.add('active'); selectedPetAge = c.dataset.val; });
+// style chips (illust style — single)
+document.querySelectorAll('#il-style-chips .chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('#il-style-chips .chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+  });
 });
 
-function updateAgeDisplay() {
-  document.getElementById('age-display').textContent = document.getElementById('age-range').value + '歳ごろ';
+// sub-tabs
+function switchSubTab(prefix, panelId) {
+  const panels = document.querySelectorAll(`#page-analyze .sub-panel`);
+  const tabs = document.querySelectorAll(`#page-analyze .sub-tab`);
+  panels.forEach(p => p.classList.remove('active'));
+  tabs.forEach(t => t.classList.remove('active'));
+  document.getElementById('sub-' + panelId).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (panelId === 'person-az') loadSavedPicker();
 }
 
-function buildCharacterPrompt() {
-  const base = document.getElementById('character').value.trim();
-  const name = document.getElementById('charname').value.trim();
-  let parts = [];
-  if (name) parts.push(name);
-  if (base) parts.push(base);
+// ===== UPLOAD =====
+const uploadImages = {};
+function triggerUpload(id) { document.getElementById(id).click(); }
+function loadUpload(e, boxId, key) {
+  const file = e.target.files[0];
+  if (!file) return;
+  uploadImages[key] = { mime: file.type, b64: null };
+  const reader = new FileReader();
+  reader.onload = ev => {
+    uploadImages[key].b64 = ev.target.result.split(',')[1];
+    const box = document.getElementById(boxId);
+    box.classList.add('has-img');
+    box.innerHTML = `<img src="${ev.target.result}" alt="preview">
+      <div class="img-overlay"><span>📎 ${file.name}</span><button class="btn-change" onclick="resetUpload('${boxId}','${key}',event)">変更</button></div>`;
+    // enable analyze buttons
+    checkAzReady();
+  };
+  reader.readAsDataURL(file);
+}
+function resetUpload(boxId, key, e) {
+  e.stopPropagation();
+  delete uploadImages[key];
+  const box = document.getElementById(boxId);
+  box.classList.remove('has-img');
+  const icons = {az1:'🖼️',az2:'📸',ed:'📷'};
+  const texts = {az1:'解析したいイラスト画像をアップ',az2:'解析したい人物写真をアップ',ed:'任意・アップしなくてもOK'};
+  box.innerHTML = `<span class="upload-icon">${icons[key]||'📁'}</span><div class="upload-text">${texts[key]||'ファイルを選択'}</div>`;
+  box.onclick = () => triggerUpload(key === 'az1' ? 'az1-file' : key === 'az2' ? 'az2-file' : 'ed-file');
+  checkAzReady();
+}
 
-  if (charType === 'human') {
-    const age = parseInt(document.getElementById('age-range').value);
-    const androgyny = parseInt(document.getElementById('androgyny-range').value);
-    if (age <= 8) parts.push('very young child, toddler');
-    else if (age <= 13) parts.push('child around ' + age + ' years old');
-    else if (age <= 17) parts.push('teenager around ' + age + ' years old');
-    else if (age <= 30) parts.push('young adult around ' + age + ' years old');
-    else if (age <= 55) parts.push('adult around ' + age + ' years old');
-    else parts.push('elderly person around ' + age + ' years old');
-    if (selectedGender) parts.push(selectedGender);
-    if (androgyny <= 15) parts.push('extremely masculine appearance, very strong male features, no feminine traits');
-    else if (androgyny <= 35) parts.push('masculine appearance, mostly male features');
-    else if (androgyny >= 85) parts.push('extremely feminine appearance, very delicate features, no masculine traits');
-    else if (androgyny >= 65) parts.push('feminine appearance, mostly female features, soft delicate face');
-    else parts.push('androgynous appearance, balanced between masculine and feminine');
-  } else if (charType === 'pet') {
-    if (selectedPetGender) parts.push(selectedPetGender);
-    if (selectedPetAge) parts.push(selectedPetAge);
+// ===== GEMINI API KEY =====
+function getAzKey() { return document.getElementById('az-apikey').value.trim(); }
+function onAzKeyChange() {
+  document.getElementById('az-apikey').classList.toggle('ok', getAzKey().startsWith('AIza'));
+  checkAzReady();
+}
+function checkAzReady() {
+  const hasKey = getAzKey().startsWith('AIza');
+  const b1 = document.getElementById('az1-btn');
+  const b2 = document.getElementById('az2-btn');
+  if (b1) b1.disabled = !(hasKey && uploadImages['az1']);
+  if (b2) b2.disabled = !(hasKey && uploadImages['az2']);
+}
+try { const k = localStorage.getItem('gemini_api_key'); if(k){document.getElementById('az-apikey').value=k;onAzKeyChange();} } catch(e){}
+document.getElementById('az-apikey').addEventListener('input', () => {
+  try { localStorage.setItem('gemini_api_key', getAzKey()); } catch(e) {}
+  checkAzReady();
+});
+
+async function callGemini(imageKey, promptText) {
+  const apiKey = getAzKey();
+  // モデル自動選択
+  const mRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {redirect:'follow'});
+  const mData = await mRes.json();
+  const models = mData.models || [];
+  const preferred = ['gemini-2.5-flash','gemini-2.5-flash-lite','gemini-1.5-flash'];
+  let model = null;
+  for (const p of preferred) {
+    const f = models.find(m => m.name.includes(p) && (m.supportedGenerationMethods||[]).includes('generateContent'));
+    if (f) { model = f.name.replace('models/',''); break; }
   }
-  // animal・other はbase説明のみ
+  if (!model) { const a = models.find(m=>(m.supportedGenerationMethods||[]).includes('generateContent')); if(a) model=a.name.replace('models/',''); }
+  if (!model) throw new Error('使えるGeminiモデルが見つからへんかった');
+
+  const img = uploadImages[imageKey];
+  const parts = img
+    ? [{ inline_data: { mime_type: img.mime, data: img.b64 } }, { text: promptText }]
+    : [{ text: promptText }];
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    { method:'POST', redirect:'follow', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.3,maxOutputTokens:1024} }) }
+  );
+  if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||`API error ${res.status}`); }
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.filter(p=>p.text)?.map(p=>p.text)?.join('') || '';
+  return text.replace(/```[a-z]*\n?|```/g,'').trim();
+}
+
+function showLoading(prefix, msg) {
+  document.getElementById(prefix+'-loading').classList.add('on');
+  const s = document.getElementById(prefix+'-status');
+  s.textContent = msg; s.style.color='var(--a4)'; s.classList.add('on');
+  document.getElementById(prefix+'-err').classList.remove('on');
+}
+function hideLoading(prefix) {
+  document.getElementById(prefix+'-loading').classList.remove('on');
+  document.getElementById(prefix+'-status').classList.remove('on');
+}
+function showErr(prefix, msg) {
+  hideLoading(prefix);
+  const e = document.getElementById(prefix+'-err');
+  e.textContent = '⚠️ '+msg; e.classList.add('on');
+}
+
+// ===== ANALYZE: ILLUST =====
+async function analyzeIllust() {
+  const extracts = [...document.querySelectorAll('.chip[data-group="az1-extract"].active')].map(c=>c.dataset.val);
+  const target = document.getElementById('az1-target').value.trim();
+  showLoading('az1','🤖 イラストを解析中...');
+  try {
+    const prompt = `このイラスト画像を解析して、同じテイストのイラストを生成するためのプロンプトを英語で作成してください。
+
+抽出する情報:
+${extracts.map(e=>'- '+e).join('\n')}
+${target ? '\n描きたいもの: ' + target : ''}
+
+出力形式:
+- ChatGPT/DALL-Eにそのまま使える英語プロンプト
+- スタイル・雰囲気・技法を具体的なキーワードで記述
+- 最後に日本語で「このプロンプトで○○を描くときは〜と追加してください」という使い方ヒントを1行添える
+
+余分な説明は不要。プロンプト本文と使い方ヒントのみ出力。`;
+    const result = await callGemini('az1', prompt);
+    document.getElementById('az1-result').textContent = result;
+    document.getElementById('az1-output').style.display = 'block';
+    hideLoading('az1');
+  } catch(e) { showErr('az1', e.message); }
+}
+
+// ===== ANALYZE: PERSON =====
+let selectedSavedPrompt = null;
+async function analyzePerson() {
+  const extracts = [...document.querySelectorAll('.chip[data-group="az2-extract"].active')].map(c=>c.dataset.val);
+  const teist = document.querySelector('.chip[data-group="az2-teist"].active')?.dataset.val || 'cute kawaii anime illustration style';
+  const hairChange = document.getElementById('az2-hair-change').value.trim();
+  const hairColorChange = document.getElementById('az2-haircolor-change').value.trim();
+  const clothesChange = document.getElementById('az2-clothes-change').value.trim();
+  const otherChange = document.getElementById('az2-other-change').value.trim();
+  const changes = [hairChange&&`髪型を「${hairChange}」に変える`,hairColorChange&&`髪色を「${hairColorChange}」に変える`,clothesChange&&`服装を「${clothesChange}」に変える`,otherChange&&otherChange].filter(Boolean);
+
+  showLoading('az2','🤖 人物を解析中...');
+  try {
+    const prompt = `この人物写真を解析して、AIイラスト生成用のキャラクタープロンプトを作成してください。
+
+抽出する情報:
+${extracts.map(e=>'- '+e).join('\n')}
+
+出力テイスト: ${teist}
+
+${changes.length > 0 ? `変更指示（以下を元の特徴の代わりに使うこと）:\n${changes.map(c=>'- '+c).join('\n')}` : ''}
+${selectedSavedPrompt ? `\nベースとなるキャラクタープロンプト（このキャラクターの特徴に今回の人物の特徴を追加/上書きする）:\n${selectedSavedPrompt.body.slice(0,300)}` : ''}
+
+出力形式:
+1. 英語のキャラクタープロンプト（カンマ区切りキーワード形式）
+2. 日本語の説明（抽出した特徴の要約を3-5行）
+
+プロンプトと日本語説明の2つのみ出力。前置きや余分な説明不要。`;
+
+    const result = await callGemini('az2', prompt);
+    document.getElementById('az2-result').textContent = result;
+    document.getElementById('az2-output').style.display = 'block';
+    hideLoading('az2');
+  } catch(e) { showErr('az2', e.message); }
+}
+
+// ===== SAVED PICKER =====
+function loadSavedPicker() {
+  const picker = document.getElementById('az2-saved-picker');
+  if (!picker) return;
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem('stamp_prompts')||'[]'); } catch(e){}
+  // Also try GAS — for now just use localStorage cache
+  if (arr.length === 0) {
+    picker.innerHTML = '<div class="saved-picker-empty">保存庫にプロンプトがないで！<br>LINEスタンプタブで生成して保存してや。</div>';
+    return;
+  }
+  picker.innerHTML = arr.map(p => `
+    <div class="saved-picker-item" data-id="${p.id}" onclick="selectSavedPrompt(${p.id})">
+      <span>${p.title}</span>
+      ${p.tag ? `<span class="sp-tag">${p.tag}</span>` : ''}
+    </div>`).join('');
+}
+function selectSavedPrompt(id) {
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem('stamp_prompts')||'[]'); } catch(e){}
+  const p = arr.find(x => String(x.id) === String(id));
+  if (!p) return;
+  selectedSavedPrompt = p;
+  document.querySelectorAll('.saved-picker-item').forEach(el => {
+    el.classList.toggle('selected', String(el.dataset.id) === String(id));
+  });
+}
+
+// ===== EDIT =====
+function genEdit() {
+  const actions = [...document.querySelectorAll('.chip[data-group="ed-action"].active')].map(c=>c.dataset.val);
+  const keep = document.getElementById('ed-keep').value.trim();
+  const bg = document.getElementById('ed-bg').value.trim();
+  const extra = document.getElementById('ed-extra').value.trim();
+  const hasImg = !!uploadImages['ed'];
+
+  if (actions.length === 0 && !keep && !bg && !extra) {
+    alert('編集したい内容を選択してや！'); return;
+  }
+
+  let prompt = `以下の指示に従って、${hasImg ? 'アップロードした' : '指定の'}画像を編集してください。\n\n`;
+  if (actions.length > 0) prompt += `【編集内容】\n${actions.map(a=>'- '+a).join('\n')}\n\n`;
+  if (keep) prompt += `【残す対象】\n${keep}\n\n`;
+  if (bg) prompt += `【背景の変更】\n${bg}\n\n`;
+  if (extra) prompt += `【追加指示】\n${extra}\n\n`;
+  if (!hasImg) prompt += `※画像が添付されていない場合は、編集内容を元に新しいイラストとして生成してください。\n`;
+  prompt += `\n高品質で自然な仕上がりになるよう処理してください。`;
+
+  document.getElementById('ed-result').textContent = prompt;
+  document.getElementById('ed-output').style.display = 'block';
+  setTimeout(() => document.getElementById('ed-output').scrollIntoView({behavior:'smooth',block:'start'}), 50);
+}
+
+// ===== ILLUST =====
+function genIllust() {
+  const subject = document.getElementById('il-subject').value.trim();
+  const styleChip = document.querySelector('#il-style-chips .chip.active')?.dataset.val || '';
+  const styleCustom = document.getElementById('il-style-custom').value.trim();
+  const style = styleCustom || styleChip;
+  const comp = document.querySelector('.chip[data-group="il-comp"].active')?.dataset.val || '';
+  const light = document.querySelector('.chip[data-group="il-light"].active')?.dataset.val || '';
+  const ratio = document.querySelector('.chip[data-group="il-ratio"].active')?.dataset.val || 'aspect ratio 1:1, square format';
+  const extra = document.getElementById('il-extra').value.trim();
+
+  if (!subject) { document.getElementById('il-subject').style.borderColor='var(--a1)'; document.getElementById('il-subject').focus(); setTimeout(()=>document.getElementById('il-subject').style.borderColor='',1500); return; }
+
+  let parts = [];
+  if (subject) parts.push(subject);
+  if (style) parts.push(style);
+  if (comp) parts.push(comp);
+  if (light) parts.push(light);
+  if (ratio) parts.push(ratio);
+  parts.push('highly detailed, high quality, masterpiece');
+  if (extra) parts.push(extra);
+
+  const prompt = `Create an illustration with the following specifications:\n\n${parts.join(', ')}\n\n---\n以下の内容でイラストを生成してください：\n\n被写体・シーン: ${subject}\n${style?'スタイル: '+style+'\n':''}${comp?'構図: '+comp+'\n':''}${light?'ライティング: '+light+'\n':''}${ratio?'比率: '+ratio+'\n':''}${extra?'追加指示: '+extra+'\n':''}`;
+
+  document.getElementById('il-result').textContent = prompt;
+  document.getElementById('il-output').style.display = 'block';
+  setTimeout(() => document.getElementById('il-output').scrollIntoView({behavior:'smooth',block:'start'}), 50);
+}
+
+// ===== STAMP =====
+let stCount=24, stEmotions=[], stExtras=[], stCurrentTab=1;
+let stStyleVal='cute kawaii anime illustration style, clean linework, bright colors';
+
+const ST_DEFAULT_POOL=['happy, big smile, joy','crying, sad tears','angry, furious','laughing hard','surprised, shocked','embarrassed, blushing','sleepy, tired, yawning','cool, confident','in love, heart eyes','thumbs up, good job','thumbs down, nope','waving hello','celebrating, hurray','sweating nervously','thinking deeply','eating, yummy','running fast, hurry','sleeping, snoring ZZZ','OK gesture','clapping, applause','texting on smartphone','working hard, laptop','drinking tea, cozy','begging, please','disgusted, eww','shrugging, whatever','music, headphones','money eyes','sick, sneezing','exercising, flexing','reading a book','taking a selfie','dancing, disco vibes','waiting, bored','crying ugly, sobbing','speechless, blank stare','overwhelmed, too much','giving a gift','heartbroken, sad love','triumphant, victory'];
+
+document.querySelectorAll('.count-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{document.querySelectorAll('.count-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');stCount=parseInt(btn.dataset.n);stUpdateBadge();});
+});
+document.querySelectorAll('.style-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));card.classList.add('active');
+    const wrap=document.getElementById('st-custom-style-wrap');
+    if(card.dataset.val==='__custom_st__'){wrap.style.display='block';stStyleVal=document.getElementById('st-custom-style').value.trim()||'custom style';}
+    else{wrap.style.display='none';stStyleVal=card.dataset.val;}
+  });
+});
+document.getElementById('st-custom-style')?.addEventListener('input',e=>{stStyleVal=e.target.value.trim()||'custom style';});
+document.querySelectorAll('#st-emotion-tags .tag').forEach(t=>{
+  t.addEventListener('click',()=>{const i=stEmotions.indexOf(t.dataset.val);if(i===-1){stEmotions.push(t.dataset.val);t.classList.add('active');}else{stEmotions.splice(i,1);t.classList.remove('active');}stUpdateBadge();});
+});
+document.querySelectorAll('#page-stamp .tag.extra').forEach(t=>{
+  t.addEventListener('click',()=>{const i=stExtras.indexOf(t.dataset.val);if(i===-1){stExtras.push(t.dataset.val);t.classList.add('active');}else{stExtras.splice(i,1);t.classList.remove('active');}});
+});
+function stUpdateBadge(){const n=stEmotions.length,b=document.getElementById('st-emotion-count');b.textContent=n+' / '+stCount+' 選択中';b.className='count-badge '+(n===stCount?'ok':n>stCount?'over':'under');}
+function stSelectAll(){document.querySelectorAll('#st-emotion-tags .tag').forEach(t=>{if(!stEmotions.includes(t.dataset.val))stEmotions.push(t.dataset.val);t.classList.add('active');});stUpdateBadge();}
+function stClearAll(){stEmotions=[];document.querySelectorAll('#st-emotion-tags .tag').forEach(t=>t.classList.remove('active'));stUpdateBadge();}
+function stAutoSelect(){stClearAll();Array.from(document.querySelectorAll('#st-emotion-tags .tag')).sort(()=>Math.random()-.5).slice(0,stCount).forEach(t=>{stEmotions.push(t.dataset.val);t.classList.add('active');});stUpdateBadge();}
+
+function buildStCharPrompt(){
+  const base=document.getElementById('st-character').value.trim();
+  const name=document.getElementById('st-charname').value.trim();
+  const ctype=document.querySelector('.chip[data-group="st-chartype"].active')?.dataset.val||'human';
+  let parts=[];
+  if(name)parts.push(name);
+  if(base)parts.push(base);
+  if(ctype==='human'){
+    const gender=document.querySelector('.chip[data-group="st-gender"].active')?.dataset.val||'';
+    const age=parseInt(document.getElementById('st-age').value);
+    const andro=parseInt(document.getElementById('st-androgyny').value);
+    if(age<=8)parts.push('very young child');else if(age<=13)parts.push('child around '+age+' years old');else if(age<=17)parts.push('teenager around '+age);else if(age<=30)parts.push('young adult around '+age);else if(age<=55)parts.push('adult around '+age);else parts.push('elderly around '+age);
+    if(gender)parts.push(gender);
+    if(andro<=15)parts.push('extremely masculine, no feminine traits');else if(andro<=35)parts.push('masculine appearance');else if(andro>=85)parts.push('extremely feminine, no masculine traits');else if(andro>=65)parts.push('feminine appearance, soft delicate face');else parts.push('androgynous, balanced masculine and feminine');
+  } else if(ctype==='pet'){
+    const pg=document.querySelector('.chip[data-group="st-petgender"].active')?.dataset.val||'';
+    const pa=document.querySelector('.chip[data-group="st-petage"].active')?.dataset.val||'';
+    if(pg)parts.push(pg);if(pa)parts.push(pa);
+  }
   return parts.filter(Boolean).join(', ');
 }
 
-// ===== PHOTO ANALYZE =====
-let paImageBase64 = null, paImageMime = 'image/jpeg';
-
-document.getElementById('pa-file').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  paImageMime = file.type;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    paImageBase64 = ev.target.result.split(',')[1];
-    const box = document.getElementById('pa-upload');
-    box.classList.add('has-img');
-    box.innerHTML = `<img src="${ev.target.result}" alt="preview"><input type="file" id="pa-file" accept="image/*" style="display:none" onchange="onPhotoSelected(event)">`;
-    checkPaReady();
-  };
-  reader.readAsDataURL(file);
-});
-
-document.getElementById('pa-apikey').addEventListener('input', checkPaReady);
-
-function checkPaReady() {
-  const key = document.getElementById('pa-apikey').value.trim();
-  const btn = document.getElementById('btn-pa-analyze');
-  btn.disabled = !(paImageBase64 && key.startsWith('AIza'));
-}
-
-async function analyzeCharPhoto() {
-  const apiKey = document.getElementById('pa-apikey').value.trim();
-  if (!paImageBase64 || !apiKey) return;
-  try { localStorage.setItem('gemini_api_key', apiKey); } catch(e) {}
-
-  const btn = document.getElementById('btn-pa-analyze');
-  const status = document.getElementById('pa-status');
-  btn.disabled = true; btn.textContent = '解析中...';
-  status.style.display = 'block'; status.textContent = '🤖 Gemini が画像を解析中...'; status.style.color = 'var(--a4)';
-
-  const inclClothing = document.getElementById('pa-clothing').checked;
-  const inclPose     = document.getElementById('pa-pose').checked;
-  const inclHair     = document.getElementById('pa-hair').checked;
-  const inclColor    = document.getElementById('pa-color').checked;
-  const inclFeature  = document.getElementById('pa-feature').checked;
-
-  const typeLabel = charType === 'human' ? '人物' : charType === 'pet' ? '動物（ペット）' : charType === 'animal' ? '動物' : 'キャラクター';
-
-  const prompt = `この画像に写っている${typeLabel}の特徴を、AIイラスト生成プロンプト用に詳細に英語で記述してください。
-
-抽出する情報：
-${inclHair ? '- 髪型・毛並み・毛色（長さ・質感・色含む）' : ''}
-${inclClothing ? '- 服装・アクセサリー・装飾品（色・デザイン・スタイル）' : ''}
-${inclColor ? '- 全体的な色合い・カラーパレット' : ''}
-${inclFeature ? '- 顔の特徴・体型・特徴的なパーツ（目の色、耳の形など）' : ''}
-${inclPose ? '- ポーズ・体勢（そのまま維持するため詳細に）' : '- ポーズは記述しない（感情に合わせて変化させるため）'}
-
-出力形式：
-- カンマ区切りの英語キーワード列のみ
-- 説明文や前置きは不要
-- キャラクターの説明として直接使える形式で
-
-例: fluffy white cat, chubby round body, bright blue eyes, small pink nose, wearing a red bow tie, soft pastel fur texture`;
-
-  try {
-    // まず使えるモデルを取得
-    const mRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { redirect: 'follow' });
-    const mData = await mRes.json();
-    const models = mData.models || [];
-    const preferred = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-1.5-flash'];
-    let model = null;
-    for (const p of preferred) {
-      const found = models.find(m => m.name.includes(p) && (m.supportedGenerationMethods||[]).includes('generateContent'));
-      if (found) { model = found.name.replace('models/', ''); break; }
-    }
-    if (!model) {
-      const any = models.find(m => (m.supportedGenerationMethods||[]).includes('generateContent'));
-      if (any) model = any.name.replace('models/', '');
-      else throw new Error('使えるモデルが見つからへんかった');
-    }
-
-    status.textContent = `🤖 ${model} で解析中...`;
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        redirect: 'follow',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [
-            { inline_data: { mime_type: paImageMime, data: paImageBase64 } },
-            { text: prompt }
-          ]}],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 512 }
-        })
-      }
-    );
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.filter(p=>p.text)?.map(p=>p.text)?.join('') || '';
-    const clean = text.replace(/```[a-z]*|```/g,'').trim();
-
-    if (clean) {
-      document.getElementById('character').value = clean;
-      status.textContent = '✅ 抽出完了！説明欄に反映したで。必要なら編集してや。';
-      status.style.color = 'var(--a3)';
-    } else {
-      throw new Error('テキストが取得できへんかった');
-    }
-  } catch(err) {
-    status.textContent = '❌ エラー: ' + err.message;
-    status.style.color = 'var(--a1)';
-  } finally {
-    btn.disabled = false; btn.textContent = '🔍 解析';
-    checkPaReady();
-  }
-}
-
-// Gemini APIキー復元
-try { const k = localStorage.getItem('gemini_api_key'); if(k) { document.getElementById('pa-apikey').value = k; checkPaReady(); } } catch(e) {}
-
-// ===== STYLE =====
-let selectedStyleVal = 'cute kawaii anime illustration style, clean linework, bright colors';
-let customStyleVal = '';
-document.querySelectorAll('.style-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    const wrap = document.getElementById('custom-style-wrap');
-    if (card.dataset.val === '__custom__') {
-      wrap.style.display = 'flex';
-      selectedStyleVal = customStyleVal || 'custom illustration style';
-    } else {
-      wrap.style.display = 'none';
-      selectedStyleVal = card.dataset.val;
-    }
-  });
-});
-function applyCustomStyle() {
-  const val = document.getElementById('custom-style-input').value.trim();
-  if (!val) return;
-  customStyleVal = val; selectedStyleVal = val;
-  document.querySelector('.style-card[data-val="__custom__"] .s-desc').textContent = val.slice(0, 30) + (val.length > 30 ? '…' : '');
-}
-
-// ===== EMOTIONS =====
-let stampCount = 24, selectedEmotions = [], selectedExtras = [], currentTab = 1;
-const DEFAULT_POOL = ['happy, big smile, joy','crying, sad tears, heartbroken','angry, furious, steam from head','laughing hard, tears of laughter','surprised, shocked, jaw drop','embarrassed, blushing, shy','sleepy, tired, heavy eyelids, yawning','cool, confident, smug','in love, heart eyes, floating hearts','thumbs up, good job, approval','thumbs down, disapproval, nope','waving hello, friendly greeting','celebrating, party popper, hurray','sweating nervously, anxious','thinking deeply, pondering','eating delicious food, yummy','running fast, in a hurry','sleeping soundly, snoring, ZZZ','OK hand gesture, affirmative','clapping hands, applause','texting on smartphone','working hard, focused at laptop','drinking tea or coffee, cozy','begging, please, puppy eyes','dancing, spinning, having fun','waiting, bored, impatient','reading a book, studious','overwhelmed, too much','triumphant, fist pump, victory','taking a selfie, peace sign','sick, sneezing','exercising, working out, flexing','listening to music, headphones','money eyes, excited about wealth','crying ugly, sobbing','speechless, blank stare','shrugging, whatever','giving a gift','heartbroken, sad love','disgusted, eww face'];
-
-document.querySelectorAll('.count-btn').forEach(btn => {
-  btn.addEventListener('click', () => { document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); stampCount = parseInt(btn.dataset.n); updateBadge(); });
-});
-document.querySelectorAll('#emotion-tags .tag').forEach(t => {
-  t.addEventListener('click', () => { const i = selectedEmotions.indexOf(t.dataset.val); if(i===-1){selectedEmotions.push(t.dataset.val);t.classList.add('active');}else{selectedEmotions.splice(i,1);t.classList.remove('active');} updateBadge(); });
-});
-document.querySelectorAll('#extra-tags .tag').forEach(t => {
-  t.addEventListener('click', () => { const i = selectedExtras.indexOf(t.dataset.val); if(i===-1){selectedExtras.push(t.dataset.val);t.classList.add('active');}else{selectedExtras.splice(i,1);t.classList.remove('active');} });
-});
-function updateBadge() { const n=selectedEmotions.length,b=document.getElementById('emotion-count'); b.textContent=n+' / '+stampCount+' 選択中'; b.className='count-badge '+(n===stampCount?'ok':n>stampCount?'over':'under'); }
-function selectAll() { document.querySelectorAll('#emotion-tags .tag').forEach(t=>{if(!selectedEmotions.includes(t.dataset.val))selectedEmotions.push(t.dataset.val);t.classList.add('active');}); updateBadge(); }
-function clearAll() { selectedEmotions=[]; document.querySelectorAll('#emotion-tags .tag').forEach(t=>t.classList.remove('active')); updateBadge(); }
-function autoSelect() { clearAll(); Array.from(document.querySelectorAll('#emotion-tags .tag')).sort(()=>Math.random()-.5).slice(0,stampCount).forEach(t=>{selectedEmotions.push(t.dataset.val);t.classList.add('active');}); updateBadge(); }
-
-// ===== GENERATE =====
-let lastP1='', lastP2='', lastTitle='';
-function generatePrompts() {
-  const character = document.getElementById('character').value.trim();
-  if (!character) { const el=document.getElementById('character'); el.style.borderColor='var(--a1)'; el.focus(); setTimeout(()=>el.style.borderColor='',1600); return; }
-  const textOverlay=document.getElementById('text-overlay').value.trim();
-  const custom=document.getElementById('custom').value.trim();
-  const wantSize=document.getElementById('toggle-size').checked;
-  const charDesc=buildCharacterPrompt();
-  const padded=[...selectedEmotions]; let pi=0;
-  while(padded.length<stampCount){const c=DEFAULT_POOL[pi%DEFAULT_POOL.length];if(!padded.includes(c))padded.push(c);pi++;}
-  const emotions=padded.slice(0,stampCount);
+function genStamp(){
+  const character=document.getElementById('st-character').value.trim();
+  if(!character){const el=document.getElementById('st-character');el.style.borderColor='var(--a1)';el.focus();setTimeout(()=>el.style.borderColor='',1600);return;}
+  const textOverlay=document.getElementById('st-text-overlay').value.trim();
+  const custom=document.getElementById('st-custom').value.trim();
+  const wantSize=document.getElementById('st-size').checked;
+  const charDesc=buildStCharPrompt();
+  const padded=[...stEmotions];let pi=0;
+  while(padded.length<stCount){const c=ST_DEFAULT_POOL[pi%ST_DEFAULT_POOL.length];if(!padded.includes(c))padded.push(c);pi++;}
+  const emotions=padded.slice(0,stCount);
   const sizeNote=wantSize?'\n- 各セル推奨サイズ: 370×320px':'';
   const textNote=textOverlay?'\n- 各スタンプには感情に合ったひと言（例:「'+textOverlay+'」）を添える':'';
-  const extrasBlock=selectedExtras.length>0?selectedExtras.map(e=>'  - '+e).join('\n'):'  - (なし)';
+  const extrasBlock=stExtras.length>0?stExtras.map(e=>'  - '+e).join('\n'):'  - (なし)';
   const customNote=custom?'\n\n【追加指示】\n'+custom:'';
-  const cols=stampCount<=16?4:stampCount<=24?6:8;
-  const rows=Math.ceil(stampCount/cols);
+  const cols=stCount<=16?4:stCount<=24?6:8;
+  const rows=Math.ceil(stCount/cols);
   const pad=n=>String(n).padStart(2,'0');
   const eBlock=emotions.map((e,i)=>'  '+pad(i+1)+'. '+e).join('\n');
-  lastTitle=(document.getElementById('charname').value.trim()||character).slice(0,20)+' '+stampCount+'枚セット';
-  lastP1=`あなたは優秀なイラストレーターです。LINEスタンプ用イラストの【一覧確認シート】を1枚生成してください。
 
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【目的】
-━━━━━━━━━━━━━━━━━━━━━━━━━
-全${stampCount}種類のスタンプを1枚のグリッド画像にまとめてください。
-個別ファイルの生成はまだ行わないでください。
+  const p1=`あなたは優秀なイラストレーターです。LINEスタンプ用イラストの【一覧確認シート】を1枚生成してください。
 
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【キャラクター設定】
-━━━━━━━━━━━━━━━━━━━━━━━━━
-- キャラクター: ${charDesc}
-- アートスタイル: ${selectedStyleVal}
-- 全コマで同じキャラクターデザインを一貫して使用すること
-
-━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━
+【目的】全${stCount}種類を1枚のグリッド画像にまとめる。個別ファイルはまだ不要。
+━━━━━━━━━━━━━━━━━━━━━━
+【キャラクター】
+- ${charDesc}
+- アートスタイル: ${stStyleVal}
+- 全コマで同じデザインを一貫して使用
+━━━━━━━━━━━━━━━━━━━━━━
 【グリッド仕様】
-━━━━━━━━━━━━━━━━━━━━━━━━━
-- レイアウト: ${cols}列 × ${rows}行（合計${stampCount}コマ）
-- 背景: 各セルは白またはごく薄いグレー（確認用なので透明でなくてOK）${sizeNote}
-- 各セルの下部に番号（01〜${pad(stampCount)}）を小さく表示する
-- セル間に細い区切り線を入れる${textNote}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【追加スタイル指定】
-━━━━━━━━━━━━━━━━━━━━━━━━━
+- ${cols}列 × ${rows}行（計${stCount}コマ）
+- 背景: 白またはごく薄いグレー（確認用）${sizeNote}
+- 各セル下部に番号（01〜${pad(stCount)}）を表示
+- セル間に区切り線を入れる${textNote}
+━━━━━━━━━━━━━━━━━━━━━━
+【追加スタイル】
 ${extrasBlock}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【${stampCount}枚の感情・表現リスト】
-━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━
+【${stCount}枚の感情リスト】
 ${eBlock}${customNote}
+━━━━━━━━━━━━━━━━━━━━━━
+グリッド一覧画像を生成してください。「OK」「分割して」等と返信があれば次フェーズへ。`;
 
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【出力指示】
-━━━━━━━━━━━━━━━━━━━━━━━━━
-上記${stampCount}種類すべてを1枚のグリッド画像として出力してください。
-ユーザーが「OK」「承認」「分割して」などと返信したら次のフェーズに進んでください。
+  const p2=`ありがとうございます！各スタンプを個別PNGに分割してZIPにまとめてください。
 
-それではグリッド一覧画像を生成してください！`;
-
-  lastP2=`ありがとうございます！一覧を確認しました。
-各スタンプを個別PNGファイルに分割してZIPにまとめてください。
-
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【分割・出力仕様（最重要）】
-━━━━━━━━━━━━━━━━━━━━━━━━━
-- 先ほど生成したグリッド画像から各コマを切り出す
-- フォーマット: PNG（背景は完全に透明 / transparent background）
-- ★背景の白またはグレーを除去し、キャラクター部分のみを残すこと★
-- ファイル名: stamp_01.png 〜 stamp_${pad(stampCount)}.png${wantSize?'\n- 各画像サイズ: 370×320px にリサイズ':''}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【キャラクター・スタイル（参照）】
-━━━━━━━━━━━━━━━━━━━━━━━━━
-- キャラクター: ${charDesc}
-- アートスタイル: ${selectedStyleVal}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【感情リスト（番号順）】
-━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━
+【分割仕様（最重要）】
+- PNG（背景完全透明 / transparent background）
+- 背景の白・グレーを除去してキャラのみ残す
+- ファイル名: stamp_01.png 〜 stamp_${pad(stCount)}.png${wantSize?'\n- サイズ: 370×320px':''}
+━━━━━━━━━━━━━━━━━━━━━━
+【キャラ・スタイル（参照）】
+- ${charDesc}
+- ${stStyleVal}
+━━━━━━━━━━━━━━━━━━━━━━
+【感情リスト】
 ${eBlock}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━
-【ZIP出力手順】
-━━━━━━━━━━━━━━━━━━━━━━━━━
-1. ${stampCount}枚すべてを透明背景PNGとして生成する
-2. stamp_01.png 〜 stamp_${pad(stampCount)}.png をひとつのZIPにまとめる
-3. ZIPファイル名は "line_stamps.zip" とする
-4. ダウンロードリンクを提供する
+━━━━━━━━━━━━━━━━━━━━━━
+【ZIP手順】
+1. ${stCount}枚を透明背景PNGで生成
+2. "line_stamps.zip" にまとめる
+3. ダウンロードリンクを提供
 
 分割・ZIP化を開始してください！`;
 
-  document.getElementById('prompt-phase1').textContent=lastP1;
-  document.getElementById('prompt-phase2').textContent=lastP2;
-  document.getElementById('output-title').textContent='📋 '+stampCount+'枚セット プロンプト（2フェーズ）';
-  document.getElementById('stamp-output').style.display='block';
-  const sb=document.getElementById('btn-save'); sb.textContent='💾 スプシに保存'; sb.classList.remove('done'); sb.disabled=false;
-  switchTab(1);
-  setTimeout(()=>document.getElementById('stamp-output').scrollIntoView({behavior:'smooth',block:'start'}),50);
+  document.getElementById('st-p1').textContent=p1;
+  document.getElementById('st-p2').textContent=p2;
+  document.getElementById('st-output-title').textContent='📋 '+stCount+'枚セット プロンプト（2フェーズ）';
+  document.getElementById('st-output').style.display='block';
+  switchStTab(1);
+  setTimeout(()=>document.getElementById('st-output').scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+function switchStTab(n){
+  stCurrentTab=n;
+  document.getElementById('st-tab1').classList.toggle('active',n===1);
+  document.getElementById('st-tab2').classList.toggle('active',n===2);
+  document.getElementById('st-panel1').classList.toggle('active',n===1);
+  document.getElementById('st-panel2').classList.toggle('active',n===2);
 }
 
-function switchTab(n) { currentTab=n; document.getElementById('tab1').classList.toggle('active',n===1); document.getElementById('tab2').classList.toggle('active',n===2); document.getElementById('panel1').classList.toggle('active',n===1); document.getElementById('panel2').classList.toggle('active',n===2); }
-function copyPrompt() {
-  const text=document.getElementById(currentTab===1?'prompt-phase1':'prompt-phase2').textContent;
-  navigator.clipboard.writeText(text).then(()=>{ const btn=document.getElementById('copy-btn'); btn.textContent='コピー済 ✓'; btn.classList.add('done'); setTimeout(()=>{btn.textContent='コピーする';btn.classList.remove('done');},2200); });
+// ===== COPY =====
+function copyOutput(resultId, btnId) {
+  const text = document.getElementById(resultId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(btnId);
+    const orig = btn.textContent;
+    btn.textContent = 'コピー済 ✓'; btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 2200);
+  });
 }
 
-// init
-try { const u=localStorage.getItem('gas_url'); if(u){document.getElementById('gas-url-input').value=u;} } catch(e){}
-updateBadge();
-</script>
+// ===== LIBRARY =====
+let libThumbData = null; // base64
+let modalCurrentId = null;
+
+function getLib() { try { return JSON.parse(localStorage.getItem('prompt_library')||'[]'); } catch(e) { return []; } }
+function setLib(arr) { try { localStorage.setItem('prompt_library', JSON.stringify(arr)); } catch(e) { alert('保存容量が足りへんかも。画像サイズを小さくしてみてや。'); } }
+
+function loadLibThumb(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  // リサイズして容量節約
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 400;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;} }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      libThumbData = canvas.toDataURL('image/jpeg', 0.75);
+      const wrap = document.getElementById('lib-thumb-upload');
+      wrap.innerHTML = `<img src="${libThumbData}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"><input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">`;
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function addLibItem() {
+  const title = document.getElementById('lib-new-title').value.trim();
+  const tag = document.getElementById('lib-new-tag').value.trim();
+  const body = document.getElementById('lib-new-body').value.trim();
+  if (!title || !body) { alert('タイトルとプロンプトは必須やで！'); return; }
+  const arr = getLib();
+  arr.unshift({ id: Date.now(), title, tag, body, thumb: libThumbData, date: new Date().toLocaleDateString('ja-JP') });
+  setLib(arr);
+  // reset
+  document.getElementById('lib-new-title').value='';
+  document.getElementById('lib-new-tag').value='';
+  document.getElementById('lib-new-body').value='';
+  libThumbData = null;
+  document.getElementById('lib-thumb-upload').innerHTML = `<span id="lib-thumb-icon">🖼️</span><input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">`;
+  document.getElementById('lib-thumb-upload').onclick = () => document.getElementById('lib-thumb-file').click();
+  renderLib();
+}
+
+function deleteLibItem(id, e) {
+  e.stopPropagation();
+  if (!confirm('削除してもええ？')) return;
+  setLib(getLib().filter(p => p.id !== id));
+  renderLib();
+}
+
+function copyLibItem(id, e) {
+  e.stopPropagation();
+  const p = getLib().find(x => x.id === id);
+  if (!p) return;
+  navigator.clipboard.writeText(p.body).then(() => {
+    const btn = e.currentTarget;
+    btn.textContent = '✓'; setTimeout(() => btn.textContent = '📋 コピー', 1800);
+  });
+}
+
+function openModal(id) {
+  const p = getLib().find(x => x.id === id);
+  if (!p) return;
+  modalCurrentId = id;
+  const imgEl = document.getElementById('modal-img');
+  if (p.thumb) { imgEl.src=p.thumb; imgEl.style.display='block'; }
+  else imgEl.style.display='none';
+  document.getElementById('modal-title').textContent = p.title;
+  document.getElementById('modal-tag-wrap').innerHTML = p.tag ? `<span class="lib-tag">${p.tag}</span> <span style="font-size:.65rem;color:var(--muted)">${p.date}</span>` : `<span style="font-size:.65rem;color:var(--muted)">${p.date}</span>`;
+  document.getElementById('modal-body').textContent = p.body;
+  document.getElementById('lib-modal').classList.add('open');
+}
+
+function closeModal(e) { document.getElementById('lib-modal').classList.remove('open'); }
+
+function copyModalPrompt() {
+  const text = document.getElementById('modal-body').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.currentTarget;
+    btn.textContent = '✓ コピー済み！';
+    setTimeout(() => btn.textContent = '📋 コピー', 2000);
+  });
+}
+
+function useInStamp() {
+  const text = document.getElementById('modal-body').textContent;
+  document.getElementById('lib-modal').classList.remove('open');
+  document.getElementById('st-character').value = text.slice(0, 400);
+  gotoPage('stamp');
+  setTimeout(() => document.getElementById('st-character').scrollIntoView({behavior:'smooth',block:'center'}), 200);
+}
+
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderLib() {
+  const q = (document.getElementById('lib-search')?.value||'').toLowerCase();
+  const arr = getLib().filter(p => !q || p.title.toLowerCase().includes(q) || (p.tag||'').toLowerCase().includes(q) || p.body.toLowerCase().includes(q));
+  const grid = document.getElementById('lib-grid');
+  if (!grid) return;
+  if (arr.length === 0) {
+    grid.innerHTML = `<div class="lib-empty" style="grid-column:1/-1"><span class="em-icon">${q?'🔍':'📭'}</span>${q?'検索結果が見つからへんかったで。':'まだ保存されてへんで！<br>上の入力欄からプロンプトを追加してや。'}</div>`;
+    return;
+  }
+  grid.innerHTML = arr.map(p => `
+    <div class="lib-card" onclick="openModal(${p.id})">
+      ${p.thumb
+        ? `<img class="lib-thumb" src="${p.thumb}" alt="${escHtml(p.title)}">`
+        : `<div class="lib-thumb-empty">📝</div>`}
+      <div class="lib-info">
+        <div class="lib-title">${escHtml(p.title)}</div>
+        ${p.tag ? `<span class="lib-tag">${escHtml(p.tag)}</span>` : ''}
+        <div class="lib-date">${p.date}</div>
+      </div>
+      <div class="lib-actions">
+        <button class="lib-btn copy" onclick="copyLibItem(${p.id},event)">📋 コピー</button>
+        <button class="lib-btn del" onclick="deleteLibItem(${p.id},event)">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+// 保存庫ピッカーをライブラリからも読む
+function loadSavedPicker() {
+  const picker = document.getElementById('az2-saved-picker');
+  if (!picker) return;
+  const arr = getLib();
+  if (arr.length === 0) {
+    picker.innerHTML = '<div class="saved-picker-empty">保存庫にプロンプトがないで！<br>📚 保存庫タブから追加してや。</div>';
+    return;
+  }
+  picker.innerHTML = arr.map(p => `
+    <div class="saved-picker-item" data-id="${p.id}" onclick="selectSavedPrompt(${p.id})">
+      ${p.thumb ? `<img src="${p.thumb}" style="width:28px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0;">` : ''}
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.title)}</span>
+      ${p.tag ? `<span class="sp-tag">${escHtml(p.tag)}</span>` : ''}
+    </div>`).join('');
+}
+function selectSavedPrompt(id) {
+  const p = getLib().find(x => String(x.id) === String(id));
+  if (!p) return;
+  selectedSavedPrompt = p;
+  document.querySelectorAll('.saved-picker-item').forEach(el => {
+    el.classList.toggle('selected', String(el.dataset.id) === String(id));
+  });
+}
+
+stUpdateBadge();
+renderLib();</script>
 </body>
 </html>

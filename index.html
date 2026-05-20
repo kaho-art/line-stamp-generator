@@ -392,7 +392,7 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <!-- イラスト解析 -->
   <div class="sub-panel active" id="sub-illust-az">
     <div class="card">
-      <div class="card-title"><span class="icon">🖼️</span> イラスト画像 → テイスト抽出</div>
+      <div class="card-title"><span class="icon">🖼️</span> イラスト画像 → テイスト抽出＆イラスト化プロンプト</div>
       <div class="field">
         <label>解析したいイラスト画像をアップ</label>
         <div class="upload-box" id="az1-upload" onclick="triggerUpload('az1-file')">
@@ -402,19 +402,30 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         </div>
       </div>
       <div class="field">
-        <label>抽出する情報</label>
+        <label>抽出する情報（複数選択OK）</label>
         <div class="chip-group">
-          <span class="chip blue active" data-group="az1-extract" data-val="art style and technique">画風・技法</span>
-          <span class="chip blue active" data-group="az1-extract" data-val="color palette and mood">色彩・ムード</span>
-          <span class="chip blue active" data-group="az1-extract" data-val="composition and framing">構図</span>
-          <span class="chip blue" data-group="az1-extract" data-val="character design details">キャラデザイン</span>
-          <span class="chip blue" data-group="az1-extract" data-val="background and environment">背景・環境</span>
-          <span class="chip blue" data-group="az1-extract" data-val="lighting and atmosphere">ライティング</span>
+          <span class="chip blue active" data-multi="az1-extract" data-val="overall art style, illustration technique, and medium (e.g. digital painting, watercolor, ink)">画風・技法・メディア</span>
+          <span class="chip blue active" data-multi="az1-extract" data-val="color palette: dominant colors, accent colors, color temperature, saturation level">色彩・カラーパレット</span>
+          <span class="chip blue active" data-multi="az1-extract" data-val="composition, framing, and camera angle">構図・フレーミング</span>
+          <span class="chip blue active" data-multi="az1-extract" data-val="linework style: line weight, line quality, whether lines are present or not">線の質・線の太さ</span>
+          <span class="chip blue active" data-multi="az1-extract" data-val="lighting style: direction, intensity, shadows, highlights, mood">ライティング・陰影</span>
+          <span class="chip blue" data-multi="az1-extract" data-val="texture and surface rendering style">テクスチャ・質感表現</span>
+          <span class="chip blue" data-multi="az1-extract" data-val="character design style: proportions, facial features, stylization level">キャラデザイン・頭身</span>
+          <span class="chip blue" data-multi="az1-extract" data-val="background style and environment details">背景・環境</span>
+          <span class="chip blue" data-multi="az1-extract" data-val="overall mood, atmosphere, and emotional tone">ムード・雰囲気</span>
+          <span class="chip blue" data-multi="az1-extract" data-val="rendering quality and detail level">描き込みの密度・クオリティ</span>
         </div>
       </div>
       <div class="field">
-        <label>このイラストで描きたいもの（任意）</label>
-        <input type="text" id="az1-target" placeholder="例: 同じテイストで猫を描いてほしい、別のキャラで同じ雰囲気で">
+        <label>🎯 プロンプトの用途</label>
+        <div class="chip-group">
+          <span class="chip green active" data-group="az1-purpose" data-val="photo_to_illust">📸 写真をこのテイストでイラスト化</span>
+          <span class="chip green" data-group="az1-purpose" data-val="new_content">✨ このテイストで新しいものを描く</span>
+        </div>
+      </div>
+      <div class="field" id="az1-target-field">
+        <label>描きたいもの（任意）</label>
+        <input type="text" id="az1-target" placeholder="例: 猫、風景、同じキャラで別ポーズ（空欄でも可）">
       </div>
       <button class="btn-primary" id="az1-btn" onclick="analyzeIllust()" disabled>🔍 解析してプロンプト生成</button>
       <div class="loading-bar" id="az1-loading"><div class="loading-fill"></div></div>
@@ -428,7 +439,7 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <button class="btn-copy" id="az1-copy" onclick="copyOutput('az1-result','az1-copy')">コピー</button>
         </div>
         <div class="prompt-box" id="az1-result"></div>
-        <div class="tip-box">💡 このプロンプトをChatGPTに貼って「この通りのテイストで〇〇を描いて」と追加するとええで！</div>
+        <div class="tip-box" id="az1-tip">💡 <b>写真をイラスト化する場合：</b>このプロンプトと変換したい写真を一緒にChatGPT（GPT-4o）に送るだけ！<br>「この写真をプロンプトに従ってイラスト化して」と一言添えてもええで。</div>
       </div>
     </div>
   </div>
@@ -436,7 +447,7 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <!-- 人物解析 -->
   <div class="sub-panel" id="sub-person-az">
     <div class="card">
-      <div class="card-title"><span class="icon">👤</span> 人物写真 → キャラクタープロンプト</div>
+      <div class="card-title"><span class="icon">👤</span> 人物写真 → 超詳細キャラクタープロンプト</div>
       <div class="field">
         <label>解析したい人物写真をアップ</label>
         <div class="upload-box" id="az2-upload" onclick="triggerUpload('az2-file')">
@@ -448,19 +459,20 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="field">
         <label>抽出する情報（複数選択OK）</label>
         <div class="chip-group">
-          <span class="chip blue active" data-multi="az2-extract" data-val="face features, eye color, facial structure">顔の特徴・目の色</span>
-          <span class="chip blue active" data-multi="az2-extract" data-val="hair style and hair color">髪型・髪色</span>
-          <span class="chip blue active" data-multi="az2-extract" data-val="clothing and outfit details">服装・コーデ</span>
-          <span class="chip blue active" data-multi="az2-extract" data-val="accessories and props">アクセサリー・小物</span>
-          <span class="chip blue" data-multi="az2-extract" data-val="body type and proportions">体型・プロポーション</span>
-          <span class="chip blue" data-multi="az2-extract" data-val="pose and body language">ポーズ（そのまま維持）</span>
-          <span class="chip blue" data-multi="az2-extract" data-val="skin tone and texture">肌の色・質感</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="face: eye shape, eye color, eyelid type (double/single), eyebrow shape and thickness, nose shape and size, lip shape and fullness, jaw shape, chin shape, overall face shape (oval/round/square/heart), cheekbone prominence">顔のパーツ詳細（目・鼻・口・輪郭）</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="hair: exact color with highlights/lowlights, length, texture (straight/wavy/curly), volume, specific hairstyle name and description, how it frames the face, any hair accessories">髪型・髪色（ハイライト含む）</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="full outfit: each clothing item with exact colors (use color names like crimson, ivory, olive), fabric texture appearance, pattern, fit style (loose/fitted/oversized), brand aesthetic, layering details">服装・色・素材感（全アイテム詳細）</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="all accessories: jewelry type and color, bags, belts, scarves, hats, glasses style, watches, and any other items with precise color and material description">アクセサリー・小物（全詳細）</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="body proportions: estimated head-to-body ratio (head count), shoulder width relative to hips, limb length, overall silhouette shape">体型・頭身・シルエット</span>
+          <span class="chip blue" data-multi="az2-extract" data-val="exact pose: position of each limb, angle of head, direction of gaze, expression details, hand position, weight distribution, stance width">ポーズ・視線・表情（完全再現用）</span>
+          <span class="chip blue" data-multi="az2-extract" data-val="skin: tone with specific description (e.g. warm ivory, golden beige, deep brown), visible texture, any notable features like freckles or beauty marks">肌の色・質感・特徴</span>
+          <span class="chip blue" data-multi="az2-extract" data-val="makeup details: foundation coverage, eye makeup style, lip color and finish, blush placement, overall makeup style (natural/dramatic/editorial)">メイク・化粧の詳細</span>
         </div>
       </div>
 
       <!-- 変更指示 -->
       <div class="field">
-        <label>✏️ 変更したい部分（任意）</label>
+        <label>✏️ 変更したい部分（任意・空欄でそのまま再現）</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
           <div>
             <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">髪型を変える</div>
@@ -468,42 +480,43 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           </div>
           <div>
             <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">髪色を変える</div>
-            <input type="text" id="az2-haircolor-change" placeholder="例: 金髪、ピンク、黒">
+            <input type="text" id="az2-haircolor-change" placeholder="例: プラチナブロンド、ローズピンク">
           </div>
           <div>
             <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">服装を変える</div>
-            <input type="text" id="az2-clothes-change" placeholder="例: 着物、スーツ、ドレス">
+            <input type="text" id="az2-clothes-change" placeholder="例: 白い着物、ダークネイビースーツ">
           </div>
           <div>
             <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">その他変更</div>
-            <input type="text" id="az2-other-change" placeholder="例: メガネをはずす、帽子追加">
+            <input type="text" id="az2-other-change" placeholder="例: メガネをはずす、帽子追加、背景を白に">
           </div>
         </div>
       </div>
 
       <!-- 出力テイスト -->
       <div class="field">
-        <label>🎨 出力テイスト</label>
-        <div class="chip-group" id="az2-teiст-chips">
-          <span class="chip purple active" data-group="az2-teist" data-val="cute kawaii anime illustration style, clean linework">アニメ風</span>
-          <span class="chip purple" data-group="az2-teist" data-val="chibi super deformed style, big head small body">ちびキャラ</span>
-          <span class="chip purple" data-group="az2-teist" data-val="realistic digital portrait, detailed render">リアル</span>
-          <span class="chip purple" data-group="az2-teist" data-val="watercolor illustration, soft brushwork">水彩</span>
-          <span class="chip purple" data-group="az2-teist" data-val="flat vector illustration, bold outlines">フラットベクター</span>
-          <span class="chip purple" data-group="az2-teist" data-val="3D clay render, Pixar inspired">3Dクレイ</span>
-          <span class="chip purple" data-group="az2-teist" data-val="line art sticker style, transparent background">ステッカー風</span>
+        <label>🎨 出力イラストテイスト</label>
+        <div class="chip-group">
+          <span class="chip purple active" data-group="az2-teist" data-val="cute kawaii anime illustration style, clean linework, expressive eyes">アニメ風</span>
+          <span class="chip purple" data-group="az2-teist" data-val="chibi super deformed style, 2-head ratio, big head small body, exaggerated cute proportions">ちびキャラ（2頭身）</span>
+          <span class="chip purple" data-group="az2-teist" data-val="semi-realistic anime style, 7-8 head ratio, detailed shading, balanced proportions">セミリアル（7〜8頭身）</span>
+          <span class="chip purple" data-group="az2-teist" data-val="highly realistic digital portrait, photorealistic skin and hair rendering, detailed render">フォトリアル</span>
+          <span class="chip purple" data-group="az2-teist" data-val="watercolor illustration, soft wet-on-wet brushwork, gentle color bleeding">水彩</span>
+          <span class="chip purple" data-group="az2-teist" data-val="flat vector illustration, bold clean outlines, no gradients">フラットベクター</span>
+          <span class="chip purple" data-group="az2-teist" data-val="3D clay render style, smooth surfaces, Pixar-inspired proportions">3Dクレイ</span>
+          <span class="chip purple" data-group="az2-teist" data-val="LINE sticker style, thick black outline, simple expressive face, transparent background compatible">LINEステッカー風</span>
         </div>
       </div>
 
       <!-- 保存済みキャラプロンプト -->
       <div class="field">
-        <label>📚 保存済みキャラプロンプトを使う（任意）</label>
+        <label>📚 保存済みキャラプロンプトをベースに使う（任意）</label>
         <div id="az2-saved-picker" class="saved-picker">
           <div class="saved-picker-empty">「プロンプト保存庫」に保存されたプロンプトがここに出るで！</div>
         </div>
       </div>
 
-      <button class="btn-primary" id="az2-btn" onclick="analyzePerson()" disabled>🔍 解析してプロンプト生成</button>
+      <button class="btn-primary" id="az2-btn" onclick="analyzePerson()" disabled>🔍 超詳細プロンプトを生成</button>
       <div class="loading-bar" id="az2-loading"><div class="loading-fill"></div></div>
       <div class="status-line" id="az2-status"></div>
       <div class="err-box" id="az2-err"></div>
@@ -511,11 +524,11 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <div class="output-section" id="az2-output">
       <div class="output-card">
         <div class="output-header">
-          <div class="output-title">👤 キャラクタープロンプト</div>
+          <div class="output-title">👤 超詳細キャラクタープロンプト</div>
           <button class="btn-copy" id="az2-copy" onclick="copyOutput('az2-result','az2-copy')">コピー</button>
         </div>
         <div class="prompt-box" id="az2-result"></div>
-        <div class="tip-box">💡 ChatGPTに貼って「この人物の特徴を使って〇〇を描いて」と追加するとええで！<br>LINEスタンプタブと組み合わせるとスタンプも作れるで。</div>
+        <div class="tip-box">💡 <b>使い方：</b>このプロンプトをChatGPTに貼るだけ！<br>📌 LINEスタンプを作るなら「スタンプ」タブのキャラ欄にこのプロンプトを貼り付けてや。<br>📌 「💬 スタンプに使う」ボタンで保存庫経由でそのまま使えるで！</div>
       </div>
     </div>
   </div>

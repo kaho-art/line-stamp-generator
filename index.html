@@ -235,6 +235,21 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .modal-btn.close{background:var(--surface);color:var(--text);border:1px solid var(--border);}
 .modal-btn:hover{opacity:.8;}
 
+/* サムネイルモード切替 */
+.thumb-mode-tabs{display:flex;gap:.4rem;margin-bottom:.7rem;}
+.thumb-mode-tab{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:.45em .5em;font-family:inherit;font-size:.75rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .18s;}
+.thumb-mode-tab:hover{border-color:var(--a5);color:var(--a5);}
+.thumb-mode-tab.active{background:rgba(199,125,255,.12);border-color:var(--a5);color:var(--a5);}
+.thumb-mode-panel{display:none;}
+.thumb-mode-panel.active{display:block;}
+.lib-thumb-preview{width:80px;height:80px;border:2px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;background:var(--surface);}
+.lib-thumb-preview img{width:100%;height:100%;object-fit:cover;}
+.drive-url-row{display:flex;gap:.4rem;margin-top:.5rem;}
+.drive-url-row input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;color:var(--text);font-family:inherit;font-size:.78rem;padding:.5rem .8rem;outline:none;transition:border-color .2s;}
+.drive-url-row input:focus{border-color:var(--a5);}
+.btn-drive-check{background:var(--a5);color:#000;font-family:inherit;font-size:.75rem;font-weight:900;border:none;border-radius:9px;padding:.5em 1em;cursor:pointer;white-space:nowrap;transition:opacity .18s;}
+.btn-drive-check:hover{opacity:.8;}
+
 /* ツールバー */
 .lib-toolbar{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;}
 .lib-toolbar input{flex:1;min-width:150px;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;color:var(--text);font-family:inherit;font-size:.85rem;padding:.58rem .9rem;outline:none;}
@@ -774,16 +789,47 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <input type="text" id="lib-new-title" placeholder="タイトル（例: もちこちゃん・アニメ風）">
       <input type="text" id="lib-new-tag" placeholder="タグ" style="max-width:110px;">
     </div>
-    <div class="lib-add-thumb-wrap">
-      <div class="lib-thumb-upload" id="lib-thumb-upload" onclick="document.getElementById('lib-thumb-file').click()" title="サムネイル画像（任意）">
-        <span id="lib-thumb-icon">🖼️</span>
-        <input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">
-      </div>
-      <textarea class="lib-add-area" id="lib-new-body" placeholder="プロンプトをここに貼り付けてや。SNSで拾ったやつでもOK！&#10;サムネイルは左の画像アイコンからアップできるで。"></textarea>
+
+    <!-- サムネイル選択モード -->
+    <div class="thumb-mode-tabs">
+      <button class="thumb-mode-tab active" onclick="switchThumbMode('file')">📁 ファイルアップ</button>
+      <button class="thumb-mode-tab" onclick="switchThumbMode('drive')">🔗 Googleドライブ</button>
     </div>
+
+    <!-- ファイルアップモード -->
+    <div class="thumb-mode-panel active" id="thumb-panel-file">
+      <div class="lib-add-thumb-wrap">
+        <div class="lib-thumb-upload" id="lib-thumb-upload" onclick="document.getElementById('lib-thumb-file').click()" title="サムネイル画像（任意）">
+          <span id="lib-thumb-icon">🖼️</span>
+          <input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">
+        </div>
+        <textarea class="lib-add-area" id="lib-new-body" placeholder="プロンプトをここに貼り付けてや。SNSで拾ったやつでもOK！"></textarea>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">📌 ファイルアップはこの端末のみに保存されるで</div>
+    </div>
+
+    <!-- Googleドライブモード -->
+    <div class="thumb-mode-panel" id="thumb-panel-drive">
+      <div class="lib-add-thumb-wrap">
+        <div class="lib-thumb-preview" id="lib-drive-preview">
+          <span style="font-size:1.8rem">🔗</span>
+        </div>
+        <textarea class="lib-add-area" id="lib-new-body-drive" placeholder="プロンプトをここに貼り付けてや。SNSで拾ったやつでもOK！"></textarea>
+      </div>
+      <div class="drive-url-row">
+        <input type="text" id="lib-drive-url" placeholder="GoogleドライブのリンクURLを貼り付け（共有リンク）" oninput="previewDriveImage()">
+        <button class="btn-drive-check" onclick="previewDriveImage()">プレビュー</button>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:.4rem;line-height:1.6">
+        📌 ドライブ画像の共有設定を<b style="color:var(--a3)">「リンクを知っている全員」</b>にしてや！<br>
+        共有リンク例: https://drive.google.com/file/d/<b>【ID】</b>/view
+      </div>
+      <div id="lib-drive-err" style="font-size:.74rem;color:var(--a1);margin-top:.3rem;display:none;"></div>
+    </div>
+
     <div class="lib-add-footer">
       <button class="btn-lib-add" onclick="addLibItem()">💾 保存する</button>
-      <span style="font-size:.72rem;color:var(--muted)">画像はこの端末に保存されるで</span>
+      <span style="font-size:.72rem;color:var(--muted)" id="lib-save-note">ファイルはこの端末のみに保存</span>
     </div>
   </div>
 
@@ -1249,8 +1295,46 @@ function copyOutput(resultId, btnId) {
 }
 
 // ===== LIBRARY =====
-let libThumbData = null; // base64
+let libThumbData = null; // base64 or drive URL
+let libThumbMode = 'file'; // 'file' or 'drive'
+let libDriveUrl = null;
 let modalCurrentId = null;
+
+function switchThumbMode(mode) {
+  libThumbMode = mode;
+  document.querySelectorAll('.thumb-mode-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&mode==='file')||(i===1&&mode==='drive')));
+  document.getElementById('thumb-panel-file').classList.toggle('active', mode==='file');
+  document.getElementById('thumb-panel-drive').classList.toggle('active', mode==='drive');
+  document.getElementById('lib-save-note').textContent = mode==='file' ? 'ファイルはこの端末のみに保存' : '画像URLはどの端末からでも表示できるで✨';
+}
+
+function convertDriveUrl(url) {
+  // https://drive.google.com/file/d/ID/view → 直接表示URL
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+  // https://drive.google.com/open?id=ID
+  const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (match2) return `https://drive.google.com/thumbnail?id=${match2[1]}&sz=w400`;
+  return null;
+}
+
+function previewDriveImage() {
+  const raw = document.getElementById('lib-drive-url').value.trim();
+  const errEl = document.getElementById('lib-drive-err');
+  const preview = document.getElementById('lib-drive-preview');
+  if (!raw) return;
+  const converted = convertDriveUrl(raw);
+  if (!converted) {
+    errEl.textContent = '⚠️ GoogleドライブのURLやないみたい。共有リンクを確認してや！';
+    errEl.style.display = 'block';
+    libDriveUrl = null;
+    preview.innerHTML = '<span style="font-size:1.8rem">❌</span>';
+    return;
+  }
+  errEl.style.display = 'none';
+  libDriveUrl = converted;
+  preview.innerHTML = `<img src="${converted}" alt="preview" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<span style=\\'font-size:.7rem;color:var(--a1);text-align:center;padding:.3rem\\'>共有設定を<br>「全員」にしてや</span>'">`;
+}
 
 function getLib() { try { return JSON.parse(localStorage.getItem('prompt_library')||'[]'); } catch(e) { return []; } }
 function setLib(arr) { try { localStorage.setItem('prompt_library', JSON.stringify(arr)); } catch(e) { alert('保存容量が足りへんかも。画像サイズを小さくしてみてや。'); } }
@@ -1258,7 +1342,6 @@ function setLib(arr) { try { localStorage.setItem('prompt_library', JSON.stringi
 function loadLibThumb(e) {
   const file = e.target.files[0];
   if (!file) return;
-  // リサイズして容量節約
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
@@ -1272,6 +1355,7 @@ function loadLibThumb(e) {
       libThumbData = canvas.toDataURL('image/jpeg', 0.75);
       const wrap = document.getElementById('lib-thumb-upload');
       wrap.innerHTML = `<img src="${libThumbData}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"><input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">`;
+      wrap.onclick = () => document.getElementById('lib-thumb-file').click();
     };
     img.src = ev.target.result;
   };
@@ -1281,19 +1365,39 @@ function loadLibThumb(e) {
 function addLibItem() {
   const title = document.getElementById('lib-new-title').value.trim();
   const tag = document.getElementById('lib-new-tag').value.trim();
-  const body = document.getElementById('lib-new-body').value.trim();
+  const body = libThumbMode === 'file'
+    ? document.getElementById('lib-new-body').value.trim()
+    : document.getElementById('lib-new-body-drive').value.trim();
   if (!title || !body) { alert('タイトルとプロンプトは必須やで！'); return; }
+
+  // サムネイル決定
+  let thumb = null;
+  if (libThumbMode === 'file') {
+    thumb = libThumbData; // base64 or null
+  } else {
+    thumb = libDriveUrl || null; // drive URL or null
+  }
+
   const arr = getLib();
-  arr.unshift({ id: Date.now(), title, tag, body, thumb: libThumbData, date: new Date().toLocaleDateString('ja-JP') });
+  arr.unshift({
+    id: Date.now(), title, tag, body,
+    thumb, thumbType: libThumbMode === 'drive' ? 'drive' : 'local',
+    date: new Date().toLocaleDateString('ja-JP')
+  });
   setLib(arr);
-  // reset
+
+  // リセット
   document.getElementById('lib-new-title').value='';
   document.getElementById('lib-new-tag').value='';
   document.getElementById('lib-new-body').value='';
-  libThumbData = null;
+  document.getElementById('lib-new-body-drive').value='';
+  document.getElementById('lib-drive-url').value='';
+  libThumbData = null; libDriveUrl = null;
   document.getElementById('lib-thumb-upload').innerHTML = `<span id="lib-thumb-icon">🖼️</span><input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">`;
   document.getElementById('lib-thumb-upload').onclick = () => document.getElementById('lib-thumb-file').click();
+  document.getElementById('lib-drive-preview').innerHTML = '<span style="font-size:1.8rem">🔗</span>';
   renderLib();
+  alert('保存したで！');
 }
 
 function deleteLibItem(id, e) {
@@ -1359,11 +1463,12 @@ function renderLib() {
   grid.innerHTML = arr.map(p => `
     <div class="lib-card" onclick="openModal(${p.id})">
       ${p.thumb
-        ? `<img class="lib-thumb" src="${p.thumb}" alt="${escHtml(p.title)}">`
+        ? `<img class="lib-thumb" src="${p.thumb}" alt="${escHtml(p.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="lib-thumb-empty" style="display:none">🔗</div>`
         : `<div class="lib-thumb-empty">📝</div>`}
       <div class="lib-info">
         <div class="lib-title">${escHtml(p.title)}</div>
         ${p.tag ? `<span class="lib-tag">${escHtml(p.tag)}</span>` : ''}
+        ${p.thumbType==='drive' ? '<span style="font-size:.6rem;color:var(--a7);margin-left:.3rem">☁️</span>' : ''}
         <div class="lib-date">${p.date}</div>
       </div>
       <div class="lib-actions">
@@ -1384,7 +1489,7 @@ function loadSavedPicker() {
   }
   picker.innerHTML = arr.map(p => `
     <div class="saved-picker-item" data-id="${p.id}" onclick="selectSavedPrompt(${p.id})">
-      ${p.thumb ? `<img src="${p.thumb}" style="width:28px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0;">` : ''}
+      ${p.thumb ? `<img src="${p.thumb}" style="width:28px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0;" onerror="this.style.display='none'">` : ''}
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.title)}</span>
       ${p.tag ? `<span class="sp-tag">${escHtml(p.tag)}</span>` : ''}
     </div>`).join('');

@@ -446,15 +446,15 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         </div>
       </div>
       <div class="field">
-        <label>抽出する情報</label>
+        <label>抽出する情報（複数選択OK）</label>
         <div class="chip-group">
-          <span class="chip blue active" data-group="az2-extract" data-val="face features, eye color, facial structure">顔の特徴・目の色</span>
-          <span class="chip blue active" data-group="az2-extract" data-val="hair style and hair color">髪型・髪色</span>
-          <span class="chip blue active" data-group="az2-extract" data-val="clothing and outfit details">服装・コーデ</span>
-          <span class="chip blue active" data-group="az2-extract" data-val="accessories and props">アクセサリー・小物</span>
-          <span class="chip blue" data-group="az2-extract" data-val="body type and proportions">体型・プロポーション</span>
-          <span class="chip blue" data-group="az2-extract" data-val="pose and body language">ポーズ（そのまま維持）</span>
-          <span class="chip blue" data-group="az2-extract" data-val="skin tone and texture">肌の色・質感</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="face features, eye color, facial structure">顔の特徴・目の色</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="hair style and hair color">髪型・髪色</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="clothing and outfit details">服装・コーデ</span>
+          <span class="chip blue active" data-multi="az2-extract" data-val="accessories and props">アクセサリー・小物</span>
+          <span class="chip blue" data-multi="az2-extract" data-val="body type and proportions">体型・プロポーション</span>
+          <span class="chip blue" data-multi="az2-extract" data-val="pose and body language">ポーズ（そのまま維持）</span>
+          <span class="chip blue" data-multi="az2-extract" data-val="skin tone and texture">肌の色・質感</span>
         </div>
       </div>
 
@@ -893,6 +893,10 @@ document.querySelectorAll('.chip[data-group]').forEach(c => {
 document.querySelectorAll('.chip:not([data-group])').forEach(c => {
   c.addEventListener('click', () => c.classList.toggle('active'));
 });
+// data-multi chips (toggle, not single-select)
+document.querySelectorAll('.chip[data-multi]').forEach(c => {
+  c.addEventListener('click', () => c.classList.toggle('active'));
+});
 // style chips (illust style — single)
 document.querySelectorAll('#il-style-chips .chip').forEach(c => {
   c.addEventListener('click', () => {
@@ -1037,7 +1041,7 @@ ${target ? '\n描きたいもの: ' + target : ''}
 // ===== ANALYZE: PERSON =====
 let selectedSavedPrompt = null;
 async function analyzePerson() {
-  const extracts = [...document.querySelectorAll('.chip[data-group="az2-extract"].active')].map(c=>c.dataset.val);
+  const extracts = [...document.querySelectorAll('.chip[data-multi="az2-extract"].active')].map(c=>c.dataset.val);
   const teist = document.querySelector('.chip[data-group="az2-teist"].active')?.dataset.val || 'cute kawaii anime illustration style';
   const hairChange = document.getElementById('az2-hair-change').value.trim();
   const hairColorChange = document.getElementById('az2-haircolor-change').value.trim();

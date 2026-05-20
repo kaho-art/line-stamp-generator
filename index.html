@@ -1116,30 +1116,14 @@ ${selectedSavedPrompt ? `\nベースとなるキャラクタープロンプト�
 }
 
 // ===== SAVED PICKER =====
-function loadSavedPicker() {
-  const picker = document.getElementById('az2-saved-picker');
-  if (!picker) return;
-  let arr = [];
-  try { arr = JSON.parse(localStorage.getItem('stamp_prompts')||'[]'); } catch(e){}
-  // Also try GAS — for now just use localStorage cache
-  if (arr.length === 0) {
-    picker.innerHTML = '<div class="saved-picker-empty">保存庫にプロンプトがないで！<br>LINEスタンプタブで生成して保存してや。</div>';
-    return;
-  }
-  picker.innerHTML = arr.map(p => `
-    <div class="saved-picker-item" data-id="${p.id}" onclick="selectSavedPrompt(${p.id})">
-      <span>${p.title}</span>
-      ${p.tag ? `<span class="sp-tag">${p.tag}</span>` : ''}
-    </div>`).join('');
-}
-function selectSavedPrompt(id) {
-  let arr = [];
-  try { arr = JSON.parse(localStorage.getItem('stamp_prompts')||'[]'); } catch(e){}
-  const p = arr.find(x => String(x.id) === String(id));
+// loadSavedPicker は library セクションで定義済み
+
+function selectSavedPrompt(sid) {
+  const p = getLib().find(x => String(x.id) === String(sid));
   if (!p) return;
   selectedSavedPrompt = p;
   document.querySelectorAll('.saved-picker-item').forEach(el => {
-    el.classList.toggle('selected', String(el.dataset.id) === String(id));
+    el.classList.toggle('selected', el.dataset.id === String(sid));
   });
 }
 
@@ -1523,13 +1507,14 @@ function addLibItem() {
 function deleteLibItem(id, e) {
   e.stopPropagation();
   if (!confirm('削除してもええ？')) return;
-  setLib(getLib().filter(p => p.id !== id));
+  setLib(getLib().filter(p => String(p.id) !== String(id)));
   renderLib();
+  loadSavedPicker();
 }
 
 function copyLibItem(id, e) {
   e.stopPropagation();
-  const p = getLib().find(x => x.id === id);
+  const p = getLib().find(x => String(x.id) === String(id));
   if (!p) return;
   navigator.clipboard.writeText(p.body).then(() => {
     const btn = e.currentTarget;
@@ -1538,14 +1523,14 @@ function copyLibItem(id, e) {
 }
 
 function openModal(id) {
-  const p = getLib().find(x => x.id === id);
+  const p = getLib().find(x => String(x.id) === String(id));
   if (!p) return;
-  modalCurrentId = id;
+  modalCurrentId = String(id);
   const imgEl = document.getElementById('modal-img');
   if (p.thumb) { imgEl.src=p.thumb; imgEl.style.display='block'; }
   else imgEl.style.display='none';
   document.getElementById('modal-title').textContent = p.title;
-  document.getElementById('modal-tag-wrap').innerHTML = p.tag ? `<span class="lib-tag">${p.tag}</span> <span style="font-size:.65rem;color:var(--muted)">${p.date}</span>` : `<span style="font-size:.65rem;color:var(--muted)">${p.date}</span>`;
+  document.getElementById('modal-tag-wrap').innerHTML = p.tag ? `<span class="lib-tag">${escHtml(p.tag)}</span> <span style="font-size:.65rem;color:var(--muted)">${p.date}</span>` : `<span style="font-size:.65rem;color:var(--muted)">${p.date}</span>`;
   document.getElementById('modal-body').textContent = p.body;
   document.getElementById('lib-modal').classList.add('open');
 }
@@ -1577,28 +1562,47 @@ function renderLib() {
   const grid = document.getElementById('lib-grid');
   if (!grid) return;
   if (arr.length === 0) {
-    grid.innerHTML = `<div class="lib-empty" style="grid-column:1/-1"><span class="em-icon">${q?'🔍':'📭'}</span>${q?'検索結果が見つからへんかったで。':'まだ保存されてへんで！<br>上の入力欄からプロンプトを追加してや。'}</div>`;
+    grid.innerHTML = `<div class="lib-empty" style="grid-column:1/-1"><span class="em-icon">${q?'🔍':'📭'}</span>${q?'検索結果が見つからへんかったで。':'まだ保存されてへんで！<br>上の入力欄かスプシ同期でプロンプトを追加してや。'}</div>`;
     return;
   }
-  grid.innerHTML = arr.map(p => `
-    <div class="lib-card" onclick="openModal(${p.id})">
+  // IDを文字列としてdata属性に持たせてonclickで渡す
+  grid.innerHTML = arr.map(p => {
+    const sid = escHtml(String(p.id));
+    return `
+    <div class="lib-card" onclick="openModal('${sid}')">
       ${p.thumb
-        ? `<img class="lib-thumb" src="${p.thumb}" alt="${escHtml(p.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="lib-thumb-empty" style="display:none">🔗</div>`
+        ? `<img class="lib-thumb" src="${p.thumb}" alt="${escHtml(p.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="lib-thumb-empty" style="display:none">☁️</div>`
         : `<div class="lib-thumb-empty">📝</div>`}
       <div class="lib-info">
         <div class="lib-title">${escHtml(p.title)}</div>
         ${p.tag ? `<span class="lib-tag">${escHtml(p.tag)}</span>` : ''}
         ${p.thumbType==='drive' ? '<span style="font-size:.6rem;color:var(--a7);margin-left:.3rem">☁️</span>' : ''}
-        <div class="lib-date">${p.date}</div>
+        <div class="lib-date">${escHtml(p.date||'')}</div>
       </div>
       <div class="lib-actions">
-        <button class="lib-btn copy" onclick="copyLibItem(${p.id},event)">📋 コピー</button>
-        <button class="lib-btn del" onclick="deleteLibItem(${p.id},event)">🗑️</button>
+        <button class="lib-btn copy" onclick="event.stopPropagation();copyLibById('${sid}',this)">📋 コピー</button>
+        <button class="lib-btn del" onclick="event.stopPropagation();deleteLibById('${sid}')">🗑️</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
-// 保存庫ピッカーをライブラリからも読む
+// 文字列IDで操作する関数（HTMLから呼ぶ用）
+function deleteLibById(sid) {
+  if (!confirm('削除してもええ？')) return;
+  setLib(getLib().filter(p => String(p.id) !== sid));
+  renderLib();
+  loadSavedPicker();
+}
+function copyLibById(sid, btn) {
+  const p = getLib().find(x => String(x.id) === sid);
+  if (!p) return;
+  navigator.clipboard.writeText(p.body).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓'; setTimeout(() => btn.textContent = orig, 1800);
+  });
+}
+
 function loadSavedPicker() {
   const picker = document.getElementById('az2-saved-picker');
   if (!picker) return;
@@ -1608,18 +1612,18 @@ function loadSavedPicker() {
     return;
   }
   picker.innerHTML = arr.map(p => `
-    <div class="saved-picker-item" data-id="${p.id}" onclick="selectSavedPrompt(${p.id})">
+    <div class="saved-picker-item" data-id="${escHtml(String(p.id))}" onclick="selectSavedPrompt('${escHtml(String(p.id))}')">
       ${p.thumb ? `<img src="${p.thumb}" style="width:28px;height:28px;object-fit:cover;border-radius:5px;flex-shrink:0;" onerror="this.style.display='none'">` : ''}
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.title)}</span>
       ${p.tag ? `<span class="sp-tag">${escHtml(p.tag)}</span>` : ''}
     </div>`).join('');
 }
-function selectSavedPrompt(id) {
-  const p = getLib().find(x => String(x.id) === String(id));
+function selectSavedPrompt(sid) {
+  const p = getLib().find(x => String(x.id) === String(sid));
   if (!p) return;
   selectedSavedPrompt = p;
   document.querySelectorAll('.saved-picker-item').forEach(el => {
-    el.classList.toggle('selected', String(el.dataset.id) === String(id));
+    el.classList.toggle('selected', el.dataset.id === String(sid));
   });
 }
 

@@ -1414,7 +1414,6 @@ function genStamp(){
   const padded=[...stEmotions];let pi=0;
   while(padded.length<stCount){const c=ST_DEFAULT_POOL[pi%ST_DEFAULT_POOL.length];if(!padded.includes(c))padded.push(c);pi++;}
   const emotions=padded.slice(0,stCount);
-  const sizeNote=wantSize?'\n- 各セル推奨サイズ: 370×320px':'';
   const textNote=textOverlay?'\n- 各スタンプには感情に合ったひと言（例:「'+textOverlay+'」）を添える':'';
   const extrasBlock=stExtras.length>0?stExtras.map(e=>'  - '+e).join('\n'):'  - (なし)';
   const customNote=custom?'\n\n【追加指示】\n'+custom:'';

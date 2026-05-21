@@ -235,6 +235,18 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .modal-btn.close{background:var(--surface);color:var(--text);border:1px solid var(--border);}
 .modal-btn:hover{opacity:.8;}
 
+/* 種類タブ */
+.product-type-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;}
+.ptype-tab{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:.9rem .6rem;text-align:center;cursor:pointer;transition:all .2s;user-select:none;}
+.ptype-tab:hover{border-color:var(--a4);}
+.ptype-tab.active{border-color:var(--a4);background:rgba(77,150,255,.1);}
+.ptype-icon{font-size:1.5rem;display:block;margin-bottom:.35rem;}
+.ptype-name{font-size:.82rem;font-weight:900;color:var(--text);margin-bottom:.2rem;}
+.ptype-tab.active .ptype-name{color:var(--a4);}
+.ptype-desc{font-size:.65rem;color:var(--muted);}
+.info-box{background:rgba(255,217,61,.07);border:1px solid rgba(255,217,61,.25);border-radius:12px;padding:.8rem 1rem;font-size:.8rem;color:#e8d87a;margin-bottom:1rem;line-height:1.6;}
+.info-box b{color:var(--a2);}
+
 /* GAS連携カード */
 .gas-setup-card{background:rgba(107,203,119,.06);border:1.5px solid rgba(107,203,119,.25);border-radius:18px;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
 .gas-setup-title{font-size:.68rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a3);margin-bottom:.8rem;}
@@ -607,8 +619,99 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 <!-- ==================== STAMP PAGE ==================== -->
 <div class="page" id="page-stamp">
+
+  <!-- 種類選択 -->
   <div class="card">
-    <div class="card-title"><span class="icon">🔢</span> スタンプ枚数</div>
+    <div class="card-title"><span class="icon">🏷️</span> 作成する種類</div>
+    <div class="product-type-tabs">
+      <div class="ptype-tab active" data-ptype="stamp" onclick="switchProductType('stamp')">
+        <span class="ptype-icon">💬</span>
+        <div class="ptype-name">LINEスタンプ</div>
+        <div class="ptype-desc">8〜40個・370×320px</div>
+      </div>
+      <div class="ptype-tab" data-ptype="emoji" onclick="switchProductType('emoji')">
+        <span class="ptype-icon">😊</span>
+        <div class="ptype-name">LINE絵文字</div>
+        <div class="ptype-desc">8〜40個・180×180px</div>
+      </div>
+      <div class="ptype-tab" data-ptype="theme" onclick="switchProductType('theme')">
+        <span class="ptype-icon">🎨</span>
+        <div class="ptype-name">LINE着せ替え</div>
+        <div class="ptype-desc">素材セット</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 絵文字ヒント -->
+  <div id="emoji-hint" style="display:none;">
+    <div class="info-box">
+      😊 <b>LINE絵文字のポイント：</b>180×180pxの正方形・シンプルで小さくても見やすい表現・テキストは入れない
+    </div>
+  </div>
+
+  <!-- 着せ替えページ -->
+  <div id="theme-panel" style="display:none;">
+    <div class="card">
+      <div class="card-title"><span class="icon">🎨</span> LINE着せ替えプロンプト生成</div>
+      <div class="field">
+        <label>テーマのコンセプト・世界観</label>
+        <textarea id="th-concept" rows="2" placeholder="例: 森の中の秘密の花屋、宇宙を旅するクジラ、レトロな喫茶店、モノクロシック"></textarea>
+      </div>
+      <div class="field">
+        <label>🎨 カラーパレット</label>
+        <div class="chip-group">
+          <span class="chip blue" data-group="th-color" data-val="soft pastel colors, muted tones, gentle hues">パステル・ソフト</span>
+          <span class="chip blue" data-group="th-color" data-val="bold vivid saturated colors, high contrast">ビビッド・カラフル</span>
+          <span class="chip blue" data-group="th-color" data-val="monochrome black and white, minimal color">モノクロ</span>
+          <span class="chip blue" data-group="th-color" data-val="dark moody tones, deep rich colors">ダーク・深み</span>
+          <span class="chip blue" data-group="th-color" data-val="warm earth tones, natural organic palette">アース・ナチュラル</span>
+          <span class="chip blue" data-group="th-color" data-val="cool blue and teal palette, fresh and clean">クール・ブルー系</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>🖌️ イラストスタイル</label>
+        <div class="chip-group">
+          <span class="chip purple active" data-group="th-style" data-val="flat vector illustration, clean minimal design">フラットベクター</span>
+          <span class="chip purple" data-group="th-style" data-val="watercolor texture, soft painterly style">水彩風</span>
+          <span class="chip purple" data-group="th-style" data-val="cute kawaii anime illustration">かわいいアニメ</span>
+          <span class="chip purple" data-group="th-style" data-val="hand-drawn doodle sketch style">手書きスケッチ</span>
+          <span class="chip purple" data-group="th-style" data-val="collage mixed media art style">コラージュ・ミクスト</span>
+          <span class="chip purple" data-group="th-style" data-val="elegant art nouveau botanical style">アールヌーボー</span>
+          <span class="chip purple" data-group="th-style" data-val="geometric abstract modern pattern">ジオメトリック</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>作成する素材（複数選択OK）</label>
+        <div class="chip-group">
+          <span class="chip green active" data-multi="th-assets" data-val="home screen background wallpaper (2556×1179px), tiled seamless pattern">ホーム画面背景</span>
+          <span class="chip green active" data-multi="th-assets" data-val="talk room background (2556×1179px), subtle pattern that doesn't interfere with text">トーク背景</span>
+          <span class="chip green active" data-multi="th-assets" data-val="main icon (114×114px), simple centered logo or symbol">メインアイコン</span>
+          <span class="chip green" data-multi="th-assets" data-val="call screen background (2556×1179px)">通話画面背景</span>
+          <span class="chip green" data-multi="th-assets" data-val="tab icons set (small, simple, monochrome friendly)">タブアイコン</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>追加指示（任意）</label>
+        <textarea id="th-extra" rows="2" placeholder="例: キャラクターは入れずパターンのみ、特定の動物モチーフで統一、など"></textarea>
+      </div>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#a8ff3e,#00d4ff);color:#000;" onclick="genTheme()">🎨 着せ替えプロンプトを生成する</button>
+    </div>
+    <div class="output-section" id="th-output">
+      <div class="output-card">
+        <div class="output-header">
+          <div class="output-title">🎨 LINE着せ替えプロンプト</div>
+          <button class="btn-copy" id="th-copy" onclick="copyOutput('th-result','th-copy')">コピー</button>
+        </div>
+        <div class="prompt-box" id="th-result"></div>
+        <div class="tip-box">💡 各素材をChatGPTに1枚ずつ生成依頼してや！サイズはチャットで「○○pxにして」と追加するとええで。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- スタンプ・絵文字共通パネル -->
+  <div id="stamp-emoji-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">🔢</span> <span id="st-count-label">スタンプ</span>枚数</div>
     <div class="count-selector">
       <div class="count-btn" data-n="8"><span class="num">8</span><span class="lbl">ミニ</span></div>
       <div class="count-btn" data-n="16"><span class="num">16</span><span class="lbl">スモール</span></div>
@@ -785,7 +888,7 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
     <div class="toggle-row">
       <label class="sw"><input type="checkbox" id="st-size" checked><span class="sw-slider"></span></label>
-      <span class="toggle-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
+      <span class="toggle-label" id="st-size-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
     </div>
     <button class="btn-primary stamp" onclick="genStamp()">✨ 2フェーズ プロンプトを生成する！</button>
   </div>
@@ -804,6 +907,7 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="tip-box">💡 <b>Phase1</b>→ChatGPTに貼って一覧グリッド確認→<b>Phase2</b>→同じチャットに貼って分割ZIP！</div>
     </div>
   </div>
+  </div><!-- /stamp-emoji-panel -->
 </div>
 
 <!-- ==================== LIBRARY PAGE ==================== -->
@@ -1181,6 +1285,70 @@ function genIllust() {
   setTimeout(() => document.getElementById('il-output').scrollIntoView({behavior:'smooth',block:'start'}), 50);
 }
 
+// ===== PRODUCT TYPE =====
+let currentProductType = 'stamp';
+
+function switchProductType(type) {
+  currentProductType = type;
+  document.querySelectorAll('.ptype-tab').forEach(t => t.classList.toggle('active', t.dataset.ptype === type));
+  document.getElementById('stamp-emoji-panel').style.display = type === 'theme' ? 'none' : 'block';
+  document.getElementById('theme-panel').style.display = type === 'theme' ? 'block' : 'none';
+  document.getElementById('emoji-hint').style.display = type === 'emoji' ? 'block' : 'none';
+  // サイズラベルとトグルを更新
+  const sizeLabel = document.getElementById('st-size-label');
+  const countLabel = document.getElementById('st-count-label');
+  if (type === 'emoji') {
+    sizeLabel.textContent = 'LINE絵文字推奨サイズを指定 (180×180px)';
+    countLabel.textContent = '絵文字';
+  } else {
+    sizeLabel.textContent = 'LINEスタンプ推奨サイズを指定 (370×320px)';
+    countLabel.textContent = 'スタンプ';
+  }
+}
+
+// ===== THEME GENERATOR =====
+function genTheme() {
+  const concept = document.getElementById('th-concept').value.trim();
+  if (!concept) { document.getElementById('th-concept').style.borderColor='var(--a1)'; document.getElementById('th-concept').focus(); setTimeout(()=>document.getElementById('th-concept').style.borderColor='',1500); return; }
+  const color = document.querySelector('.chip[data-group="th-color"].active')?.dataset.val || 'soft pastel colors, muted tones';
+  const style = document.querySelector('.chip[data-group="th-style"].active')?.dataset.val || 'flat vector illustration';
+  const assets = [...document.querySelectorAll('.chip[data-multi="th-assets"].active')].map(c => c.dataset.val);
+  const extra = document.getElementById('th-extra').value.trim();
+
+  const assetList = assets.length > 0 ? assets : ['home screen background, talk room background, main icon'];
+
+  const prompt = `LINE着せ替えテーマの素材を作成してください。
+
+━━━━━━━━━━━━━━━━━━━━━━
+【テーマコンセプト】
+${concept}
+
+━━━━━━━━━━━━━━━━━━━━━━
+【デザイン仕様】
+- カラーパレット: ${color}
+- イラストスタイル: ${style}
+- テーマ全体で統一感のあるデザインにすること
+- シンプルで視認性が高く、テキストの邪魔をしないこと
+
+━━━━━━━━━━━━━━━━━━━━━━
+【作成する素材】
+${assetList.map((a, i) => `${i+1}. ${a}`).join('\n')}
+${extra ? '\n【追加指示】\n' + extra : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━
+【出力指示】
+- 各素材を1枚ずつ順番に生成してください
+- 最初に「1. ホーム画面背景」から始めて、「次の素材をお願いします」と返信するたびに次に進んでください
+- すべての素材でテーマとカラーパレットを統一すること
+- 背景素材はシームレスパターンまたは全体に広がるデザインにすること
+
+それでは最初の素材から生成してください！`;
+
+  document.getElementById('th-result').textContent = prompt;
+  document.getElementById('th-output').style.display = 'block';
+  setTimeout(() => document.getElementById('th-output').scrollIntoView({behavior:'smooth',block:'start'}), 50);
+}
+
 // ===== STAMP =====
 let stCount=24, stEmotions=[], stExtras=[], stCurrentTab=1;
 let stStyleVal='cute kawaii anime illustration style, clean linework, bright colors';
@@ -1238,6 +1406,10 @@ function genStamp(){
   const textOverlay=document.getElementById('st-text-overlay').value.trim();
   const custom=document.getElementById('st-custom').value.trim();
   const wantSize=document.getElementById('st-size').checked;
+  const isEmoji=currentProductType==='emoji';
+  const productLabel=isEmoji?'LINE絵文字':'LINEスタンプ';
+  const sizeNote=wantSize?(isEmoji?'\n- 各セル推奨サイズ: 180×180px（正方形）':'\n- 各セル推奨サイズ: 370×320px'):'';
+  const emojiNote=isEmoji?'\n- 正方形（180×180px）に収まるシンプルな構図\n- テキストは入れない（絵文字はテキストなしが基本）\n- 小さく表示されても認識できるシンプルな表現にすること':'';
   const charDesc=buildStCharPrompt();
   const padded=[...stEmotions];let pi=0;
   while(padded.length<stCount){const c=ST_DEFAULT_POOL[pi%ST_DEFAULT_POOL.length];if(!padded.includes(c))padded.push(c);pi++;}
@@ -1251,7 +1423,7 @@ function genStamp(){
   const pad=n=>String(n).padStart(2,'0');
   const eBlock=emotions.map((e,i)=>'  '+pad(i+1)+'. '+e).join('\n');
 
-  const p1=`あなたは優秀なイラストレーターです。LINEスタンプ用イラストの【一覧確認シート】を1枚生成してください。
+  const p1=`あなたは優秀なイラストレーターです。${productLabel}用イラストの【一覧確認シート】を1枚生成してください。
 
 ━━━━━━━━━━━━━━━━━━━━━━
 【目的】全${stCount}種類を1枚のグリッド画像にまとめる。個別ファイルはまだ不要。
@@ -1265,7 +1437,7 @@ function genStamp(){
 - ${cols}列 × ${rows}行（計${stCount}コマ）
 - 背景: 各セルは白またはごく薄いグレー（確認用）${sizeNote}
 - セル同士の区切りは【余白のみ】で分ける（線・枠・番号・テキストは一切入れない）
-- Phase2でそのまま均等分割できるよう、各セルを完全に等サイズで配置すること${textNote}
+- Phase2でそのまま均等分割できるよう、各セルを完全に等サイズで配置すること${textNote}${emojiNote}
 ━━━━━━━━━━━━━━━━━━━━━━
 【追加スタイル】
 ${extrasBlock}
@@ -1275,7 +1447,7 @@ ${eBlock}${customNote}
 ━━━━━━━━━━━━━━━━━━━━━━
 グリッド一覧画像を生成してください。「OK」「分割して」等と返信があれば次フェーズへ。`;
 
-  const p2=`ありがとうございます！各スタンプを個別PNGに分割してZIPにまとめてください。
+  const p2=`ありがとうございます！各${productLabel}を個別PNGに分割してZIPにまとめてください。
 
 ━━━━━━━━━━━━━━━━━━━━━━
 【分割仕様（最重要）】
@@ -1284,7 +1456,7 @@ ${eBlock}${customNote}
 - PNG（背景完全透明 / transparent background）
 - 背景の白・グレーを除去してキャラのみ残す
 - セル間の余白は切り捨て、キャラクター部分のみを抽出すること
-- ファイル名: stamp_01.png 〜 stamp_${pad(stCount)}.png${wantSize?'\n- サイズ: 370×320px':''}
+- ファイル名: stamp_01.png 〜 stamp_${pad(stCount)}.png${wantSize?(isEmoji?'\n- サイズ: 180×180px（正方形）':'\n- サイズ: 370×320px'):''}
 ━━━━━━━━━━━━━━━━━━━━━━
 【キャラ・スタイル（参照）】
 - ${charDesc}
@@ -1302,7 +1474,7 @@ ${eBlock}
 
   document.getElementById('st-p1').textContent=p1;
   document.getElementById('st-p2').textContent=p2;
-  document.getElementById('st-output-title').textContent='📋 '+stCount+'枚セット プロンプト（2フェーズ）';
+  document.getElementById('st-output-title').textContent='📋 '+stCount+'枚セット プロンプト（'+productLabel+'・2フェーズ）';
   document.getElementById('st-output').style.display='block';
   switchStTab(1);
   setTimeout(()=>document.getElementById('st-output').scrollIntoView({behavior:'smooth',block:'start'}),50);

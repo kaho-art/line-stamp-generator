@@ -1353,35 +1353,36 @@ async function syncFromGas() {
       return;
     }
 
-    // 既存のlocalStorageデータを取得
+    // スプシのデータを全件ローカルに反映（IDで上書きマージ）
     const existing = getLib();
-    const existingIds = new Set(existing.map(p => String(p.id)));
+    const existingMap = {};
+    existing.forEach(p => { existingMap[String(p.id)] = p; });
 
-    // GASのデータをlibフォーマットに変換して追加（重複スキップ）
-    let added = 0;
-    const newItems = [];
     for (const item of gasItems) {
-      if (existingIds.has(String(item.id))) continue;
-      // Driveリンクを変換
-      let thumb = null;
-      if (item.image) {
-        thumb = convertDriveUrl(item.image) || null;
+      const sid = String(item.id);
+      // imageフィールドをサムネイルURLに変換
+      let thumb = existingMap[sid]?.thumb || null; // ローカルにすでにあれば維持
+      const rawImage = String(item.image || '').trim();
+      if (rawImage) {
+        const converted = convertDriveUrl(rawImage);
+        if (converted) thumb = converted;
       }
-      newItems.push({
-        id: item.id || Date.now() + Math.random(),
+      existingMap[sid] = {
+        id: sid,
         title: item.title || '無題',
         tag: item.tag || '',
         body: item.body || '',
         thumb: thumb,
         thumbType: thumb ? 'drive' : null,
-        date: item.date || new Date().toLocaleDateString('ja-JP')
-      });
-      added++;
+        date: item.date || '',
+        image: rawImage // 元のドライブURLも保持
+      };
     }
 
-    // 新しいものを先頭に追加
-    setLib([...newItems, ...existing]);
-    setGasStatus(`✅ ${added}件追加！（計${newItems.length + existing.length}件）`, 'ok');
+    // 最終的なリストを日付降順（IDが大きい順）で並べる
+    const merged = Object.values(existingMap).sort((a, b) => String(b.id).localeCompare(String(a.id)));
+    setLib(merged);
+    setGasStatus(`✅ ${gasItems.length}件を同期完了！`, 'ok');
     renderLib();
     loadSavedPicker();
   } catch(e) {
@@ -1474,11 +1475,14 @@ async function addLibItem() {
     : document.getElementById('lib-new-body-drive').value.trim();
   if (!title || !body) { alert('タイトルとプロンプトは必須やで！'); return; }
 
+  // サムネイルとdriveURL決定
   let thumb = null;
+  let rawDriveUrl = '';
   if (libThumbMode === 'file') {
-    thumb = libThumbData;
+    thumb = libThumbData || null;
   } else {
-    thumb = libDriveUrl || null;
+    rawDriveUrl = (document.getElementById('lib-drive-url')?.value || '').trim();
+    thumb = libDriveUrl || (rawDriveUrl ? convertDriveUrl(rawDriveUrl) : null);
   }
 
   const newItem = {
@@ -1487,8 +1491,7 @@ async function addLibItem() {
     thumb,
     thumbType: libThumbMode === 'drive' ? 'drive' : 'local',
     date: new Date().toLocaleDateString('ja-JP'),
-    // スプシ用: driveリンクそのまま保存
-    image: libThumbMode === 'drive' ? (document.getElementById('lib-drive-url')?.value.trim() || '') : ''
+    image: rawDriveUrl // スプシのimage列に入るドライブURL
   };
 
   // localStorageに保存
@@ -1505,35 +1508,36 @@ async function addLibItem() {
         method: 'POST',
         redirect: 'follow',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'save', data: {
-          id: newItem.id,
-          title: newItem.title,
-          tag: newItem.tag,
-          body: newItem.body,
-          date: newItem.date,
-          image: newItem.image
-        }})
+        body: JSON.stringify({
+          action: 'save',
+          data: {
+            id:    newItem.id,
+            title: newItem.title,
+            tag:   newItem.tag,
+            body:  newItem.body,
+            date:  newItem.date,
+            image: newItem.image  // ← Driveの共有URLをそのまま送る
+          }
+        })
       });
       const text = await res.text();
       const result = JSON.parse(text);
       if (result.ok) {
-        setGasStatus('✅ スプシに保存したで！', 'ok');
+        setGasStatus('✅ スプシにも保存したで！', 'ok');
       } else {
-        setGasStatus('⚠️ ローカル保存はOK。スプシ書き込みエラー: ' + (result.error||'不明'), 'err');
+        setGasStatus('⚠️ ローカル保存はOK。スプシエラー: ' + (result.error||'不明'), 'err');
       }
     } catch(e) {
       setGasStatus('⚠️ ローカル保存はOK。スプシ接続失敗: ' + e.message, 'err');
     }
-  } else {
-    setGasStatus('💡 スプシ連携URLを設定するとクラウド保存もできるで！', 'loading');
   }
 
   // フォームリセット
-  document.getElementById('lib-new-title').value='';
-  document.getElementById('lib-new-tag').value='';
-  document.getElementById('lib-new-body').value='';
-  document.getElementById('lib-new-body-drive').value='';
-  if (document.getElementById('lib-drive-url')) document.getElementById('lib-drive-url').value='';
+  document.getElementById('lib-new-title').value = '';
+  document.getElementById('lib-new-tag').value = '';
+  document.getElementById('lib-new-body').value = '';
+  document.getElementById('lib-new-body-drive').value = '';
+  if (document.getElementById('lib-drive-url')) document.getElementById('lib-drive-url').value = '';
   libThumbData = null; libDriveUrl = null;
   const upWrap = document.getElementById('lib-thumb-upload');
   if (upWrap) {

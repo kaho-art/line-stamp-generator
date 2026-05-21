@@ -1466,7 +1466,7 @@ function loadLibThumb(e) {
   reader.readAsDataURL(file);
 }
 
-function addLibItem() {
+async function addLibItem() {
   const title = document.getElementById('lib-new-title').value.trim();
   const tag = document.getElementById('lib-new-tag').value.trim();
   const body = libThumbMode === 'file'
@@ -1474,34 +1474,77 @@ function addLibItem() {
     : document.getElementById('lib-new-body-drive').value.trim();
   if (!title || !body) { alert('タイトルとプロンプトは必須やで！'); return; }
 
-  // サムネイル決定
   let thumb = null;
   if (libThumbMode === 'file') {
-    thumb = libThumbData; // base64 or null
+    thumb = libThumbData;
   } else {
-    thumb = libDriveUrl || null; // drive URL or null
+    thumb = libDriveUrl || null;
   }
 
+  const newItem = {
+    id: String(Date.now()),
+    title, tag, body,
+    thumb,
+    thumbType: libThumbMode === 'drive' ? 'drive' : 'local',
+    date: new Date().toLocaleDateString('ja-JP'),
+    // スプシ用: driveリンクそのまま保存
+    image: libThumbMode === 'drive' ? (document.getElementById('lib-drive-url')?.value.trim() || '') : ''
+  };
+
+  // localStorageに保存
   const arr = getLib();
-  arr.unshift({
-    id: Date.now(), title, tag, body,
-    thumb, thumbType: libThumbMode === 'drive' ? 'drive' : 'local',
-    date: new Date().toLocaleDateString('ja-JP')
-  });
+  arr.unshift(newItem);
   setLib(arr);
 
-  // リセット
+  // GASにも書き込む
+  const gasUrl = getGasUrl();
+  if (gasUrl) {
+    setGasStatus('💾 スプシに保存中...', 'loading');
+    try {
+      const res = await fetch(gasUrl, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'save', data: {
+          id: newItem.id,
+          title: newItem.title,
+          tag: newItem.tag,
+          body: newItem.body,
+          date: newItem.date,
+          image: newItem.image
+        }})
+      });
+      const text = await res.text();
+      const result = JSON.parse(text);
+      if (result.ok) {
+        setGasStatus('✅ スプシに保存したで！', 'ok');
+      } else {
+        setGasStatus('⚠️ ローカル保存はOK。スプシ書き込みエラー: ' + (result.error||'不明'), 'err');
+      }
+    } catch(e) {
+      setGasStatus('⚠️ ローカル保存はOK。スプシ接続失敗: ' + e.message, 'err');
+    }
+  } else {
+    setGasStatus('💡 スプシ連携URLを設定するとクラウド保存もできるで！', 'loading');
+  }
+
+  // フォームリセット
   document.getElementById('lib-new-title').value='';
   document.getElementById('lib-new-tag').value='';
   document.getElementById('lib-new-body').value='';
   document.getElementById('lib-new-body-drive').value='';
-  document.getElementById('lib-drive-url').value='';
+  if (document.getElementById('lib-drive-url')) document.getElementById('lib-drive-url').value='';
   libThumbData = null; libDriveUrl = null;
-  document.getElementById('lib-thumb-upload').innerHTML = `<span id="lib-thumb-icon">🖼️</span><input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">`;
-  document.getElementById('lib-thumb-upload').onclick = () => document.getElementById('lib-thumb-file').click();
-  document.getElementById('lib-drive-preview').innerHTML = '<span style="font-size:1.8rem">🔗</span>';
+  const upWrap = document.getElementById('lib-thumb-upload');
+  if (upWrap) {
+    upWrap.innerHTML = `<span id="lib-thumb-icon">🖼️</span><input type="file" id="lib-thumb-file" accept="image/*" style="display:none" onchange="loadLibThumb(event)">`;
+    upWrap.onclick = () => document.getElementById('lib-thumb-file').click();
+  }
+  const drPrev = document.getElementById('lib-drive-preview');
+  if (drPrev) drPrev.innerHTML = '<span style="font-size:1.8rem">🔗</span>';
+
   renderLib();
-  alert('保存したで！');
+  loadSavedPicker();
 }
 
 function deleteLibItem(id, e) {

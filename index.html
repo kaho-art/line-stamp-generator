@@ -192,8 +192,8 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 @media(max-width:400px){.lib-grid{grid-template-columns:repeat(2,1fr);}}
 .lib-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;}
 .lib-card:hover{border-color:var(--a5);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3);}
-.lib-thumb{width:100%;height:130px;object-fit:cover;display:block;background:var(--surface);}
-.lib-thumb-empty{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface);}
+.lib-thumb{width:100%;height:200px;object-fit:cover;display:block;background:var(--surface);}
+.lib-thumb-empty{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--surface);}
 .lib-info{padding:.7rem .8rem;}
 .lib-title{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lib-tag{font-size:.64rem;background:rgba(199,125,255,.15);border:1px solid rgba(199,125,255,.25);color:var(--a5);border-radius:99px;padding:.1em .55em;display:inline-block;}
@@ -1263,14 +1263,14 @@ function genStamp(){
 ━━━━━━━━━━━━━━━━━━━━━━
 【グリッド仕様】
 - ${cols}列 × ${rows}行（計${stCount}コマ）
-- 背景: 白またはごく薄いグレー（確認用）${sizeNote}
-- 各セル下部に番号（01〜${pad(stCount)}）を表示
-- セル間に区切り線を入れる${textNote}
+- 背景: 各セルは白またはごく薄いグレー（確認用）${sizeNote}
+- セル同士の区切りは【余白のみ】で分ける（線・枠・番号・テキストは一切入れない）
+- Phase2でそのまま均等分割できるよう、各セルを完全に等サイズで配置すること${textNote}
 ━━━━━━━━━━━━━━━━━━━━━━
 【追加スタイル】
 ${extrasBlock}
 ━━━━━━━━━━━━━━━━━━━━━━
-【${stCount}枚の感情リスト】
+【${stCount}枚の感情リスト（左上から順番に配置）】
 ${eBlock}${customNote}
 ━━━━━━━━━━━━━━━━━━━━━━
 グリッド一覧画像を生成してください。「OK」「分割して」等と返信があれば次フェーズへ。`;
@@ -1279,15 +1279,18 @@ ${eBlock}${customNote}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 【分割仕様（最重要）】
+- 先ほどのグリッド画像を${cols}列×${rows}行で均等に切り分ける
+- 左上から右・下の順に stamp_01〜stamp_${pad(stCount)} とする
 - PNG（背景完全透明 / transparent background）
 - 背景の白・グレーを除去してキャラのみ残す
+- セル間の余白は切り捨て、キャラクター部分のみを抽出すること
 - ファイル名: stamp_01.png 〜 stamp_${pad(stCount)}.png${wantSize?'\n- サイズ: 370×320px':''}
 ━━━━━━━━━━━━━━━━━━━━━━
 【キャラ・スタイル（参照）】
 - ${charDesc}
 - ${stStyleVal}
 ━━━━━━━━━━━━━━━━━━━━━━
-【感情リスト】
+【感情リスト（番号順）】
 ${eBlock}
 ━━━━━━━━━━━━━━━━━━━━━━
 【ZIP手順】

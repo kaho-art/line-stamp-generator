@@ -568,6 +568,14 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
             <span class="chip orange" data-group="st-petage" data-val="elderly animal, senior, gentle">シニア</span>
           </div>
         </div>
+        <div class="field" style="margin-bottom:0">
+          <label>🐕 見た目のタイプ</label>
+          <div class="chip-group">
+            <span class="chip orange active" data-group="st-petstyle" data-val="natural">🐾 自然な動物（擬人化しない）</span>
+            <span class="chip orange" data-group="st-petstyle" data-val="anthro">🧑 二足歩行・擬人化キャラ</span>
+          </div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.4rem">「自然な動物」は四足・動物らしい表情やしぐさで、服やサムズアップなど人間っぽい要素は入れへんで</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1011,7 +1019,12 @@ function buildStCharPrompt(){
   } else if(ctype==='pet'){
     const pg=document.querySelector('.chip[data-group="st-petgender"].active')?.dataset.val||'';
     const pa=document.querySelector('.chip[data-group="st-petage"].active')?.dataset.val||'';
+    const pstyle=document.querySelector('.chip[data-group="st-petstyle"].active')?.dataset.val||'natural';
     if(pg)parts.push(pg);if(pa)parts.push(pa);
+    if(pstyle==='natural')parts.push('realistic animal proportions and posture, on all four legs or natural animal stance, no human clothing, no human-like hand gestures');
+    else parts.push('anthropomorphic, walking upright on two legs, wearing clothes, human-like hand gestures and expressions, kemono style');
+  } else if(ctype==='animal'){
+    parts.push('realistic animal proportions and natural posture for this species, no human clothing, no human-like hand gestures unless specified');
   }
   return parts.filter(Boolean).join(', ');
 }
@@ -1030,7 +1043,12 @@ function buildStCharAttrsOnly(){
   } else if(ctype==='pet'){
     const pg=document.querySelector('.chip[data-group="st-petgender"].active')?.dataset.val||'';
     const pa=document.querySelector('.chip[data-group="st-petage"].active')?.dataset.val||'';
+    const pstyle=document.querySelector('.chip[data-group="st-petstyle"].active')?.dataset.val||'natural';
     if(pg)parts.push(pg);if(pa)parts.push(pa);
+    if(pstyle==='natural')parts.push('realistic animal proportions and posture, on all four legs or natural animal stance, no human clothing, no human-like hand gestures');
+    else parts.push('anthropomorphic, walking upright on two legs, wearing clothes, human-like hand gestures and expressions, kemono style');
+  } else if(ctype==='animal'){
+    parts.push('realistic animal proportions and natural posture for this species, no human clothing, no human-like hand gestures unless specified');
   }
   return parts.filter(Boolean).join(', ');
 }

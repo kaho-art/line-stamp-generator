@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI プロンプトメーカー</title>
+<title>LINEスタンプ プロンプトメーカー</title>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -12,7 +12,7 @@
   --text:#f0f0f8;--muted:#777899;--muted2:#aab0cc;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'M PLUS Rounded 1c',sans-serif;min-height:100vh;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'M PLUS Rounded 1c',sans-serif;min-height:100vh;overflow-x:hidden;scroll-behavior:smooth;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 50% 35% at 20% 15%,rgba(77,150,255,.06) 0%,transparent 65%),radial-gradient(ellipse 45% 40% at 80% 85%,rgba(199,125,255,.06) 0%,transparent 65%);pointer-events:none;z-index:0;}
 .wrapper{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1.5rem 1.2rem 6rem;}
 
@@ -22,7 +22,10 @@ header{text-align:center;padding:2rem 0 1.5rem;}
 .logo-sub{color:var(--muted2);font-size:.85rem;}
 
 /* TOP MENU */
-.top-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin:1.5rem 0 2rem;}
+.top-menu-intro{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;}
+.top-menu-intro .tmi-num{width:24px;height:24px;border-radius:50%;background:var(--a4);color:#000;font-size:.75rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.top-menu-intro .tmi-text{font-size:.82rem;font-weight:700;color:var(--muted2);}
+.top-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin:0 0 2rem;}
 @media(min-width:600px){.top-menu{grid-template-columns:repeat(4,1fr);}}
 .menu-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .22s;user-select:none;position:relative;overflow:hidden;}
 .menu-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .22s;}
@@ -38,6 +41,23 @@ header{text-align:center;padding:2rem 0 1.5rem;}
 .mc-title{font-size:.9rem;font-weight:900;color:var(--text);margin-bottom:.25rem;}
 .mc-desc{font-size:.68rem;color:var(--muted);line-height:1.4;}
 .menu-card.active .mc-title{color:var(--mc);}
+.menu-card.active::after{content:'▶ 選択中';position:absolute;top:.5rem;right:.6rem;font-size:.6rem;font-weight:900;color:var(--mc);}
+
+/* 現在地ブレッドクラム（各ページの先頭に表示） */
+.page-breadcrumb{display:flex;align-items:center;justify-content:space-between;gap:.6rem;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.7rem 1rem;margin-bottom:1.2rem;flex-wrap:wrap;}
+.pb-current{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:900;}
+.pb-current .pb-icon{font-size:1.1rem;}
+.btn-home{background:var(--surface);border:1.5px solid var(--border);border-radius:9px;color:var(--muted2);font-family:inherit;font-size:.72rem;font-weight:700;padding:.4em .8em;cursor:pointer;transition:all .18s;}
+.btn-home:hover{border-color:var(--a4);color:var(--a4);}
+
+/* スクロール追従ミニナビ */
+.sticky-nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(10,10,18,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem;transform:translateY(-110%);transition:transform .25s ease;}
+.sticky-nav.show{transform:translateY(0);}
+.sticky-nav-inner{max-width:960px;margin:0 auto;width:100%;display:flex;align-items:center;gap:.45rem;overflow-x:auto;}
+.sn-logo{font-family:'Zen Dots',sans-serif;font-size:.78rem;color:var(--a4);flex-shrink:0;margin-right:.3rem;white-space:nowrap;}
+.sn-btn{flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:.4em .7em;font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:.3rem;white-space:nowrap;transition:all .18s;}
+.sn-btn:hover{border-color:var(--a4);color:var(--a4);}
+.sn-btn.active{background:rgba(77,150,255,.15);border-color:var(--a4);color:var(--a4);}
 
 /* PAGES */
 .page{display:none;}
@@ -247,6 +267,23 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .info-box{background:rgba(255,217,61,.07);border:1px solid rgba(255,217,61,.25);border-radius:12px;padding:.8rem 1rem;font-size:.8rem;color:#e8d87a;margin-bottom:1rem;line-height:1.6;}
 .info-box b{color:var(--a2);}
 
+/* 感情モード切替 */
+.emo-mode-tabs{display:flex;gap:.4rem;margin-bottom:1rem;}
+.emo-mode-tab{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:.55em .6em;font-family:inherit;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .18s;}
+.emo-mode-tab:hover{border-color:var(--a3);color:var(--a3);}
+.emo-mode-tab.active{background:rgba(107,203,119,.12);border-color:var(--a3);color:var(--a3);}
+.emo-mode-panel{display:none;}
+.emo-mode-panel.active{display:block;}
+
+/* セリフ結果リスト */
+.phrase-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:.8rem .9rem;margin-bottom:.55rem;display:flex;gap:.7rem;align-items:flex-start;}
+.phrase-item .pi-num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(107,203,119,.15);color:var(--a3);font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.phrase-item .pi-body{flex:1;}
+.phrase-item .pi-phrase{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.3rem;}
+.phrase-item .pi-desc{font-size:.74rem;color:var(--muted2);line-height:1.5;background:var(--bg);border-radius:8px;padding:.5rem .7rem;width:100%;outline:none;border:1px solid var(--border);resize:vertical;font-family:inherit;}
+.phrase-item .pi-del{flex-shrink:0;background:rgba(255,107,107,.12);color:var(--a1);border:1px solid rgba(255,107,107,.25);border-radius:7px;font-size:.7rem;padding:.3em .6em;cursor:pointer;}
+.phrase-item .pi-del:hover{opacity:.7;}
+
 /* GAS連携カード */
 .gas-setup-card{background:rgba(107,203,119,.06);border:1.5px solid rgba(107,203,119,.25);border-radius:18px;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
 .gas-setup-title{font-size:.68rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--a3);margin-bottom:.8rem;}
@@ -288,337 +325,46 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </style>
 </head>
 <body>
-<div class="wrapper">
+<div class="wrapper" id="wrapper-top">
+
+<!-- スクロール追従ミニナビ -->
+<div class="sticky-nav" id="sticky-nav">
+  <div class="sticky-nav-inner">
+    <span class="sn-logo">✦ LINE Stamp Prompt Maker</span>
+    <button class="sn-btn" data-snpage="stamp" onclick="gotoPage('stamp')">💬 スタンプ作成</button>
+    <button class="sn-btn" data-snpage="library" onclick="gotoPage('library')">📚 保存庫</button>
+  </div>
+</div>
 
 <header>
-  <div class="logo">AI Prompt Maker</div>
-  <div class="logo-sub">ChatGPT に貼るだけ！なんでもプロンプトに変換するで✨</div>
+  <div class="logo">LINE Stamp Prompt Maker</div>
+  <div class="logo-sub">ChatGPT に貼るだけ！LINEスタンプ・絵文字・着せ替えのプロンプトを作るで✨</div>
 </header>
 
 <!-- TOP MENU -->
+<div class="top-menu-intro">
+  <span class="tmi-num">1</span>
+  <span class="tmi-text">作成タイプを選んで、下のフォームに入力するだけ！</span>
+</div>
 <div class="top-menu" style="grid-template-columns:repeat(2,1fr);">
-  <div class="menu-card c-illust" onclick="gotoPage('illust')">
-    <span class="mc-icon">🎨</span>
-    <div class="mc-title">イラスト生成</div>
-    <div class="mc-desc">画風・スタイル指定でプロンプト作成</div>
-  </div>
-  <div class="menu-card c-analyze" onclick="gotoPage('analyze')">
-    <span class="mc-icon">🔍</span>
-    <div class="mc-title">画像解析</div>
-    <div class="mc-desc">画像からプロンプトを自動抽出</div>
-  </div>
-  <div class="menu-card c-edit" onclick="gotoPage('edit')">
-    <span class="mc-icon">✏️</span>
-    <div class="mc-title">画像編集</div>
-    <div class="mc-desc">編集内容をプロンプトに変換</div>
-  </div>
-  <div class="menu-card c-stamp" onclick="gotoPage('stamp')">
+  <div class="menu-card c-stamp active" onclick="gotoPage('stamp')">
     <span class="mc-icon">💬</span>
-    <div class="mc-title">LINEスタンプ</div>
-    <div class="mc-desc">スタンプセット用プロンプト生成</div>
+    <div class="mc-title">スタンプ作成</div>
+    <div class="mc-desc">LINEスタンプ・絵文字・着せ替え用プロンプト生成</div>
   </div>
-  <div class="menu-card c-library" onclick="gotoPage('library')" style="grid-column:1/-1;">
+  <div class="menu-card c-library" onclick="gotoPage('library')">
     <span class="mc-icon">📚</span>
     <div class="mc-title">プロンプト保存庫</div>
     <div class="mc-desc">サムネイル付きでプロンプトを管理</div>
   </div>
 </div>
 
-<!-- ==================== ILLUST PAGE ==================== -->
-<div class="page" id="page-illust">
-  <div class="card">
-    <div class="card-title"><span class="icon">🎨</span> イラスト生成プロンプト</div>
-    <div class="field">
-      <label>何を描きたい？（被写体・シーン）</label>
-      <input type="text" id="il-subject" placeholder="例: 夕暮れの街を歩く女性、猫と本棚、宇宙を漂う宇宙飛行士">
-    </div>
-    <div class="field">
-      <label>🎨 画風・アーティスト風</label>
-      <div class="chip-group" id="il-style-chips">
-        <span class="chip yellow" data-val="in the style of Salvador Dali, surrealist, melting clocks, dreamlike">ダリ風</span>
-        <span class="chip yellow" data-val="in the style of Van Gogh, thick impasto brushstrokes, swirling skies, vibrant colors">ゴッホ風</span>
-        <span class="chip yellow" data-val="in the style of Monet, impressionist, soft light, water reflections, painterly">モネ風</span>
-        <span class="chip yellow" data-val="in the style of Picasso, cubist, geometric fragmentation, multiple perspectives">ピカソ風</span>
-        <span class="chip yellow" data-val="Studio Ghibli style, soft warm illustration, detailed nature, magical atmosphere">ジブリ風</span>
-        <span class="chip yellow" data-val="ukiyo-e woodblock print style, Japanese traditional art, bold outlines, flat colors">浮世絵風</span>
-        <span class="chip yellow" data-val="art nouveau style, organic flowing lines, ornate decorative borders, Belle Epoque">アールヌーボー</span>
-        <span class="chip yellow" data-val="pop art style, bold flat colors, halftone dots, Andy Warhol inspired">ポップアート</span>
-        <span class="chip yellow" data-val="cyberpunk style, neon lights, dystopian cityscape, rain-soaked streets">サイバーパンク</span>
-        <span class="chip yellow" data-val="minimalist illustration, clean lines, negative space, simple shapes, monochrome">ミニマリスト</span>
-        <span class="chip yellow" data-val="baroque painting style, dramatic lighting, chiaroscuro, classical oil painting">バロック</span>
-        <span class="chip yellow" data-val="concept art, digital painting, detailed environment, cinematic lighting">コンセプトアート</span>
-      </div>
-      <input type="text" id="il-style-custom" style="margin-top:.6rem;" placeholder="その他（例: フェルメール風、鉛筆スケッチ、水墨画...）">
-    </div>
-    <div class="field">
-      <label>🖼️ 構図・カメラ</label>
-      <div class="chip-group">
-        <span class="chip blue" data-group="il-comp" data-val="wide shot, full scene">ワイドショット</span>
-        <span class="chip blue" data-group="il-comp" data-val="close-up portrait">クローズアップ</span>
-        <span class="chip blue" data-group="il-comp" data-val="bird's eye view, top down">俯瞰</span>
-        <span class="chip blue" data-group="il-comp" data-val="low angle, looking up">ローアングル</span>
-        <span class="chip blue" data-group="il-comp" data-val="symmetrical composition">シンメトリー</span>
-        <span class="chip blue" data-group="il-comp" data-val="rule of thirds composition">三分割</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>💡 ライティング・雰囲気</label>
-      <div class="chip-group">
-        <span class="chip purple" data-group="il-light" data-val="golden hour lighting, warm sunset glow">夕暮れ・ゴールデンアワー</span>
-        <span class="chip purple" data-group="il-light" data-val="dramatic cinematic lighting, rim light">シネマティック</span>
-        <span class="chip purple" data-group="il-light" data-val="soft diffused natural light, overcast">ソフトナチュラル</span>
-        <span class="chip purple" data-group="il-light" data-val="neon glow, dark night, colorful artificial lights">ネオン・夜</span>
-        <span class="chip purple" data-group="il-light" data-val="moonlit night, cool blue tones, mysterious">月明かり・神秘的</span>
-        <span class="chip purple" data-group="il-light" data-val="backlit silhouette, contre-jour">逆光・シルエット</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>📐 出力比率</label>
-      <div class="chip-group">
-        <span class="chip green active" data-group="il-ratio" data-val="aspect ratio 1:1, square format">1:1 正方形</span>
-        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 16:9, widescreen landscape">16:9 横長</span>
-        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 9:16, vertical portrait format">9:16 縦長</span>
-        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 4:3">4:3</span>
-        <span class="chip green" data-group="il-ratio" data-val="aspect ratio 2:3, portrait">2:3 ポートレート</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>その他追加指示（任意）</label>
-      <textarea id="il-extra" placeholder="例: 高解像度、8K、細部まで描き込んで、背景なし、など"></textarea>
-    </div>
-    <button class="btn-primary yellow" onclick="genIllust()">✨ プロンプトを生成する</button>
-  </div>
-  <div class="output-section" id="il-output">
-    <div class="output-card">
-      <div class="output-header">
-        <div class="output-title">🎨 イラスト生成プロンプト</div>
-        <button class="btn-copy" id="il-copy" onclick="copyOutput('il-result','il-copy')">コピー</button>
-      </div>
-      <div class="prompt-box" id="il-result"></div>
-      <div class="tip-box">💡 <b>使い方：</b>ChatGPT（GPT-4o）またはDALL-E・Midjourneyに貼り付けてや！</div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== ANALYZE PAGE ==================== -->
-<div class="page" id="page-analyze">
-
-  <!-- APIキー -->
-  <div class="apikey-bar">
-    <label>🔑 Gemini API</label>
-    <input type="password" id="az-apikey" placeholder="AIza... （無料）" oninput="onAzKeyChange()">
-    <a href="https://aistudio.google.com/app/apikey" target="_blank">無料取得 →</a>
-  </div>
-
-  <div class="sub-tabs">
-    <button class="sub-tab active" onclick="switchSubTab('az','illust-az')">🖼️ イラスト画像解析</button>
-    <button class="sub-tab" onclick="switchSubTab('az','person-az')">👤 人物写真解析</button>
-  </div>
-
-  <!-- イラスト解析 -->
-  <div class="sub-panel active" id="sub-illust-az">
-    <div class="card">
-      <div class="card-title"><span class="icon">🖼️</span> イラスト画像 → テイスト抽出＆イラスト化プロンプト</div>
-      <div class="field">
-        <label>解析したいイラスト画像をアップ</label>
-        <div class="upload-box" id="az1-upload" onclick="triggerUpload('az1-file')">
-          <span class="upload-icon">🖼️</span>
-          <div class="upload-text">タップ／クリックで画像を選択<br><b>JPG・PNG・WEBP</b></div>
-          <input type="file" id="az1-file" accept="image/*" style="display:none" onchange="loadUpload(event,'az1-upload','az1')">
-        </div>
-      </div>
-      <div class="field">
-        <label>抽出する情報（複数選択OK）</label>
-        <div class="chip-group">
-          <span class="chip blue active" data-multi="az1-extract" data-val="overall art style, illustration technique, and medium (e.g. digital painting, watercolor, ink)">画風・技法・メディア</span>
-          <span class="chip blue active" data-multi="az1-extract" data-val="color palette: dominant colors, accent colors, color temperature, saturation level">色彩・カラーパレット</span>
-          <span class="chip blue active" data-multi="az1-extract" data-val="composition, framing, and camera angle">構図・フレーミング</span>
-          <span class="chip blue active" data-multi="az1-extract" data-val="linework style: line weight, line quality, whether lines are present or not">線の質・線の太さ</span>
-          <span class="chip blue active" data-multi="az1-extract" data-val="lighting style: direction, intensity, shadows, highlights, mood">ライティング・陰影</span>
-          <span class="chip blue" data-multi="az1-extract" data-val="texture and surface rendering style">テクスチャ・質感表現</span>
-          <span class="chip blue" data-multi="az1-extract" data-val="character design style: proportions, facial features, stylization level">キャラデザイン・頭身</span>
-          <span class="chip blue" data-multi="az1-extract" data-val="background style and environment details">背景・環境</span>
-          <span class="chip blue" data-multi="az1-extract" data-val="overall mood, atmosphere, and emotional tone">ムード・雰囲気</span>
-          <span class="chip blue" data-multi="az1-extract" data-val="rendering quality and detail level">描き込みの密度・クオリティ</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>🎯 プロンプトの用途</label>
-        <div class="chip-group">
-          <span class="chip green active" data-group="az1-purpose" data-val="photo_to_illust">📸 写真をこのテイストでイラスト化</span>
-          <span class="chip green" data-group="az1-purpose" data-val="new_content">✨ このテイストで新しいものを描く</span>
-        </div>
-      </div>
-      <div class="field" id="az1-target-field">
-        <label>描きたいもの（任意）</label>
-        <input type="text" id="az1-target" placeholder="例: 猫、風景、同じキャラで別ポーズ（空欄でも可）">
-      </div>
-      <button class="btn-primary" id="az1-btn" onclick="analyzeIllust()" disabled>🔍 解析してプロンプト生成</button>
-      <div class="loading-bar" id="az1-loading"><div class="loading-fill"></div></div>
-      <div class="status-line" id="az1-status"></div>
-      <div class="err-box" id="az1-err"></div>
-    </div>
-    <div class="output-section" id="az1-output">
-      <div class="output-card">
-        <div class="output-header">
-          <div class="output-title">🖼️ イラストテイスト プロンプト</div>
-          <button class="btn-copy" id="az1-copy" onclick="copyOutput('az1-result','az1-copy')">コピー</button>
-        </div>
-        <div class="prompt-box" id="az1-result"></div>
-        <div class="tip-box" id="az1-tip">💡 <b>写真をイラスト化する場合：</b>このプロンプトと変換したい写真を一緒にChatGPT（GPT-4o）に送るだけ！<br>「この写真をプロンプトに従ってイラスト化して」と一言添えてもええで。</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 人物解析 -->
-  <div class="sub-panel" id="sub-person-az">
-    <div class="card">
-      <div class="card-title"><span class="icon">👤</span> 人物写真 → 超詳細キャラクタープロンプト</div>
-      <div class="field">
-        <label>解析したい人物写真をアップ</label>
-        <div class="upload-box" id="az2-upload" onclick="triggerUpload('az2-file')">
-          <span class="upload-icon">📸</span>
-          <div class="upload-text">タップ／クリックで画像を選択<br><b>JPG・PNG・WEBP</b></div>
-          <input type="file" id="az2-file" accept="image/*" style="display:none" onchange="loadUpload(event,'az2-upload','az2')">
-        </div>
-      </div>
-      <div class="field">
-        <label>抽出する情報（複数選択OK）</label>
-        <div class="chip-group">
-          <span class="chip blue active" data-multi="az2-extract" data-val="face: eye shape, eye color, eyelid type (double/single), eyebrow shape and thickness, nose shape and size, lip shape and fullness, jaw shape, chin shape, overall face shape (oval/round/square/heart), cheekbone prominence">顔のパーツ詳細（目・鼻・口・輪郭）</span>
-          <span class="chip blue active" data-multi="az2-extract" data-val="hair: exact color with highlights/lowlights, length, texture (straight/wavy/curly), volume, specific hairstyle name and description, how it frames the face, any hair accessories">髪型・髪色（ハイライト含む）</span>
-          <span class="chip blue active" data-multi="az2-extract" data-val="full outfit: each clothing item with exact colors (use color names like crimson, ivory, olive), fabric texture appearance, pattern, fit style (loose/fitted/oversized), brand aesthetic, layering details">服装・色・素材感（全アイテム詳細）</span>
-          <span class="chip blue active" data-multi="az2-extract" data-val="all accessories: jewelry type and color, bags, belts, scarves, hats, glasses style, watches, and any other items with precise color and material description">アクセサリー・小物（全詳細）</span>
-          <span class="chip blue active" data-multi="az2-extract" data-val="body proportions: estimated head-to-body ratio (head count), shoulder width relative to hips, limb length, overall silhouette shape">体型・頭身・シルエット</span>
-          <span class="chip blue" data-multi="az2-extract" data-val="exact pose: position of each limb, angle of head, direction of gaze, expression details, hand position, weight distribution, stance width">ポーズ・視線・表情（完全再現用）</span>
-          <span class="chip blue" data-multi="az2-extract" data-val="skin: tone with specific description (e.g. warm ivory, golden beige, deep brown), visible texture, any notable features like freckles or beauty marks">肌の色・質感・特徴</span>
-          <span class="chip blue" data-multi="az2-extract" data-val="makeup details: foundation coverage, eye makeup style, lip color and finish, blush placement, overall makeup style (natural/dramatic/editorial)">メイク・化粧の詳細</span>
-        </div>
-      </div>
-
-      <!-- 変更指示 -->
-      <div class="field">
-        <label>✏️ 変更したい部分（任意・空欄でそのまま再現）</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
-          <div>
-            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">髪型を変える</div>
-            <input type="text" id="az2-hair-change" placeholder="例: ショートボブ、ポニーテール">
-          </div>
-          <div>
-            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">髪色を変える</div>
-            <input type="text" id="az2-haircolor-change" placeholder="例: プラチナブロンド、ローズピンク">
-          </div>
-          <div>
-            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">服装を変える</div>
-            <input type="text" id="az2-clothes-change" placeholder="例: 白い着物、ダークネイビースーツ">
-          </div>
-          <div>
-            <div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem;">その他変更</div>
-            <input type="text" id="az2-other-change" placeholder="例: メガネをはずす、帽子追加、背景を白に">
-          </div>
-        </div>
-      </div>
-
-      <!-- 出力テイスト -->
-      <div class="field">
-        <label>🎨 出力イラストテイスト</label>
-        <div class="chip-group">
-          <span class="chip purple active" data-group="az2-teist" data-val="cute kawaii anime illustration style, clean linework, expressive eyes">アニメ風</span>
-          <span class="chip purple" data-group="az2-teist" data-val="chibi super deformed style, 2-head ratio, big head small body, exaggerated cute proportions">ちびキャラ（2頭身）</span>
-          <span class="chip purple" data-group="az2-teist" data-val="semi-realistic anime style, 7-8 head ratio, detailed shading, balanced proportions">セミリアル（7〜8頭身）</span>
-          <span class="chip purple" data-group="az2-teist" data-val="highly realistic digital portrait, photorealistic skin and hair rendering, detailed render">フォトリアル</span>
-          <span class="chip purple" data-group="az2-teist" data-val="watercolor illustration, soft wet-on-wet brushwork, gentle color bleeding">水彩</span>
-          <span class="chip purple" data-group="az2-teist" data-val="flat vector illustration, bold clean outlines, no gradients">フラットベクター</span>
-          <span class="chip purple" data-group="az2-teist" data-val="3D clay render style, smooth surfaces, Pixar-inspired proportions">3Dクレイ</span>
-          <span class="chip purple" data-group="az2-teist" data-val="LINE sticker style, thick black outline, simple expressive face, transparent background compatible">LINEステッカー風</span>
-        </div>
-      </div>
-
-      <!-- 保存済みキャラプロンプト -->
-      <div class="field">
-        <label>📚 保存済みキャラプロンプトをベースに使う（任意）</label>
-        <div id="az2-saved-picker" class="saved-picker">
-          <div class="saved-picker-empty">「プロンプト保存庫」に保存されたプロンプトがここに出るで！</div>
-        </div>
-      </div>
-
-      <button class="btn-primary" id="az2-btn" onclick="analyzePerson()" disabled>🔍 超詳細プロンプトを生成</button>
-      <div class="loading-bar" id="az2-loading"><div class="loading-fill"></div></div>
-      <div class="status-line" id="az2-status"></div>
-      <div class="err-box" id="az2-err"></div>
-    </div>
-    <div class="output-section" id="az2-output">
-      <div class="output-card">
-        <div class="output-header">
-          <div class="output-title">👤 超詳細キャラクタープロンプト</div>
-          <button class="btn-copy" id="az2-copy" onclick="copyOutput('az2-result','az2-copy')">コピー</button>
-        </div>
-        <div class="prompt-box" id="az2-result"></div>
-        <div class="tip-box">💡 <b>使い方：</b>このプロンプトをChatGPTに貼るだけ！<br>📌 LINEスタンプを作るなら「スタンプ」タブのキャラ欄にこのプロンプトを貼り付けてや。<br>📌 「💬 スタンプに使う」ボタンで保存庫経由でそのまま使えるで！</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== EDIT PAGE ==================== -->
-<div class="page" id="page-edit">
-  <div class="card">
-    <div class="card-title"><span class="icon">✏️</span> 画像編集プロンプト生成</div>
-    <div class="field">
-      <label>📷 編集したい画像（任意・内容説明用）</label>
-      <div class="upload-box" id="ed-upload" onclick="triggerUpload('ed-file')">
-        <span class="upload-icon">📷</span>
-        <div class="upload-text">画像をアップすると編集内容がより正確になるで<br><b>任意・アップしなくてもOK</b></div>
-        <input type="file" id="ed-file" accept="image/*" style="display:none" onchange="loadUpload(event,'ed-upload','ed')">
-      </div>
-    </div>
-    <div class="field">
-      <label>✏️ 何をしたい？（複数選択OK）</label>
-      <div class="chip-group" id="ed-action-chips">
-        <span class="chip green" data-group="ed-action" data-val="increase saturation and vibrance, make colors more vivid and punchy">🎨 彩度を上げる</span>
-        <span class="chip green" data-group="ed-action" data-val="decrease saturation, make colors more muted and desaturated">🩶 彩度を下げる</span>
-        <span class="chip green" data-group="ed-action" data-val="fix blur and improve sharpness, enhance fine details">🔭 ピンボケを直す</span>
-        <span class="chip green" data-group="ed-action" data-val="remove grain and noise, denoise the image, smooth textures">✨ ノイズ・ざらつきを消す</span>
-        <span class="chip green" data-group="ed-action" data-val="remove background completely, isolate subject with transparent background">🪄 背景を消す</span>
-        <span class="chip green" data-group="ed-action" data-val="brighten the image, increase exposure and highlights">☀️ 明るくする</span>
-        <span class="chip green" data-group="ed-action" data-val="darken the image, reduce exposure, deeper shadows">🌑 暗くする</span>
-        <span class="chip green" data-group="ed-action" data-val="increase contrast, make darks darker and lights lighter">⬛ コントラストを上げる</span>
-        <span class="chip green" data-group="ed-action" data-val="apply warm color grading, golden tones, film look">🟡 暖色フィルター</span>
-        <span class="chip green" data-group="ed-action" data-val="apply cool color grading, blue tones, cinematic">🔵 寒色フィルター</span>
-        <span class="chip green" data-group="ed-action" data-val="convert to black and white, monochrome">⬜ 白黒に変換</span>
-        <span class="chip green" data-group="ed-action" data-val="upscale image resolution, enhance quality to 4K">📐 解像度を上げる（4K）</span>
-        <span class="chip green" data-group="ed-action" data-val="remove wrinkles and smooth skin, portrait retouching">💆 肌補正・レタッチ</span>
-        <span class="chip green" data-group="ed-action" data-val="straighten horizon, fix perspective distortion">📏 傾きを直す</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>指定の人物・物だけ残す（任意）</label>
-      <input type="text" id="ed-keep" placeholder="例: 右側の女性だけ残して他は消して、前景の猫だけ残す">
-    </div>
-    <div class="field">
-      <label>背景を変える（任意）</label>
-      <input type="text" id="ed-bg" placeholder="例: 青空の公園に変えて、スタジオ白背景に">
-    </div>
-    <div class="field">
-      <label>その他の編集指示（任意）</label>
-      <textarea id="ed-extra" placeholder="例: 全体的にレトロフィルム風に加工して、ロゴを消して、など"></textarea>
-    </div>
-    <button class="btn-primary green" onclick="genEdit()">✨ 編集プロンプトを生成する</button>
-  </div>
-  <div class="output-section" id="ed-output">
-    <div class="output-card">
-      <div class="output-header">
-        <div class="output-title">✏️ 画像編集プロンプト</div>
-        <button class="btn-copy" id="ed-copy" onclick="copyOutput('ed-result','ed-copy')">コピー</button>
-      </div>
-      <div class="prompt-box" id="ed-result"></div>
-      <div class="tip-box">💡 <b>使い方：</b>ChatGPT（GPT-4o）に画像と一緒にこのプロンプトを貼り付けてや！<br>画像編集AIツール（Adobe Firefly、Canvaなど）のプロンプト欄にも使えるで。</div>
-    </div>
-  </div>
-</div>
-
 <!-- ==================== STAMP PAGE ==================== -->
 <div class="page" id="page-stamp">
+  <div class="page-breadcrumb">
+    <div class="pb-current"><span class="pb-icon">💬</span> LINEスタンプ・絵文字・着せ替え</div>
+    <button class="btn-home" onclick="scrollToTop()">⬆ 種類選択に戻る</button>
+  </div>
 
   <!-- 種類選択 -->
   <div class="card">
@@ -722,71 +468,110 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   </div>
   <div class="card">
     <div class="card-title"><span class="icon">🎭</span> キャラクター設定</div>
+
+    <!-- キャラクターの元 選択 -->
     <div class="field">
-      <label>🐾 キャラクタータイプ</label>
-      <div class="chip-group">
-        <span class="chip orange active" data-group="st-chartype" data-val="human">👤 人間</span>
-        <span class="chip orange" data-group="st-chartype" data-val="pet">🐾 犬・猫など</span>
-        <span class="chip orange" data-group="st-chartype" data-val="animal">🐘 その他動物</span>
-        <span class="chip orange" data-group="st-chartype" data-val="other">✨ その他</span>
+      <label>🧬 キャラクターの元</label>
+      <div class="product-type-tabs" style="margin-bottom:0;">
+        <div class="ptype-tab active" data-srcmode="text" onclick="switchCharSource('text')">
+          <span class="ptype-icon">📝</span>
+          <div class="ptype-name">テキストで説明</div>
+          <div class="ptype-desc">文章でキャラを指定</div>
+        </div>
+        <div class="ptype-tab" data-srcmode="photo" onclick="switchCharSource('photo')">
+          <span class="ptype-icon">📸</span>
+          <div class="ptype-name">写真を送る</div>
+          <div class="ptype-desc">性別・年齢→画風を選択</div>
+        </div>
+        <div class="ptype-tab" data-srcmode="illustration" onclick="switchCharSource('illustration')">
+          <span class="ptype-icon">🖼️</span>
+          <div class="ptype-name">イラストを送る</div>
+          <div class="ptype-desc">そのまま感情パターンへ</div>
+        </div>
       </div>
     </div>
-    <div class="field">
+
+    <!-- テキストモード用の説明欄 -->
+    <div class="field" id="char-desc-field">
       <label>キャラクターの説明（必須）</label>
       <textarea id="st-character" rows="2" placeholder="例: ぽっちゃりした白い猫、メガネをかけたサラリーマン、魔法使いの女の子"></textarea>
     </div>
-    <div class="field">
+
+    <!-- 写真モード用の案内 -->
+    <div class="info-box" id="char-photo-note" style="display:none;">
+      📸 <b>写真を送るモード：</b>下で性別・年齢・イラストスタイルを選んでプロンプトを生成したら、生成されたプロンプトと一緒に<b>写真をChatGPTに添付</b>して送ってや！
+    </div>
+
+    <!-- イラストモード用の案内 -->
+    <div class="info-box" id="char-illust-note" style="display:none;">
+      🖼️ <b>イラストを送るモード：</b>このイラストの画風・見た目をそのまま使うで。下の感情パターンだけ選んでプロンプトを生成したら、<b>イラストをChatGPTに添付</b>して送ってや！
+    </div>
+
+    <div class="field" id="char-name-field">
       <label>キャラクター名（任意）</label>
       <input type="text" id="st-charname" placeholder="例: もちこ、たろう">
     </div>
-    <!-- 人間パネル -->
-    <div id="st-panel-human">
+
+    <!-- 性別・年齢系（テキスト／写真モードで表示） -->
+    <div id="char-attrs-block">
       <div class="field">
-        <label>👤 性別</label>
+        <label>🐾 キャラクタータイプ</label>
         <div class="chip-group">
-          <span class="chip orange active" data-group="st-gender" data-val="">指定なし</span>
-          <span class="chip orange" data-group="st-gender" data-val="male character, masculine">男性</span>
-          <span class="chip orange" data-group="st-gender" data-val="female character, feminine">女性</span>
-          <span class="chip orange" data-group="st-gender" data-val="otokoyaku, Takarazuka male role, elegant androgynous woman as a man, princely bearing">🌹 宝塚・男役</span>
-          <span class="chip orange" data-group="st-gender" data-val="musumeyaku, Takarazuka female role, ultra-feminine, graceful, large expressive eyes">🌸 宝塚・娘役</span>
-          <span class="chip orange" data-group="st-gender" data-val="non-binary, gender-neutral">ノンバイナリー</span>
+          <span class="chip orange active" data-group="st-chartype" data-val="human">👤 人間</span>
+          <span class="chip orange" data-group="st-chartype" data-val="pet">🐾 犬・猫など</span>
+          <span class="chip orange" data-group="st-chartype" data-val="animal">🐘 その他動物</span>
+          <span class="chip orange" data-group="st-chartype" data-val="other">✨ その他</span>
         </div>
       </div>
-      <div class="field">
-        <label>🎂 年齢イメージ</label>
-        <input type="range" id="st-age" min="5" max="80" value="25" oninput="document.getElementById('st-age-disp').textContent=this.value+'歳ごろ'">
-        <div class="age-display" id="st-age-disp">25歳ごろ</div>
-        <div class="range-labels"><span>子ども</span><span>ティーン</span><span>青年</span><span>中年</span><span>シニア</span></div>
-      </div>
-      <div class="field" style="margin-bottom:0">
-        <label>⚡ 中性度</label>
-        <div class="androgyny-track"></div>
-        <input type="range" class="androgyny-r" id="st-androgyny" min="0" max="100" value="50">
-        <div class="range-labels"><span>💙 男性的</span><span>⚡ 中性</span><span>💗 女性的</span></div>
-      </div>
-    </div>
-    <!-- ペットパネル -->
-    <div id="st-panel-pet" style="display:none">
-      <div class="field">
-        <label>🐾 性別</label>
-        <div class="chip-group">
-          <span class="chip orange active" data-group="st-petgender" data-val="">指定なし</span>
-          <span class="chip orange" data-group="st-petgender" data-val="male, boy">オス</span>
-          <span class="chip orange" data-group="st-petgender" data-val="female, girl">メス</span>
+      <!-- 人間パネル -->
+      <div id="st-panel-human">
+        <div class="field">
+          <label>👤 性別</label>
+          <div class="chip-group">
+            <span class="chip orange active" data-group="st-gender" data-val="">指定なし</span>
+            <span class="chip orange" data-group="st-gender" data-val="male character, masculine">男性</span>
+            <span class="chip orange" data-group="st-gender" data-val="female character, feminine">女性</span>
+            <span class="chip orange" data-group="st-gender" data-val="otokoyaku, Takarazuka male role, elegant androgynous woman as a man, princely bearing">🌹 宝塚・男役</span>
+            <span class="chip orange" data-group="st-gender" data-val="musumeyaku, Takarazuka female role, ultra-feminine, graceful, large expressive eyes">🌸 宝塚・娘役</span>
+            <span class="chip orange" data-group="st-gender" data-val="non-binary, gender-neutral">ノンバイナリー</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>🎂 年齢イメージ</label>
+          <input type="range" id="st-age" min="5" max="80" value="25" oninput="document.getElementById('st-age-disp').textContent=this.value+'歳ごろ'">
+          <div class="age-display" id="st-age-disp">25歳ごろ</div>
+          <div class="range-labels"><span>子ども</span><span>ティーン</span><span>青年</span><span>中年</span><span>シニア</span></div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>⚡ 中性度</label>
+          <div class="androgyny-track"></div>
+          <input type="range" class="androgyny-r" id="st-androgyny" min="0" max="100" value="50">
+          <div class="range-labels"><span>💙 男性的</span><span>⚡ 中性</span><span>💗 女性的</span></div>
         </div>
       </div>
-      <div class="field">
-        <label>📅 年齢</label>
-        <div class="chip-group">
-          <span class="chip orange active" data-group="st-petage" data-val="very young puppy or kitten, baby animal, tiny chubby">赤ちゃん・子</span>
-          <span class="chip orange" data-group="st-petage" data-val="young adult animal, energetic and playful">若い・元気</span>
-          <span class="chip orange" data-group="st-petage" data-val="mature adult animal, calm">大人</span>
-          <span class="chip orange" data-group="st-petage" data-val="elderly animal, senior, gentle">シニア</span>
+      <!-- ペットパネル -->
+      <div id="st-panel-pet" style="display:none">
+        <div class="field">
+          <label>🐾 性別</label>
+          <div class="chip-group">
+            <span class="chip orange active" data-group="st-petgender" data-val="">指定なし</span>
+            <span class="chip orange" data-group="st-petgender" data-val="male, boy">オス</span>
+            <span class="chip orange" data-group="st-petgender" data-val="female, girl">メス</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>📅 年齢</label>
+          <div class="chip-group">
+            <span class="chip orange active" data-group="st-petage" data-val="very young puppy or kitten, baby animal, tiny chubby">赤ちゃん・子</span>
+            <span class="chip orange" data-group="st-petage" data-val="young adult animal, energetic and playful">若い・元気</span>
+            <span class="chip orange" data-group="st-petage" data-val="mature adult animal, calm">大人</span>
+            <span class="chip orange" data-group="st-petage" data-val="elderly animal, senior, gentle">シニア</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="card">
+  <div class="card" id="art-style-card">
     <div class="card-title"><span class="icon">🎨</span> アートスタイル</div>
     <div class="style-grid">
       <div class="style-card active" data-val="cute kawaii anime illustration style, clean linework, bright colors"><span class="s-icon">✨</span><span class="s-name">かわいいアニメ</span><span class="s-desc">クリーンな線画</span></div>
@@ -815,6 +600,42 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="card-title" style="margin-bottom:0"><span class="icon">😄</span> 感情パターン</div>
       <span class="count-badge under" id="st-emotion-count">0 / 24 選択中</span>
     </div>
+
+    <!-- モード切替 -->
+    <div class="emo-mode-tabs">
+      <button class="emo-mode-tab active" onclick="switchEmoMode('tags')">🏷️ タグから選ぶ</button>
+      <button class="emo-mode-tab" onclick="switchEmoMode('phrase')">💬 セリフからAI生成</button>
+    </div>
+
+    <!-- セリフ入力モード -->
+    <div class="emo-mode-panel" id="emo-panel-phrase">
+      <div class="info-box" style="margin-bottom:.9rem;">
+        💬 <b>使い方：</b>よく使うセリフ・場面を入力すると、Geminiがそのセリフに合う<b>表情・しぐさ・シチュエーション</b>を自動で考えてくれるで！テンプレ感のない、らしいスタンプが作れるわ。
+      </div>
+      <div class="field">
+        <label>入れたいセリフ・場面を1行ずつ入力（複数行OK）</label>
+        <textarea id="phrase-input" rows="6" placeholder="例:&#10;ありがとう！&#10;おつかれさま&#10;了解です！&#10;ちょっと待ってて&#10;今向かってます&#10;誕生日おめでとう&#10;ごめんなさい&#10;よろしくお願いします"></textarea>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:.4rem">📌 1行＝1スタンプ。空いている枠は元の感情タグから自動で補完するで</div>
+      </div>
+      <div class="apikey-bar" style="margin-top:.8rem;">
+        <label>🔑 Gemini API</label>
+        <input type="password" id="phrase-apikey" placeholder="AIza... （無料）" oninput="onPhraseKeyChange()">
+        <a href="https://aistudio.google.com/app/apikey" target="_blank">無料取得 →</a>
+      </div>
+      <button class="btn-primary" id="phrase-btn" style="background:linear-gradient(135deg,#a8ff3e,#00d4ff);color:#000;" onclick="generatePhraseEmotions()" disabled>🤖 セリフに合う表情・しぐさを生成</button>
+      <div class="loading-bar" id="phrase-loading"><div class="loading-fill"></div></div>
+      <div class="status-line" id="phrase-status"></div>
+      <div class="err-box" id="phrase-err"></div>
+
+      <!-- 生成結果プレビュー -->
+      <div id="phrase-result-wrap" style="display:none;margin-top:1rem;">
+        <div class="attr-label" style="margin-bottom:.6rem;">✅ 生成された表情・しぐさ（編集もできるで）</div>
+        <div id="phrase-result-list"></div>
+      </div>
+    </div>
+
+    <!-- タグ選択モード（既存） -->
+    <div class="emo-mode-panel active" id="emo-panel-tags">
     <div class="quick-btns">
       <button class="qbtn" onclick="stSelectAll()">すべて選択</button>
       <button class="qbtn" onclick="stClearAll()">クリア</button>
@@ -862,6 +683,7 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <span class="tag" data-val="heartbroken, sad love">💔 しつれん</span>
       <span class="tag" data-val="triumphant, fist pump, victory">✊ やってやる</span>
     </div>
+    </div><!-- /emo-panel-tags -->
   </div>
   <div class="card">
     <div class="card-title"><span class="icon">✨</span> オプション</div>
@@ -888,7 +710,12 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
     <div class="toggle-row">
       <label class="sw"><input type="checkbox" id="st-size" checked><span class="sw-slider"></span></label>
-      <span class="toggle-label" id="st-size-label">LINEスタンプ推奨サイズを指定 (370×320px)</span>
+      <span class="toggle-label" id="st-size-label">高画質で生成 → 最後にLINE推奨サイズ(370×320px)へリサイズ</span>
+    </div>
+    <div style="font-size:.7rem;color:var(--muted);margin-top:-.4rem;margin-bottom:.8rem;">OFFにすると、リサイズせず高画質のまま出力するで（提出時は自分でリサイズしてや）</div>
+    <div class="toggle-row" style="margin-bottom:0;">
+      <label class="sw"><input type="checkbox" id="st-outline" checked><span class="sw-slider"></span></label>
+      <span class="toggle-label">キャラクターに縁取り（白フチ）をつける</span>
     </div>
     <button class="btn-primary stamp" onclick="genStamp()">✨ 2フェーズ プロンプトを生成する！</button>
   </div>
@@ -904,6 +731,9 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </div>
       <div class="phase-panel active" id="st-panel1"><div class="prompt-box" id="st-p1"></div></div>
       <div class="phase-panel" id="st-panel2"><div class="prompt-box" id="st-p2"></div></div>
+      <div class="info-box" id="st-attach-reminder" style="display:none;margin-top:1rem;">
+        📎 <b>このプロンプトと一緒に、写真・イラストをChatGPTに添付してから送信してや！</b><br>添付せずテキストだけ送ると、ChatGPTがキャラを認識できへんで。
+      </div>
       <div class="tip-box">💡 <b>Phase1</b>→ChatGPTに貼って一覧グリッド確認→<b>Phase2</b>→同じチャットに貼って分割ZIP！</div>
     </div>
   </div>
@@ -912,6 +742,10 @@ input.androgyny-r::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 <!-- ==================== LIBRARY PAGE ==================== -->
 <div class="page" id="page-library">
+  <div class="page-breadcrumb">
+    <div class="pb-current"><span class="pb-icon">📚</span> プロンプト保存庫</div>
+    <button class="btn-home" onclick="scrollToTop()">⬆ 種類選択に戻る</button>
+  </div>
 
   <!-- GAS連携設定 -->
   <div class="gas-setup-card" id="gas-setup-card">
@@ -1011,14 +845,29 @@ let currentPage = null;
 function gotoPage(page) {
   document.querySelectorAll('.menu-card').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sn-btn').forEach(b => b.classList.toggle('active', b.dataset.snpage === page));
   const mc = document.querySelector('.menu-card.c-' + page);
   if (mc) mc.classList.add('active');
   const pg = document.getElementById('page-' + page);
   if (pg) pg.classList.add('active');
   currentPage = page;
-  if (page === 'analyze') loadSavedPicker();
   if (page === 'library') renderLib();
+  // ページ切替時は先頭にスクロール（ブレッドクラムが見えるように）
+  setTimeout(() => { if (pg) pg.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
 }
+
+function scrollToTop() {
+  document.getElementById('wrapper-top').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// スクロールでミニナビを表示/非表示
+let lastScrollY = 0;
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('sticky-nav');
+  if (window.scrollY > 280) nav.classList.add('show');
+  else nav.classList.remove('show');
+  lastScrollY = window.scrollY;
+}, { passive: true });
 
 // ===== GENERIC CHIP (single select per group) =====
 document.querySelectorAll('.chip[data-group]').forEach(c => {
@@ -1042,248 +891,6 @@ document.querySelectorAll('.chip:not([data-group])').forEach(c => {
 document.querySelectorAll('.chip[data-multi]').forEach(c => {
   c.addEventListener('click', () => c.classList.toggle('active'));
 });
-// style chips (illust style — single)
-document.querySelectorAll('#il-style-chips .chip').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('#il-style-chips .chip').forEach(x => x.classList.remove('active'));
-    c.classList.add('active');
-  });
-});
-
-// sub-tabs
-function switchSubTab(prefix, panelId) {
-  const panels = document.querySelectorAll(`#page-analyze .sub-panel`);
-  const tabs = document.querySelectorAll(`#page-analyze .sub-tab`);
-  panels.forEach(p => p.classList.remove('active'));
-  tabs.forEach(t => t.classList.remove('active'));
-  document.getElementById('sub-' + panelId).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (panelId === 'person-az') loadSavedPicker();
-}
-
-// ===== UPLOAD =====
-const uploadImages = {};
-function triggerUpload(id) { document.getElementById(id).click(); }
-function loadUpload(e, boxId, key) {
-  const file = e.target.files[0];
-  if (!file) return;
-  uploadImages[key] = { mime: file.type, b64: null };
-  const reader = new FileReader();
-  reader.onload = ev => {
-    uploadImages[key].b64 = ev.target.result.split(',')[1];
-    const box = document.getElementById(boxId);
-    box.classList.add('has-img');
-    box.innerHTML = `<img src="${ev.target.result}" alt="preview">
-      <div class="img-overlay"><span>📎 ${file.name}</span><button class="btn-change" onclick="resetUpload('${boxId}','${key}',event)">変更</button></div>`;
-    // enable analyze buttons
-    checkAzReady();
-  };
-  reader.readAsDataURL(file);
-}
-function resetUpload(boxId, key, e) {
-  e.stopPropagation();
-  delete uploadImages[key];
-  const box = document.getElementById(boxId);
-  box.classList.remove('has-img');
-  const icons = {az1:'🖼️',az2:'📸',ed:'📷'};
-  const texts = {az1:'解析したいイラスト画像をアップ',az2:'解析したい人物写真をアップ',ed:'任意・アップしなくてもOK'};
-  box.innerHTML = `<span class="upload-icon">${icons[key]||'📁'}</span><div class="upload-text">${texts[key]||'ファイルを選択'}</div>`;
-  box.onclick = () => triggerUpload(key === 'az1' ? 'az1-file' : key === 'az2' ? 'az2-file' : 'ed-file');
-  checkAzReady();
-}
-
-// ===== GEMINI API KEY =====
-function getAzKey() { return document.getElementById('az-apikey').value.trim(); }
-function onAzKeyChange() {
-  document.getElementById('az-apikey').classList.toggle('ok', getAzKey().startsWith('AIza'));
-  checkAzReady();
-}
-function checkAzReady() {
-  const hasKey = getAzKey().startsWith('AIza');
-  const b1 = document.getElementById('az1-btn');
-  const b2 = document.getElementById('az2-btn');
-  if (b1) b1.disabled = !(hasKey && uploadImages['az1']);
-  if (b2) b2.disabled = !(hasKey && uploadImages['az2']);
-}
-try { const k = localStorage.getItem('gemini_api_key'); if(k){document.getElementById('az-apikey').value=k;onAzKeyChange();} } catch(e){}
-document.getElementById('az-apikey').addEventListener('input', () => {
-  try { localStorage.setItem('gemini_api_key', getAzKey()); } catch(e) {}
-  checkAzReady();
-});
-
-async function callGemini(imageKey, promptText) {
-  const apiKey = getAzKey();
-  // モデル自動選択
-  const mRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {redirect:'follow'});
-  const mData = await mRes.json();
-  const models = mData.models || [];
-  const preferred = ['gemini-2.5-flash','gemini-2.5-flash-lite','gemini-1.5-flash'];
-  let model = null;
-  for (const p of preferred) {
-    const f = models.find(m => m.name.includes(p) && (m.supportedGenerationMethods||[]).includes('generateContent'));
-    if (f) { model = f.name.replace('models/',''); break; }
-  }
-  if (!model) { const a = models.find(m=>(m.supportedGenerationMethods||[]).includes('generateContent')); if(a) model=a.name.replace('models/',''); }
-  if (!model) throw new Error('使えるGeminiモデルが見つからへんかった');
-
-  const img = uploadImages[imageKey];
-  const parts = img
-    ? [{ inline_data: { mime_type: img.mime, data: img.b64 } }, { text: promptText }]
-    : [{ text: promptText }];
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    { method:'POST', redirect:'follow', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.3,maxOutputTokens:1024} }) }
-  );
-  if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||`API error ${res.status}`); }
-  const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.filter(p=>p.text)?.map(p=>p.text)?.join('') || '';
-  return text.replace(/```[a-z]*\n?|```/g,'').trim();
-}
-
-function showLoading(prefix, msg) {
-  document.getElementById(prefix+'-loading').classList.add('on');
-  const s = document.getElementById(prefix+'-status');
-  s.textContent = msg; s.style.color='var(--a4)'; s.classList.add('on');
-  document.getElementById(prefix+'-err').classList.remove('on');
-}
-function hideLoading(prefix) {
-  document.getElementById(prefix+'-loading').classList.remove('on');
-  document.getElementById(prefix+'-status').classList.remove('on');
-}
-function showErr(prefix, msg) {
-  hideLoading(prefix);
-  const e = document.getElementById(prefix+'-err');
-  e.textContent = '⚠️ '+msg; e.classList.add('on');
-}
-
-// ===== ANALYZE: ILLUST =====
-async function analyzeIllust() {
-  const extracts = [...document.querySelectorAll('.chip[data-group="az1-extract"].active')].map(c=>c.dataset.val);
-  const target = document.getElementById('az1-target').value.trim();
-  showLoading('az1','🤖 イラストを解析中...');
-  try {
-    const prompt = `このイラスト画像を解析して、同じテイストのイラストを生成するためのプロンプトを英語で作成してください。
-
-抽出する情報:
-${extracts.map(e=>'- '+e).join('\n')}
-${target ? '\n描きたいもの: ' + target : ''}
-
-出力形式:
-- ChatGPT/DALL-Eにそのまま使える英語プロンプト
-- スタイル・雰囲気・技法を具体的なキーワードで記述
-- 最後に日本語で「このプロンプトで○○を描くときは〜と追加してください」という使い方ヒントを1行添える
-
-余分な説明は不要。プロンプト本文と使い方ヒントのみ出力。`;
-    const result = await callGemini('az1', prompt);
-    document.getElementById('az1-result').textContent = result;
-    document.getElementById('az1-output').style.display = 'block';
-    hideLoading('az1');
-  } catch(e) { showErr('az1', e.message); }
-}
-
-// ===== ANALYZE: PERSON =====
-let selectedSavedPrompt = null;
-async function analyzePerson() {
-  const extracts = [...document.querySelectorAll('.chip[data-multi="az2-extract"].active')].map(c=>c.dataset.val);
-  const teist = document.querySelector('.chip[data-group="az2-teist"].active')?.dataset.val || 'cute kawaii anime illustration style';
-  const hairChange = document.getElementById('az2-hair-change').value.trim();
-  const hairColorChange = document.getElementById('az2-haircolor-change').value.trim();
-  const clothesChange = document.getElementById('az2-clothes-change').value.trim();
-  const otherChange = document.getElementById('az2-other-change').value.trim();
-  const changes = [hairChange&&`髪型を「${hairChange}」に変える`,hairColorChange&&`髪色を「${hairColorChange}」に変える`,clothesChange&&`服装を「${clothesChange}」に変える`,otherChange&&otherChange].filter(Boolean);
-
-  showLoading('az2','🤖 人物を解析中...');
-  try {
-    const prompt = `この人物写真を解析して、AIイラスト生成用のキャラクタープロンプトを作成してください。
-
-抽出する情報:
-${extracts.map(e=>'- '+e).join('\n')}
-
-出力テイスト: ${teist}
-
-${changes.length > 0 ? `変更指示（以下を元の特徴の代わりに使うこと）:\n${changes.map(c=>'- '+c).join('\n')}` : ''}
-${selectedSavedPrompt ? `\nベースとなるキャラクタープロンプト（このキャラクターの特徴に今回の人物の特徴を追加/上書きする）:\n${selectedSavedPrompt.body.slice(0,300)}` : ''}
-
-出力形式:
-1. 英語のキャラクタープロンプト（カンマ区切りキーワード形式）
-2. 日本語の説明（抽出した特徴の要約を3-5行）
-
-プロンプトと日本語説明の2つのみ出力。前置きや余分な説明不要。`;
-
-    const result = await callGemini('az2', prompt);
-    document.getElementById('az2-result').textContent = result;
-    document.getElementById('az2-output').style.display = 'block';
-    hideLoading('az2');
-  } catch(e) { showErr('az2', e.message); }
-}
-
-// ===== SAVED PICKER =====
-// loadSavedPicker は library セクションで定義済み
-
-function selectSavedPrompt(sid) {
-  const p = getLib().find(x => String(x.id) === String(sid));
-  if (!p) return;
-  selectedSavedPrompt = p;
-  document.querySelectorAll('.saved-picker-item').forEach(el => {
-    el.classList.toggle('selected', el.dataset.id === String(sid));
-  });
-}
-
-// ===== EDIT =====
-function genEdit() {
-  const actions = [...document.querySelectorAll('.chip[data-group="ed-action"].active')].map(c=>c.dataset.val);
-  const keep = document.getElementById('ed-keep').value.trim();
-  const bg = document.getElementById('ed-bg').value.trim();
-  const extra = document.getElementById('ed-extra').value.trim();
-  const hasImg = !!uploadImages['ed'];
-
-  if (actions.length === 0 && !keep && !bg && !extra) {
-    alert('編集したい内容を選択してや！'); return;
-  }
-
-  let prompt = `以下の指示に従って、${hasImg ? 'アップロードした' : '指定の'}画像を編集してください。\n\n`;
-  if (actions.length > 0) prompt += `【編集内容】\n${actions.map(a=>'- '+a).join('\n')}\n\n`;
-  if (keep) prompt += `【残す対象】\n${keep}\n\n`;
-  if (bg) prompt += `【背景の変更】\n${bg}\n\n`;
-  if (extra) prompt += `【追加指示】\n${extra}\n\n`;
-  if (!hasImg) prompt += `※画像が添付されていない場合は、編集内容を元に新しいイラストとして生成してください。\n`;
-  prompt += `\n高品質で自然な仕上がりになるよう処理してください。`;
-
-  document.getElementById('ed-result').textContent = prompt;
-  document.getElementById('ed-output').style.display = 'block';
-  setTimeout(() => document.getElementById('ed-output').scrollIntoView({behavior:'smooth',block:'start'}), 50);
-}
-
-// ===== ILLUST =====
-function genIllust() {
-  const subject = document.getElementById('il-subject').value.trim();
-  const styleChip = document.querySelector('#il-style-chips .chip.active')?.dataset.val || '';
-  const styleCustom = document.getElementById('il-style-custom').value.trim();
-  const style = styleCustom || styleChip;
-  const comp = document.querySelector('.chip[data-group="il-comp"].active')?.dataset.val || '';
-  const light = document.querySelector('.chip[data-group="il-light"].active')?.dataset.val || '';
-  const ratio = document.querySelector('.chip[data-group="il-ratio"].active')?.dataset.val || 'aspect ratio 1:1, square format';
-  const extra = document.getElementById('il-extra').value.trim();
-
-  if (!subject) { document.getElementById('il-subject').style.borderColor='var(--a1)'; document.getElementById('il-subject').focus(); setTimeout(()=>document.getElementById('il-subject').style.borderColor='',1500); return; }
-
-  let parts = [];
-  if (subject) parts.push(subject);
-  if (style) parts.push(style);
-  if (comp) parts.push(comp);
-  if (light) parts.push(light);
-  if (ratio) parts.push(ratio);
-  parts.push('highly detailed, high quality, masterpiece');
-  if (extra) parts.push(extra);
-
-  const prompt = `Create an illustration with the following specifications:\n\n${parts.join(', ')}\n\n---\n以下の内容でイラストを生成してください：\n\n被写体・シーン: ${subject}\n${style?'スタイル: '+style+'\n':''}${comp?'構図: '+comp+'\n':''}${light?'ライティング: '+light+'\n':''}${ratio?'比率: '+ratio+'\n':''}${extra?'追加指示: '+extra+'\n':''}`;
-
-  document.getElementById('il-result').textContent = prompt;
-  document.getElementById('il-output').style.display = 'block';
-  setTimeout(() => document.getElementById('il-output').scrollIntoView({behavior:'smooth',block:'start'}), 50);
-}
 
 // ===== PRODUCT TYPE =====
 let currentProductType = 'stamp';
@@ -1298,10 +905,10 @@ function switchProductType(type) {
   const sizeLabel = document.getElementById('st-size-label');
   const countLabel = document.getElementById('st-count-label');
   if (type === 'emoji') {
-    sizeLabel.textContent = 'LINE絵文字推奨サイズを指定 (180×180px)';
+    sizeLabel.textContent = '高画質で生成 → 最後にLINE絵文字サイズ(180×180px)へリサイズ';
     countLabel.textContent = '絵文字';
   } else {
-    sizeLabel.textContent = 'LINEスタンプ推奨サイズを指定 (370×320px)';
+    sizeLabel.textContent = '高画質で生成 → 最後にLINEスタンプ推奨サイズ(370×320px)へリサイズ';
     countLabel.textContent = 'スタンプ';
   }
 }
@@ -1373,7 +980,16 @@ document.querySelectorAll('#st-emotion-tags .tag').forEach(t=>{
 document.querySelectorAll('#page-stamp .tag.extra').forEach(t=>{
   t.addEventListener('click',()=>{const i=stExtras.indexOf(t.dataset.val);if(i===-1){stExtras.push(t.dataset.val);t.classList.add('active');}else{stExtras.splice(i,1);t.classList.remove('active');}});
 });
-function stUpdateBadge(){const n=stEmotions.length,b=document.getElementById('st-emotion-count');b.textContent=n+' / '+stCount+' 選択中';b.className='count-badge '+(n===stCount?'ok':n>stCount?'over':'under');}
+function stUpdateBadge(){
+  if (emoMode === 'phrase') {
+    const n = phraseResults.length;
+    const b = document.getElementById('st-emotion-count');
+    b.textContent = n + ' / ' + stCount + ' （セリフ）';
+    b.className = 'count-badge ' + (n===stCount?'ok':n>stCount?'over':'under');
+    return;
+  }
+  const n=stEmotions.length,b=document.getElementById('st-emotion-count');b.textContent=n+' / '+stCount+' 選択中';b.className='count-badge '+(n===stCount?'ok':n>stCount?'over':'under');
+}
 function stSelectAll(){document.querySelectorAll('#st-emotion-tags .tag').forEach(t=>{if(!stEmotions.includes(t.dataset.val))stEmotions.push(t.dataset.val);t.classList.add('active');});stUpdateBadge();}
 function stClearAll(){stEmotions=[];document.querySelectorAll('#st-emotion-tags .tag').forEach(t=>t.classList.remove('active'));stUpdateBadge();}
 function stAutoSelect(){stClearAll();Array.from(document.querySelectorAll('#st-emotion-tags .tag')).sort(()=>Math.random()-.5).slice(0,stCount).forEach(t=>{stEmotions.push(t.dataset.val);t.classList.add('active');});stUpdateBadge();}
@@ -1400,81 +1016,405 @@ function buildStCharPrompt(){
   return parts.filter(Boolean).join(', ');
 }
 
+// 写真モード用：名前・説明文を含めず、性別・年齢などの属性のみ返す
+function buildStCharAttrsOnly(){
+  const ctype=document.querySelector('.chip[data-group="st-chartype"].active')?.dataset.val||'human';
+  let parts=[];
+  if(ctype==='human'){
+    const gender=document.querySelector('.chip[data-group="st-gender"].active')?.dataset.val||'';
+    const age=parseInt(document.getElementById('st-age').value);
+    const andro=parseInt(document.getElementById('st-androgyny').value);
+    if(age<=8)parts.push('very young child');else if(age<=13)parts.push('child around '+age+' years old');else if(age<=17)parts.push('teenager around '+age);else if(age<=30)parts.push('young adult around '+age);else if(age<=55)parts.push('adult around '+age);else parts.push('elderly around '+age);
+    if(gender)parts.push(gender);
+    if(andro<=15)parts.push('extremely masculine, no feminine traits');else if(andro<=35)parts.push('masculine appearance');else if(andro>=85)parts.push('extremely feminine, no masculine traits');else if(andro>=65)parts.push('feminine appearance, soft delicate face');else parts.push('androgynous, balanced masculine and feminine');
+  } else if(ctype==='pet'){
+    const pg=document.querySelector('.chip[data-group="st-petgender"].active')?.dataset.val||'';
+    const pa=document.querySelector('.chip[data-group="st-petage"].active')?.dataset.val||'';
+    if(pg)parts.push(pg);if(pa)parts.push(pa);
+  }
+  return parts.filter(Boolean).join(', ');
+}
+
+// ===== キャラクターの元 切替 =====
+let charSourceMode = 'text'; // 'text' | 'photo' | 'illustration'
+
+function switchCharSource(mode) {
+  charSourceMode = mode;
+  document.querySelectorAll('.ptype-tab[data-srcmode]').forEach(t => t.classList.toggle('active', t.dataset.srcmode === mode));
+
+  document.getElementById('char-desc-field').style.display = (mode === 'text') ? 'block' : 'none';
+  document.getElementById('char-photo-note').style.display = (mode === 'photo') ? 'block' : 'none';
+  document.getElementById('char-illust-note').style.display = (mode === 'illustration') ? 'block' : 'none';
+
+  // 性別・年齢・キャラタイプは text/photo モードで表示、illustrationでは非表示
+  const showAttrs = (mode === 'text' || mode === 'photo');
+  document.getElementById('char-attrs-block').style.display = showAttrs ? 'block' : 'none';
+  document.getElementById('char-name-field').style.display = (mode === 'text') ? 'block' : 'none';
+
+  // アートスタイルは illustration モードでは不要（添付画風を維持するため）
+  document.getElementById('art-style-card').style.display = (mode === 'illustration') ? 'none' : 'block';
+}
+
+// ===== EMOTION MODE SWITCH =====
+let emoMode = 'tags'; // 'tags' or 'phrase'
+let phraseResults = []; // [{phrase, desc}]
+
+function switchEmoMode(mode) {
+  emoMode = mode;
+  document.querySelectorAll('.emo-mode-tab').forEach((t, i) => t.classList.toggle('active', (i===0&&mode==='tags')||(i===1&&mode==='phrase')));
+  document.getElementById('emo-panel-tags').classList.toggle('active', mode==='tags');
+  document.getElementById('emo-panel-phrase').classList.toggle('active', mode==='phrase');
+  stUpdateBadge();
+}
+
+function getPhraseKey() { return document.getElementById('phrase-apikey').value.trim(); }
+function onPhraseKeyChange() {
+  try { localStorage.setItem('gemini_api_key', getPhraseKey()); } catch(e) {}
+  document.getElementById('phrase-btn').disabled = !getPhraseKey().startsWith('AIza');
+}
+try { const k = localStorage.getItem('gemini_api_key'); if (k) { document.getElementById('phrase-apikey').value = k; document.getElementById('phrase-btn').disabled = !k.startsWith('AIza'); } } catch(e) {}
+
+async function pickGeminiModel(apiKey) {
+  const mRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {redirect:'follow'});
+  const mData = await mRes.json();
+  const models = mData.models || [];
+  const preferred = ['gemini-2.5-flash','gemini-2.5-flash-lite','gemini-1.5-flash'];
+  for (const p of preferred) {
+    const f = models.find(m => m.name.includes(p) && (m.supportedGenerationMethods||[]).includes('generateContent'));
+    if (f) return f.name.replace('models/','');
+  }
+  const a = models.find(m=>(m.supportedGenerationMethods||[]).includes('generateContent'));
+  if (a) return a.name.replace('models/','');
+  throw new Error('使えるGeminiモデルが見つからへんかった');
+}
+
+async function generatePhraseEmotions() {
+  const apiKey = getPhraseKey();
+  if (!apiKey) return;
+  const rawLines = document.getElementById('phrase-input').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  if (rawLines.length === 0) { alert('セリフを1行以上入力してや！'); return; }
+
+  const btn = document.getElementById('phrase-btn');
+  btn.disabled = true;
+  document.getElementById('phrase-loading').classList.add('on');
+  const status = document.getElementById('phrase-status');
+  status.classList.add('on'); status.textContent = '🤖 セリフに合う表情・しぐさを考え中...'; status.style.color='var(--a3)';
+  document.getElementById('phrase-err').classList.remove('on');
+
+  // キャラ情報も渡してキャラに合った提案にする
+  const charType = document.querySelector('.chip[data-group="st-chartype"].active')?.dataset.val || 'human';
+  const charDesc = document.getElementById('st-character').value.trim() || '汎用キャラクター';
+
+  const prompt = `あなたはLINEスタンプのクリエイティブディレクターです。
+以下のキャラクターと、ユーザーが使いたいセリフのリストを元に、各セリフに合う「表情・ポーズ・シチュエーション」を考えてください。
+
+キャラクター: ${charDesc}（タイプ: ${charType}）
+
+セリフリスト:
+${rawLines.map((l,i)=>`${i+1}. ${l}`).join('\n')}
+
+各セリフについて、テンプレ的でない、自然で具体的な表情・しぐさ・小物・シチュエーションを考えてください。
+例えば「ありがとう」なら "bowing slightly with both hands together, warm grateful smile, sparkle effect" のように、複数の要素を組み合わせた具体的な英語の記述にしてください。
+
+重要: 全${rawLines.length}個のセリフ間で、ポーズ・カメラ距離・体の向き・手の位置が極力被らないようにしてください。
+同じような「両手を上げて喜ぶ」「正面を向いて立つ」だけのパターンの繰り返しは避け、クローズアップ／全身／横向き／後ろ姿／寄り目線など、カットの種類も意識して変化をつけてください。
+
+出力は以下のJSON配列の形式のみで、他のテキストは含めないでください:
+[
+  {"phrase": "セリフ1", "desc": "英語での表情・しぐさの詳細な記述"},
+  {"phrase": "セリフ2", "desc": "英語での表情・しぐさの詳細な記述"}
+]`;
+
+  try {
+    const model = await pickGeminiModel(apiKey);
+    status.textContent = `🤖 ${model} で生成中...`;
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method:'POST', redirect:'follow',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          contents:[{parts:[{text:prompt}]}],
+          generationConfig:{temperature:0.7,maxOutputTokens:2048}
+        })
+      }
+    );
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `API error ${res.status}`); }
+    const data = await res.json();
+    const raw = (data.candidates?.[0]?.content?.parts || []).filter(p=>p.text).map(p=>p.text).join('');
+    const jsonMatch = raw.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('AIの返答からJSONが見つからへんかった');
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    phraseResults = parsed.map(p => ({ phrase: p.phrase || '', desc: p.desc || '' }));
+    renderPhraseResults();
+    document.getElementById('phrase-result-wrap').style.display = 'block';
+    status.textContent = `✅ ${phraseResults.length}件生成完了！下で編集もできるで`;
+    status.style.color = 'var(--a3)';
+  } catch(err) {
+    document.getElementById('phrase-err').textContent = '⚠️ ' + err.message;
+    document.getElementById('phrase-err').classList.add('on');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('phrase-loading').classList.remove('on');
+  }
+}
+
+function renderPhraseResults() {
+  const list = document.getElementById('phrase-result-list');
+  list.innerHTML = phraseResults.map((p, i) => `
+    <div class="phrase-item">
+      <div class="pi-num">${i+1}</div>
+      <div class="pi-body">
+        <div class="pi-phrase">💬 ${escHtml(p.phrase)}</div>
+        <textarea class="pi-desc" rows="2" oninput="updatePhraseDesc(${i}, this.value)">${escHtml(p.desc)}</textarea>
+      </div>
+      <button class="pi-del" onclick="removePhraseItem(${i})">✕</button>
+    </div>`).join('');
+  stUpdateBadge();
+}
+function updatePhraseDesc(i, val) { if (phraseResults[i]) phraseResults[i].desc = val; }
+function removePhraseItem(i) { phraseResults.splice(i, 1); renderPhraseResults(); }
+
+// ===== ジェスチャー・ポーズ バリエーション強制システム =====
+// 同じ感情でも構図が被らないよう、各コマに異なる「視点・距離・手の位置・体の向き」を割り当てる
+const POSE_VARIATIONS = {
+  cameraDistance: ['close-up shot showing head and shoulders only', 'medium shot showing upper body', 'full body shot from a slight distance', 'close-up on face filling most of the frame'],
+  bodyAngle: ['facing directly forward', 'body turned slightly to the left', 'body turned slightly to the right', 'three-quarter angle view', 'looking back over the shoulder'],
+  handPosition: ['both hands visible near the face', 'one hand raised', 'hands resting at the sides', 'hands clasped together', 'one hand on hip', 'arms crossed', 'hands behind the back', 'one hand reaching toward viewer'],
+  gaze: ['looking directly at the viewer', 'looking slightly off to the side', 'eyes looking upward', 'eyes closed', 'looking down'],
+};
+
+function pickVariation(pool, index) {
+  // インデックスをずらしてプールを巡回させ、同じ感情でも被らないようにする
+  return pool[index % pool.length];
+}
+
+function buildVariationLine(index) {
+  const dist = pickVariation(POSE_VARIATIONS.cameraDistance, index);
+  const angle = pickVariation(POSE_VARIATIONS.bodyAngle, index + 1);
+  const hand = pickVariation(POSE_VARIATIONS.handPosition, index + 2);
+  const gaze = pickVariation(POSE_VARIATIONS.gaze, index + 3);
+  return `[構図: ${dist} / ${angle} / ${hand} / ${gaze}]`;
+}
+
 function genStamp(){
   const character=document.getElementById('st-character').value.trim();
-  if(!character){const el=document.getElementById('st-character');el.style.borderColor='var(--a1)';el.focus();setTimeout(()=>el.style.borderColor='',1600);return;}
+  if (charSourceMode === 'text' && !character) {
+    const el=document.getElementById('st-character');el.style.borderColor='var(--a1)';el.focus();setTimeout(()=>el.style.borderColor='',1600);return;
+  }
   const textOverlay=document.getElementById('st-text-overlay').value.trim();
   const custom=document.getElementById('st-custom').value.trim();
   const wantSize=document.getElementById('st-size').checked;
+  const wantOutline=document.getElementById('st-outline').checked;
   const isEmoji=currentProductType==='emoji';
   const productLabel=isEmoji?'LINE絵文字':'LINEスタンプ';
-  const sizeNote=wantSize?(isEmoji?'\n- 各セル推奨サイズ: 180×180px（正方形）':'\n- 各セル推奨サイズ: 370×320px'):'';
+  const sizeNote='\n- 各セルは高画質・高精細に描き込む（線・グラデーション・ディテールまで丁寧に。最終的にリサイズされる前提でこの段階では画質を優先する）';
   const emojiNote=isEmoji?'\n- 正方形（180×180px）に収まるシンプルな構図\n- テキストは入れない（絵文字はテキストなしが基本）\n- 小さく表示されても認識できるシンプルな表現にすること':'';
-  const charDesc=buildStCharPrompt();
-  const padded=[...stEmotions];let pi=0;
-  while(padded.length<stCount){const c=ST_DEFAULT_POOL[pi%ST_DEFAULT_POOL.length];if(!padded.includes(c))padded.push(c);pi++;}
-  const emotions=padded.slice(0,stCount);
-  const textNote=textOverlay?'\n- 各スタンプには感情に合ったひと言（例:「'+textOverlay+'」）を添える':'';
-  const extrasBlock=stExtras.length>0?stExtras.map(e=>'  - '+e).join('\n'):'  - (なし)';
-  const customNote=custom?'\n\n【追加指示】\n'+custom:'';
+
+  // ---- キャラクターの元モードに応じてcharDesc・styleLineを決定 ----
+  let charDesc, styleLine, attachNote;
+  if (charSourceMode === 'photo') {
+    charDesc = '添付した写真に写っている' + (buildStCharAttrsOnly() || '人物');
+    styleLine = `アートスタイル: ${stStyleVal}（添付写真の人物を、このイラストスタイルで描く）`;
+    attachNote = `\n\n━━━━━━━━━━━━━━━━━━━━━━\n【添付写真について】\n━━━━━━━━━━━━━━━━━━━━━━\nこのメッセージに写真を添付しています。その人物の顔・特徴を元に、指定のイラストスタイルでキャラクターを作成してください。`;
+  } else if (charSourceMode === 'illustration') {
+    charDesc = '添付したイラストに描かれているキャラクター（画風・配色・見た目をそのまま維持）';
+    styleLine = 'アートスタイル: 添付イラストの画風・線の質感・配色をそのまま維持する（新たな画風指定はしない）';
+    attachNote = `\n\n━━━━━━━━━━━━━━━━━━━━━━\n【添付イラストについて】\n━━━━━━━━━━━━━━━━━━━━━━\nこのメッセージにイラストを添付しています。テキストでのキャラクター説明・画風指定は行っていません。添付イラストの画風・キャラクターをそのまま使ってください。`;
+  } else {
+    charDesc = buildStCharPrompt();
+    styleLine = `アートスタイル: ${stStyleVal}`;
+    attachNote = '';
+  }
+
+  // セリフモードかタグモードかで感情リストの作り方を変える
+  let eBlock, usePhraseText=false;
+  const pad=n=>String(n).padStart(2,'0');
   const cols=stCount<=16?4:stCount<=24?6:8;
   const rows=Math.ceil(stCount/cols);
-  const pad=n=>String(n).padStart(2,'0');
-  const eBlock=emotions.map((e,i)=>'  '+pad(i+1)+'. '+e).join('\n');
+
+  if (emoMode === 'phrase' && phraseResults.length > 0) {
+    usePhraseText = true;
+    const padded = phraseResults.slice(0, stCount).map(p => `${p.desc}（セリフ: "${p.phrase}"）`);
+    let pi = 0;
+    while (padded.length < stCount) { const c = ST_DEFAULT_POOL[pi % ST_DEFAULT_POOL.length]; padded.push(c); pi++; }
+    // セリフモードはAIが既に具体的な構図を生成済みなので、補完分のみバリエーション行を付与
+    eBlock = padded.map((e,i) => {
+      const isGenerated = i < phraseResults.length;
+      return '  '+pad(i+1)+'. '+e + (isGenerated ? '' : '\n     '+buildVariationLine(i));
+    }).join('\n');
+  } else {
+    const padded=[...stEmotions];let pi=0;
+    while(padded.length<stCount){const c=ST_DEFAULT_POOL[pi%ST_DEFAULT_POOL.length];if(!padded.includes(c))padded.push(c);pi++;}
+    const emotions=padded.slice(0,stCount);
+    eBlock=emotions.map((e,i)=>'  '+pad(i+1)+'. '+e+'\n     '+buildVariationLine(i)).join('\n');
+  }
+
+  const textNote=usePhraseText
+    ? '\n- 各スタンプには対応するセリフをテキストとして自然に配置する（手書き風や吹き出し風など、キャラデザインに合った形で）'
+    : (textOverlay?'\n- 各スタンプには感情に合ったひと言（例:「'+textOverlay+'」）を添える':'');
+  const extrasBlock=stExtras.length>0?stExtras.map(e=>'  - '+e).join('\n'):'  - (なし)';
+  const customNote=custom?'\n\n【追加指示】\n'+custom:'';
+
+  // ---- グリッドの正確なピクセル寸法を計算 ----
+  // 生成時は高画質ワーキングサイズ（公式サイズの3倍相当）で描かせて、最後に公式サイズへリサイズする
+  const QUALITY_SCALE = 3;
+  const finalCellW = isEmoji ? 180 : 370;   // LINE公式の最終提出サイズ
+  const finalCellH = isEmoji ? 180 : 320;
+  const cellW = finalCellW * QUALITY_SCALE;  // 生成時のワーキングサイズ（高画質優先）
+  const cellH = finalCellH * QUALITY_SCALE;
+  const gridW = cellW * cols;
+  const gridH = cellH * rows;
+
+  // ---- キャラクター一貫性ロック文 ----
+  const consistencyLock = (charSourceMode === 'photo' || charSourceMode === 'illustration')
+    ? `添付した${charSourceMode === 'photo' ? '写真' : 'イラスト'}のキャラクターを「基準キャラクターデザイン」として固定する。
+- 添付${charSourceMode === 'photo' ? '写真の人物' : 'イラストのキャラクター'}の顔の輪郭・パーツの形・配置比率を全${stCount}コマで完全に統一する
+- 髪型・髪色・瞳の色・体型・身長比率（頭身）を一切変えない
+- 服装・配色・小物も指定がない限り全コマで同一にする
+- 添付${charSourceMode === 'photo' ? '写真の人物' : 'イラストのキャラクター'}を「マスター」とし、各コマはそのマスターを複製してポーズ・表情のみ変更する感覚で描く
+- 線の太さ・塗りの質感・陰影のつけ方も全コマで統一する
+- 【固定するのは「キャラクターの見た目」のみ】カメラ距離・体の向き・手足の配置・視線の方向は各コマの[構図]指定に従って積極的に変化させること`
+    : `この${charDesc}を「基準キャラクターデザイン」として固定する。
+- 顔の輪郭・パーツの形・配置比率を全${stCount}コマで完全に統一する
+- 髪型・髪色・瞳の色・体型・身長比率（頭身）を一切変えない
+- 服装・配色・小物も指定がない限り全コマで同一にする
+- 1コマ目で確定したデザインを「マスター」とし、以降のコマはそのマスターを複製してポーズ・表情のみ変更する感覚で描く
+- 線の太さ・塗りの質感・陰影のつけ方も全コマで統一する（一部だけ精密で一部だけ簡素にならないようにする）
+- 【固定するのは「キャラクターの見た目」のみ】カメラ距離・体の向き・手足の配置・視線の方向は各コマの[構図]指定に従って積極的に変化させること。見た目は同一人物だが、ポーズ・カット・角度は毎コマ変えるという意識で描く`;
+
+  // ---- 視認性・LINEスタンプ規格に基づく仕上げ指示 ----
+  const outlineLine = wantOutline
+    ? 'キャラクターの輪郭に薄い白または明るい色の縁取り（1〜2px相当）を入れ、どの背景色でも視認しやすくする'
+    : '輪郭の縁取りは付けない（キャラクターの線画をそのまま生かし、フチ取りなしの仕上がりにする）';
+  const visibilityNote = isEmoji
+    ? `- 小さいサイズ（180×180px）で表示されることを前提に、線を太く・シルエットを明確にする
+- 細かいディテールは省略し、遠目でも感情が伝わるシンプルな表現にする
+- ${outlineLine}`
+    : `- LINEのトーク画面は様々な背景色（白・黒・写真背景など）の上に表示されるため、${outlineLine}
+- 細部を描き込みすぎず、太い線・はっきりした色面でシルエットを明確にする（小さく表示されても感情が伝わることを優先）
+- 表情は通常のイラストよりやや大げさ・誇張気味に描く（小さい画面でも感情が瞬時に伝わるように）`;
+
+  // ---- ネガティブ指示（よくある失敗を防ぐ） ----
+  const negativeNote = `- 指定外の背景オブジェクト・装飾・模様を追加しない（背景は単色のみ）
+- 手足の本数や指の数を誤らない（各コマで解剖学的に正しい姿にする）
+- コマによって線の太さ・塗りの密度・絵のクオリティがブレないようにする（手抜きコマを作らない）
+- テキスト・吹き出し・絵文字記号を、指定がない限り追加しない
+- キャラクター以外の人物・動物・モブを描き加えない
+- 同一コマ内に同じキャラクターを複数描かない`;
 
   const p1=`あなたは優秀なイラストレーターです。${productLabel}用イラストの【一覧確認シート】を1枚生成してください。
 
 ━━━━━━━━━━━━━━━━━━━━━━
-【目的】全${stCount}種類を1枚のグリッド画像にまとめる。個別ファイルはまだ不要。
+【目的】
 ━━━━━━━━━━━━━━━━━━━━━━
-【キャラクター】
-- ${charDesc}
-- アートスタイル: ${stStyleVal}
-- 全コマで同じデザインを一貫して使用
+全${stCount}種類を1枚のグリッド画像にまとめる。個別ファイルの生成はまだ不要。
+このグリッドは後の工程で機械的に等分割されるため、レイアウトの正確さが最重要。
+
 ━━━━━━━━━━━━━━━━━━━━━━
-【グリッド仕様】
-- ${cols}列 × ${rows}行（計${stCount}コマ）
-- 背景: 各セルは白またはごく薄いグレー（確認用）${sizeNote}
-- セル同士の区切りは【余白のみ】で分ける（線・枠・番号・テキストは一切入れない）
-- Phase2でそのまま均等分割できるよう、各セルを完全に等サイズで配置すること${textNote}${emojiNote}
+【キャラクター基準デザイン（最重要・厳守）】
+━━━━━━━━━━━━━━━━━━━━━━
+${consistencyLock}
+${styleLine}${attachNote}
+
+━━━━━━━━━━━━━━━━━━━━━━
+【視認性・仕上げの質（LINEスタンプとして使われる前提）】
+━━━━━━━━━━━━━━━━━━━━━━
+${visibilityNote}
+
+━━━━━━━━━━━━━━━━━━━━━━
+【グリッド仕様（厳密）】
+━━━━━━━━━━━━━━━━━━━━━━
+- キャンバス全体サイズ: ${gridW}px × ${gridH}px
+- ${cols}列 × ${rows}行、各セルは正確に ${cellW}px × ${cellH}px の等サイズグリッド
+- 各セルの中央にキャラクターを配置し、セルの境界からはみ出さないようにする
+- セルとセルの間に隙間・マージンを作らない（セルは隙間なく隣接させる、座標計算をズラさないため）
+- 背景: 全セル共通で単一の薄いグレー（#F0F0F0相当）で統一。セルごとに背景色を変えない
+- 線・枠線・番号・座標目盛り・テキストラベルなどの装飾は一切追加しない（後工程でのクロップに不要な要素のため）${sizeNote}${textNote}${emojiNote}
+
+━━━━━━━━━━━━━━━━━━━━━━
+【やってはいけないこと】
+━━━━━━━━━━━━━━━━━━━━━━
+${negativeNote}
+
 ━━━━━━━━━━━━━━━━━━━━━━
 【追加スタイル】
+━━━━━━━━━━━━━━━━━━━━━━
 ${extrasBlock}
+
 ━━━━━━━━━━━━━━━━━━━━━━
-【${stCount}枚の感情リスト（左上から順番に配置）】
+【${stCount}枚の感情リスト（配置順: 左上から右へ、行が終わったら次の行の左へ）】
+━━━━━━━━━━━━━━━━━━━━━━
+各行末尾の[構図: ...]はそのコマで使用するカメラ距離・体の向き・手の位置・視線の指定です。
+同じ感情でも構図が異なれば必ずポーズ・アングルを変えてください（全コマが似たガッツポーズや正面立ち姿にならないようにする）。
+
 ${eBlock}${customNote}
-━━━━━━━━━━━━━━━━━━━━━━
-グリッド一覧画像を生成してください。「OK」「分割して」等と返信があれば次フェーズへ。`;
-
-  const p2=`ありがとうございます！各${productLabel}を個別PNGに分割してZIPにまとめてください。
 
 ━━━━━━━━━━━━━━━━━━━━━━
-【分割仕様（最重要）】
-- 先ほどのグリッド画像を${cols}列×${rows}行で均等に切り分ける
-- 左上から右・下の順に stamp_01〜stamp_${pad(stCount)} とする
-- PNG（背景完全透明 / transparent background）
-- 背景の白・グレーを除去してキャラのみ残す
-- セル間の余白は切り捨て、キャラクター部分のみを抽出すること
-- ファイル名: stamp_01.png 〜 stamp_${pad(stCount)}.png${wantSize?(isEmoji?'\n- サイズ: 180×180px（正方形）':'\n- サイズ: 370×320px'):''}
+【出力前の確認事項】
 ━━━━━━━━━━━━━━━━━━━━━━
-【キャラ・スタイル（参照）】
+- 全${stCount}コマでキャラクターの顔・体型・配色が同一であることを確認する
+- 各セルが完全に同サイズ・同位置グリッドに収まっていることを確認する
+- 縮小表示しても各コマの感情が判別できるか確認する
+
+それでは ${gridW}×${gridH}px のグリッド一覧画像を生成してください。確認後「OK」「分割して」と返信したら次フェーズに進みます。`;
+
+  const p2=`ありがとうございます！先ほどの ${gridW}×${gridH}px のグリッド画像を、以下の正確な座標で個別PNGに分割してZIPにまとめてください。
+
+━━━━━━━━━━━━━━━━━━━━━━
+【重要：これは「分割」作業であり「再生成」ではありません】
+━━━━━━━━━━━━━━━━━━━━━━
+先ほど生成したグリッド画像をそのまま使い、ピクセル単位で機械的に切り出すだけの作業です。
+キャラクターを描き直したり、ポーズ・表情・配色を再生成・再解釈しないでください。
+（再描画するとコマ間でキャラクターの見た目が微妙にズレる原因になります）
+
+━━━━━━━━━━━━━━━━━━━━━━
+【分割の正確な座標（最重要）】
+━━━━━━━━━━━━━━━━━━━━━━
+- グリッド全体: ${gridW}px × ${gridH}px、${cols}列 × ${rows}行
+- 各セルのサイズ: 幅${cellW}px × 高さ${cellH}px（隙間なし・等間隔）
+- 切り出し座標は以下の計算式で機械的に求める:
+  ・列n（0始まり, 0〜${cols-1}）のX開始位置 = n × ${cellW}px
+  ・行m（0始まり, 0〜${rows-1}）のY開始位置 = m × ${cellH}px
+  ・各セルは (X開始位置, Y開始位置) から幅${cellW}px×高さ${cellH}px を切り出す
+- 切り出す際、セルの境界線上でキャラクターが切れていないか確認し、切れていれば元のグリッド画像の生成段階に問題がある可能性があるため、その場合はキャラクターがセル中央に収まるよう再調整して切り出すこと（この調整は位置の微修正のみで、キャラクターデザイン自体の再生成は行わないこと）
+- ファイル名は左上から右へ、行ごとに 01, 02, 03... と番号を振る: stamp_01.png 〜 stamp_${pad(stCount)}.png
+
+━━━━━━━━━━━━━━━━━━━━━━
+【出力フォーマット】
+━━━━━━━━━━━━━━━━━━━━━━
+- PNG形式、背景は完全に透明（transparent background, alpha channel）
+- 切り出した薄いグレー背景を完全に除去し、キャラクター部分のみ残す
+- 背景除去後、キャラクターの輪郭にギザギザ・ハロー（縁の残留色）が出ないよう滑らかに処理する
+- ${isEmoji ? '線を太く保ち、小さい表示サイズでも視認できる仕上がりを維持する' : (wantOutline ? 'キャラクター輪郭の縁取り（視認性のための白フチ）が背景除去で消えていないか確認する' : '輪郭に余計な縁取りが残っていないか確認する（縁取りなしの仕上がりを維持）')}${wantSize?`\n- 各PNGを高画質のまま ${finalCellW}×${finalCellH}px にリサイズする（画質が劣化しないよう丁寧に縮小する。LINE公式の提出サイズ）`:`\n- リサイズは行わず、高画質の ${cellW}×${cellH}px のまま出力する（提出時は自分でリサイズしてや）`}
+
+━━━━━━━━━━━━━━━━━━━━━━
+【キャラクター・スタイル（参照・分割時も一貫性を保つこと）】
+━━━━━━━━━━━━━━━━━━━━━━
 - ${charDesc}
-- ${stStyleVal}
+- ${styleLine}
+
 ━━━━━━━━━━━━━━━━━━━━━━
-【感情リスト（番号順）】
+【感情リスト（番号順・ファイル名と対応）】
+━━━━━━━━━━━━━━━━━━━━━━
 ${eBlock}
+
 ━━━━━━━━━━━━━━━━━━━━━━
-【ZIP手順】
-1. ${stCount}枚を透明背景PNGで生成
-2. "line_stamps.zip" にまとめる
-3. ダウンロードリンクを提供
+【ZIP化手順】
+━━━━━━━━━━━━━━━━━━━━━━
+1. 上記座標計算に従って${stCount}枚を正確に切り出し、透明背景PNGとして生成
+2. stamp_01.png 〜 stamp_${pad(stCount)}.png を "line_stamps.zip" にまとめる
+3. ダウンロードリンクを提供する
 
 分割・ZIP化を開始してください！`;
 
   document.getElementById('st-p1').textContent=p1;
   document.getElementById('st-p2').textContent=p2;
-  document.getElementById('st-output-title').textContent='📋 '+stCount+'枚セット プロンプト（'+productLabel+'・2フェーズ）';
+  document.getElementById('st-output-title').textContent='📋 '+stCount+'枚セット（'+productLabel+'・'+gridW+'×'+gridH+'px）';
   document.getElementById('st-output').style.display='block';
+  document.getElementById('st-attach-reminder').style.display = (charSourceMode !== 'text') ? 'block' : 'none';
   switchStTab(1);
   setTimeout(()=>document.getElementById('st-output').scrollIntoView({behavior:'smooth',block:'start'}),50);
 }
